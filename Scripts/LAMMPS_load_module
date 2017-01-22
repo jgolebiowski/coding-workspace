@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cat <<EOF
+module load intel-suite/2015.3.187
+module load openmpi/1.8.7
+module load fftw
+module load lammps/16Feb16
+EOF

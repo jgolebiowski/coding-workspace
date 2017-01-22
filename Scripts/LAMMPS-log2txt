@@ -1,0 +1,55 @@
+#!/usr/bin/python
+
+#The code extracts the thermo data from a LAMMPS log file 
+import sys
+import math
+
+#open file as first parameter
+seedname = str(sys.argv[1]) # First argument is a log file 
+
+#read in the .cell file to get the proper format 
+h=open(seedname,'r')
+loglines=h.readlines()
+h.close()
+
+#second parameter is the number of the run 
+no_run = int(sys.argv[2])
+
+flag =0 # flag is set to track the no of the run 
+
+beg_run=0
+end_run=0
+#look for the necesary run when the beginning is found, look for the end 
+for line in loglines:
+	if 'Memory usage per processor' in line:
+		flag=flag+1
+	if flag == no_run:
+		if beg_run ==0:
+			label_run = loglines.index(line)+2
+			beg_run = loglines.index(line)+1
+		if 'Loop time of' in line:
+			end_run = loglines.index(line)-1
+			break
+#If the end was not found (run corrupted) then use the log up untill the break point 
+if end_run == 0:
+	end_run = len(loglines)
+
+if beg_run == 0:
+	sys.exit('There is no run with this number.')
+#define the run
+run=loglines[beg_run:end_run]
+
+thermo_data=[]
+for line in run:
+	thermo_data.append('\t'.join(line.split())+'\n')	
+
+# COMMANDS USED TO PRINT THE OUTPUT DIRECTLY INTO SHELL
+#output=thermo_data
+#output='label line: ',loglines[label_run],'beg line: ',loglines[beg_run],'end_line: ',loglines[end_run]
+#output=run
+#print ''.join(output)
+
+#produce the output file
+g=open('run-'+str(no_run)+'-from-'+seedname,'w')
+g.writelines(thermo_data)
+g.close

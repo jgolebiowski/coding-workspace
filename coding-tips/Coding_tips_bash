@@ -1,0 +1,49 @@
+BASH:
+
+#############################
+#print out a part of a string
+#############################
+name=jestemjasimamkupe
+
+first 4 characters
+echo ${name:0:4}
+
+last 4 characters
+echo ${name: -4}
+
+string untill 4th character from the end
+echo ${name:0: -4}
+
+string from the stary untill 4th character from the end
+echo ${name:0:${#name}-4}
+
+###### Length of a string
+length=${#name}
+
+${parameter:offset}
+${parameter:offset:length}
+
+Expands to up to length characters of parameter starting at the character
+specified by offset. If length is omitted, expands to the substring of parameter
+starting at the character specified by offset. length and offset are arithmetic
+expressions (see Shell Arithmetic). This is referred to as Substring Expansion.
+
+If offset evaluates to a number less than zero, the value is used as an offset
+from the end of the value of parameter. If length evaluates to a number less than
+zero, and parameter is not ‘@’ and not an indexed or associative array, it is
+interpreted as an offset from the end of the value of parameter rather than a
+number of characters, and the expansion is the characters between the two
+offsets. If parameter is ‘@’, the result is length positional parameters
+beginning at offset. If parameter is an indexed array name subscripted by ‘@’ or
+‘*’, the result is the length members of the array beginning with
+${parameter[offset]}. A negative offset is taken relative to one greater than the
+maximum index of the specified array. Substring expansion applied to an
+associative array produces undefined results.
+
+Note that a negative offset must be separated from the colon by at least one
+space to avoid being confused with the ‘:-’ expansion. Substring indexing is
+zero-based unless the positional parameters are used, in which case the indexing
+starts at 1 by default. If offset is 0, and the positional parameters are used,
+$@ is prefixed to the list.
+
+

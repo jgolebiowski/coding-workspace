@@ -1,0 +1,587 @@
+
+<!-- saved from url=(0057)https://computing.llnl.gov/tutorials/openMP/exercise.html -->
+<html class="gr__computing_llnl_gov"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>OpenMP Exercise</title>
+
+<script language="JavaScript" src="./OpenMP Exercise_files/tutorials.js"></script>
+<link rel="StyleSheet" href="./OpenMP Exercise_files/tutorials.css" type="text/css">
+<link rel="SHORTCUT ICON" href="http://www.llnl.gov/favicon.ico">
+
+<!-- BEGIN META TAGS -->
+<meta name="LLNLRandR" content="UCRL-MI-133316">
+<meta name="distribution" content="global">
+<meta name="description" content="Livermore Computing Training">
+<meta name="rating" content="general">
+<meta http-equiv="keywords" content="Lawrence Livermore
+National Laboratory, LLNL, High Performance Computing, parallel, programming, 
+HPC, training, workshops, tutorials, OpenMP, Blaise Barney">
+<meta name="copyright" content="This document is copyrighted U.S.
+Department of Energy">
+<meta name="Author" content="Blaise Barney">
+<meta name="email" content="blaiseb@llnl.gov">
+<!-- END META TAGS -->
+</head>
+
+<body bgcolor="#FFFFFF" data-gr-c-s-loaded="true">
+<basefont size="3">            <!-- default font size -->
+<font face="arial">
+
+<a name="top"> </a>
+<a name="exercise1"> </a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr><td bgcolor="#3F5098">
+  <table cellpadding="0" cellspacing="0" width="900">
+  <tbody><tr><td background="./OpenMP Exercise_files/bg1.gif">
+  <script language="JavaScript">addNavigation()</script>   <table border="0"><tbody><tr align="center" valign="center">    <td><font size="-1" face="arial">    <a href="https://computing.llnl.gov/training#training_materials">Tutorials</a></font></td>    <td><b>|</b></td>   <td><font size="-1" face="arial">    <a href="https://computing.llnl.gov/tutorials/exercises/index.html">Exercises</a></font></td>    <td><b>|</b></td>   <td><font size="-1" face="arial">    <a href="https://computing.llnl.gov/tutorials/abstracts/index.html">Abstracts</a></font></td>    <td><b>|</b></td>   <td><font size="-1" face="arial">    <a href="https://computing.llnl.gov/training#workshops">LC&nbsp;Workshops</a></font></td>    <td><b>|</b></td>   <td><font size="-1" face="arial">    <a href="https://computing.llnl.gov/tutorials/misc/comments.html">Comments</a></font></td>    <td><b>|</b></td>   <td><font size="-1" face="arial">    <a href="https://computing.llnl.gov/tutorials/search/index.html">Search</a></font></td>    <td><b>|</b></td>   <td><font size="-1" face="arial">   <a href="http://www.llnl.gov/disclaimer.html" target="W2">   Privacy &amp; Legal Notice</a></font></td>   </tr></tbody></table>   
+  <p><br>
+  </p><h1>OpenMP Exercise</h1>
+  <p>
+  </p></td></tr></tbody></table>
+</td></tr></tbody></table>
+
+<h2>Exercise 1</h2>
+
+<ol>
+<p>
+<b></b></p><li><b>Login to the workshop machine</b>
+<p>
+    Workshops differ in how this is done.  The instructor will go over this     
+    beforehand.
+
+</p><p>
+<b></b></p></li><li><b>Copy the example files</b>
+<ol>
+<p>
+</p><li>In your home directory, create a subdirectory for the example codes
+    and then <tt>cd</tt> to it.
+<p></p><pre><b>mkdir openMP
+cd  openMP </b></pre>
+<p>
+</p></li><li>Then, copy either the Fortran or the C version of the parallel OpenMP
+    exercise files to your openMP subdirectory:
+<p>
+<table border="0" cellpadding="5">
+<tbody><tr valign="top">
+<td bgcolor="EEEEEE"><b>C: </b></td>
+<td><pre><b>cp  /usr/global/docs/training/blaise/openMP/C/*  ~/openMP</b>
+</pre></td>
+</tr><tr valign="top">
+<td bgcolor="EEEEEE"><b>Fortran: </b></td>
+<td><pre><b>cp  /usr/global/docs/training/blaise/openMP/Fortran/*  ~/openMP</b>
+</pre></td>
+</tr></tbody></table>
+</p></li></ol>
+
+<p>
+<b></b></p></li><li><b> List the contents of your openMP subdirectory</b>
+<p>
+You should notice the following files. <b><i>Note:</i></b> Most of these are simple example files.  Their primary purpose is to demonstrate the basics of how to parallelize a code with OpenMP.  Most execute in a second or two.
+
+</p><p>
+<table border="1" cellspacing="0" cellpadding="5" width="90%">
+<tbody><tr valign="top">
+<th>C Files</th>
+<th>Fortran Files</th>
+<th colspan="2">Description</th>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_hello.c" target="_blank">  
+omp_hello.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_hello.f" target="_blank">  
+omp_hello.f</a></tt></td>
+<td colspan="2">Hello world</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_workshare1.c" target="_blank">  
+omp_workshare1.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_workshare1.f" target="_blank">  
+omp_workshare1.f</a></tt></td>
+<td colspan="2">Loop work-sharing</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_workshare2.c" target="_blank">  
+omp_workshare2.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_workshare2.f" target="_blank">  
+omp_workshare2.f</a></tt></td>
+<td colspan="2">Sections work-sharing</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_reduction.c" target="_blank">
+omp_reduction.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_reduction.f" target="_blank"> 
+omp_reduction.f</a></tt></td>
+<td colspan="2">Combined parallel loop reduction</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_orphan.c" target="_blank">
+omp_orphan.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_orphan.f" target="_blank">
+omp_orphan.f</a></tt></td>
+<td colspan="2">Orphaned parallel loop reduction</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_mm.c" target="_blank">
+omp_mm.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_mm.f" target="_blank">
+omp_mm.f</a></tt></td>
+<td colspan="2">Matrix multiply</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_getEnvInfo.c" target="_blank">
+omp_getEnvInfo.c</a></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_getEnvInfo.f" target="_blank">
+omp_getEnvInfo.f</a></tt></td>
+<td colspan="2">Get and print environment information</td>
+
+</tr><tr valign="top">
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug1.c" target="_blank">
+omp_bug1.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug1fix.c" target="_blank">
+omp_bug1fix.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug2.c" target="_blank">
+omp_bug2.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug3.c" target="_blank">
+omp_bug3.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug4.c" target="_blank">
+omp_bug4.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug4fix" target="_blank">
+omp_bug4fix</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug5.c" target="_blank">
+omp_bug5.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug5fix.c" target="_blank">
+omp_bug5fix.c</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/C/omp_bug6.c" target="_blank">
+omp_bug6.c</a>
+</tt></tt></tt></tt></tt></tt></tt></tt></tt></td>
+<td><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug1.f" target="_blank">
+omp_bug1.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug1fix.f" target="_blank">
+omp_bug1fix.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug2.f" target="_blank">
+omp_bug2.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug3.f" target="_blank">
+omp_bug3.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug4.f" target="_blank">
+omp_bug4.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug4fix" target="_blank">
+omp_bug4fix</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug5.f" target="_blank">
+omp_bug5.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug5fix.f" target="_blank">
+omp_bug5fix.f</a>
+<br><tt><a href="https://computing.llnl.gov/tutorials/openMP/samples/Fortran/omp_bug6.f" target="_blank">
+omp_bug6.f</a>
+</tt></tt></tt></tt></tt></tt></tt></tt></tt></td>
+<td>Programs with bugs</td>
+</tr></tbody></table>
+</p><p>
+
+<b></b></p></li><li><b>Compilers - What's Available?</b>
+<ol>
+<p>
+</p><li>Visit the
+<a href="https://computing.llnl.gov/?set=code&amp;page=compilers" target="_blank">Compilers Currently Installed on LC Platforms</a>
+webpage.
+<p>
+</p></li><li>Look for one of LC's Linux clusters, such as cab, zin or sierra, in 
+    the section near the top of the page. Then, click on a specific cluster 
+    name/link to see additional detail for that cluster. Note that this page
+    shows the default compilers only.  Most systems have several versions of
+    each.
+<p>
+</p></li><li>Now, try the <span class="cmd">use -l compilers</span> command to display
+    available compilers on the cluster you're logged into. 
+    You should see GNU, Intel, and PGI compilers - several versions of each. 
+    Try any/all of these commands to narrow your search to a specific 
+    compiler:
+<pre><span class="cmd">use -l compilers/gcc
+use -l compilers/icc
+use -l compilers/pgi
+</span></pre>
+</li><li>You can also see the <a href="https://computing.llnl.gov/tutorials/openMP/index.html#Compiling" target="_blank">Compiling OpenMP Programs</a> section of the tutorial.
+</li></ol>
+<p>
+
+<b></b></p></li><li><b>Create, compile and run an OpenMP "Hello world" program</b> 
+<ol>
+<p>
+</p><li>Using your favorite text editor (vi/vim, emacs, nedit, gedit, nano...) open a 
+    new file - call it whatever you'd like.
+<p>
+</p></li><li>Create a simple OpenMP program that does the following:
+    <ul>
+    <li>Creates a parallel region
+    </li><li>Has each thread in the parallel region obtain its thread id
+    </li><li>Has each thread print "Hello World" along with its unique thread id
+    </li><li>Has the master thread only, obtain and then print the total number of
+        threads
+    </li></ul>
+<p>
+If you need help, see the provided 
+<b><input type="button" value="omp_hello.c" onclick="popUp(&#39;samples/C/omp_hello.c&#39;)"></b> or
+<b><input type="button" value="omp_hello.f" onclick="popUp(&#39;samples/Fortran/omp_hello.f&#39;)"></b> file.
+</p><p>
+</p></li><li>Using your choice of compiler (see above section 4), compile your hello
+    world OpenMP program. This may take several attempts if there are any code 
+    errors.  For example:
+<p>
+<table border="0" cellpadding="5">
+<tbody><tr valign="top">
+<td bgcolor="EEEEEE"><b>C:</b>
+</td><td><pre><span class="cmd">icc -openmp omp_hello.c -o hello
+pgcc -mp omp_hello.c -o hello
+gcc -fopenmp omp_hello.c -o hello</span></pre></td>
+</tr><tr valign="top">
+<td bgcolor="EEEEEE"><b>Fortran:</b></td>
+<td><pre><span class="cmd">ifort -openmp omp_hello.f -o hello
+pgf90 -mp omp_hello.f -o hello
+gfortran -fopenmp omp_hello.f -o hello</span></pre></td>
+</tr></tbody></table>
+</p><p>
+
+When you get a clean compile, proceed. 
+</p><p>
+</p></li><li>Run your <span class="cmd">hello</span> executable and notice its output. 
+    <ul>
+    <li>Is it what you expected?  As a comparison, you can compile and run the 
+        provided <span class="file">omp_hello.c</span> or 
+        <span class="file">omp_hello.f</span> example program.
+    </li><li>How many threads were created?  By default, the Intel and GNU compilers will
+        create 1 thread for each core.  The PGI compiler will create only 1 thread
+        total.
+    </li></ul>
+<p>
+</p></li><li>Notes: 
+    <ul>
+    <li>For the remainder of this exercise, you can use the compiler command 
+        of your choice unless indicated otherwise. 
+    </li><li>Compilers will differ in which warnings they issue, but all can be
+        ignored for this exercise. Errors are different, of course.
+    </li></ul>
+</li></ol>
+<p>
+
+<b></b></p></li><li><b>Vary the number of threads and re-run Hello World</b>
+<p>
+</p><ol>
+<li>Explicitly set the number of threads to use by means of the OMP_NUM_THREADS 
+    environment variable:  
+<pre><span class="cmd">setenv OMP_NUM_THREADS 8</span></pre>
+
+</li><li>Your output should look something like below.
+<p>
+<table border="1" cellpadding="5" cellspacing="0" width="90%">
+<tbody><tr><td><pre>Hello World from thread = 0
+Hello World from thread = 3
+Hello World from thread = 2
+Number of threads = 8
+Hello World from thread = 6
+Hello World from thread = 1
+Hello World from thread = 4
+Hello World from thread = 7
+Hello World from thread = 5</pre></td>
+</tr></tbody></table>
+</p><p>
+</p></li><li>Run your program several times and observe the order of print statements. 
+    Notice that the order of output is more or less random.
+</li></ol>
+</li></ol>
+<p>
+<b>This completes Exercise 1</b>
+
+<!---------------------------------------------------------------------------->
+
+<a name="Exercise2">  </a>
+<br><br></p><hr><br><br>
+
+<h2>Exercise 2</h2>
+
+<ol>
+<b></b><li><b>Still logged into the workshop cluster?</b> 
+<ol>
+<p>
+</p><li>If so, then continue to the next step.  If not, then login as you did
+    previously for Exercise 1.
+</li></ol>
+<p>
+
+<b></b></p></li><li><b> Review / Compile / Run the workshare1 example code</b>
+<p>
+This example demonstrates use of the OpenMP loop work-sharing construct.
+Notice that it specifies dynamic scheduling of threads and assigns a 
+specific number of iterations to be done by each thread.
+</p><ol>
+<p>
+</p><li>First, set the number of threads to 4:
+    <pre><span class="cmd">setenv OMP_NUM_THREADS 4</span></pre>
+<p>
+</p></li><li>After reviewing the source code, use your preferred compiler to compile
+    and run the executable. For example:
+<p>
+<table border="0" cellpadding="5">
+<tbody><tr valign="top">
+<td bgcolor="EEEEEE"><b>C:</b></td>
+<td><tt><b>icc -openmp omp_workshare1.c -o workshare1
+<br>workshare1 | sort</b></tt></td>
+</tr><tr valign="top">
+<td bgcolor="EEEEEE"><b>Fortran:</b></td>
+<td><tt><b>ifort -openmp omp_workshare1.f -o workshare1
+<br>workshare1 | sort</b></tt></td>
+</tr></tbody></table>
+</p><p>
+</p></li><li>Review the output. Note that it is piped through the sort utility.  
+    This will make it easier to view how loop iterations were actually 
+    scheduled across the team of threads.
+<p>
+</p></li><li>Run the program a couple more times and review the output. 
+    What do you see? Typically, dynamic scheduling is not deterministic.
+    Everytime you run the program, different threads can run different
+    chunks of work. It is even possible that a thread might not do any
+    work because another thread is quicker and takes more work. In fact,
+    it might be possible for one thread to do all of the work.
+<p>
+</p></li><li>Edit the workshare1 source file and change the <b>dynamic scheduling</b>
+    to <b>static scheduling</b>.
+<p>
+</p></li><li>Recompile and run the modified program. Notice the difference in 
+    output compared to dynamic scheduling. Specifically, notice that
+    thread 0 gets the first chunk, thread 1 the second chunk, and so on.
+<p>
+</p></li><li>Run the program a couple more times. Does the output change?
+    With static scheduling, the allocation of work is deterministic and
+    should not change between runs, and every thread gets work to do.
+<p>
+</p></li><li>Reflect on possible performance differences between dynamic and
+    static scheduling. 
+</li></ol>
+<p>
+
+<b></b></p></li><li><b> Review / Compile / Run the matrix multiply example code</b>
+<p>
+This example performs a matrix multiple by distributing the iterations
+of the operation between available threads. 
+</p><ol>
+<p>
+</p><li>After reviewing the source code, compile and run the program. For example:
+<p>
+<table border="0" cellpadding="5">
+<tbody><tr valign="top">
+<td bgcolor="EEEEEE"><b>C:</b></td>
+<td><tt><b>icc -openmp omp_mm.c -o matmult
+<br>matmult </b></tt></td>
+</tr><tr valign="top">
+<td bgcolor="EEEEEE"><b>Fortran:</b></td>
+<td><tt><b>ifort -openmp omp_mm.f -o matmult
+<br>matmult</b></tt></td>
+</tr></tbody></table>
+</p><p>
+</p></li><li>Review the output. It shows which thread did each iteration and the 
+    final result matrix. 
+<p>
+</p></li><li>Run the program again, however this time sort the output to clearly see
+which threads execute which iterations:
+<p><b><tt>matmult | sort | grep Thread</tt></b>
+</p><p>Do the loop iterations match the SCHEDULE(STATIC,CHUNK) directive for 
+   the matrix multiple loop in the code?
+</p></li></ol>
+
+<p>
+<b></b></p></li><li><b> Review / Compile / Run the workshare2 example code</b>
+<p>
+This example demonstrates use of the OpenMP SECTIONS work-sharing construct
+Note how the PARALLEL region is divided into separate sections, each of 
+which will be executed by one thread.   
+</p><p>
+</p><ol>
+<li>As before, compile and execute the program after reviewing it. For
+    example:
+<p>
+<table border="0" cellpadding="5">
+<tbody><tr valign="top">
+<td bgcolor="EEEEEE"><b>C:</b></td>
+<td><tt><b>icc -openmp omp_workshare2.c -o workshare2
+<br>workshare2</b></tt></td>
+</tr><tr valign="top">
+<td bgcolor="EEEEEE"><b>Fortran:</b></td>
+<td><tt><b>ifort -openmp omp_workshare2.f -o workshare2
+<br>workshare2</b></tt></td>
+</tr></tbody></table>
+</p><p>
+</p></li><li>Run the program several times and observe any differences in output.  
+Because there are only two sections, you should notice that some threads do 
+not do any work.  You may/may not notice that the threads doing work can vary.
+For example, the first time thread 0 and thread 1 may do the work, and the 
+next time it may be thread 0 and thread 3.  It is even possible for one thread 
+to do all of the work.  Which thread does work is non-deterministic in this 
+case.
+</li></ol>
+</li></ol>
+<p>
+<b>This completes Exercise 2</b>
+
+<!---------------------------------------------------------------------------->
+
+<a name="Exercise3">  </a>
+<br><br></p><hr><br><br>
+
+<h2>Exercise 3</h2>
+<ol>
+<b></b><li><b>Still logged into the workshop cluster?</b> 
+<ol>
+<p>
+</p><li>If so, then continue to the next step.  If not, then login as you did
+    previously for Exercise 1.
+</li></ol>
+<p>
+
+<b></b></p></li><li><b> Review / Compile / Run the orphan example code</b>
+<p>
+This example computes a dot product in parallel, however it differs from 
+previous examples because the parallel loop construct is orphaned - it is
+contained in a subroutine outside the lexical extent of the main program's
+parallel region.
+</p><p>
+</p><ol>
+<li>After reviewing the source code, compile and run the program. For example:
+<p>
+<table border="0" cellpadding="5">
+<tbody><tr valign="top">
+<td bgcolor="EEEEEE"><b>C:</b></td>
+<td><tt><b>icc -openmp omp_orphan.c -o orphan
+<br>orphan | sort</b></tt></td>
+</tr><tr valign="top">
+<td bgcolor="EEEEEE"><b>Fortran:</b></td>
+<td><tt><b>ifort -openmp omp_orphan.f -o orphan
+<br>orphan | sort</b></tt></td>
+</tr></tbody></table>
+</p><p>
+</p></li><li>Note the result...and the fact that this example will come back to haunt 
+    as <tt>omp_bug6</tt> later.
+</li></ol>
+
+
+<p>
+<b></b></p></li><li><b>Get environment information</b>
+<p>
+</p><ol>
+<li>Starting from scratch, write a simple program that obtains information
+    about your openMP environment. Alternately, you can modify the "hello"
+    program to do this.
+<p>
+</p></li><li>Using the appropriate openMP routines/functions, have the master thread
+    query and print the following:
+    <ul>
+    <li>The number of processors available
+    </li><li>The number of threads being used
+    </li><li>The maximum number of threads available
+    </li><li>If you are in a parallel region
+    </li><li>If dynamic threads are enabled
+    </li><li>If nested parallelism is enabled
+    </li></ul>
+<p>
+    NOTE: Some compilers (IBM, GNU) implement some of the necessary Fortran 
+    functions as integer instead of logical as the standard specifies.
+</p><p>
+</p></li><li>If you need help, you can consult the
+<b><input type="button" value="omp_getEnvInfo.c" onclick="popUp(&#39;samples/C/omp_getEnvInfo.c&#39;)"></b> or
+<b><input type="button" value="omp_getEnvInfo.f" onclick="popUp(&#39;samples/Fortran/omp_getEnvInfo.f&#39;)"></b>
+example file.
+</li></ol>
+
+<p>
+<b></b></p></li><li><b>When things go wrong...</b>
+<p>
+There are many things that can go wrong when developing OpenMP programs. The
+<b><tt>omp_bugX.X</tt></b> series of programs demonstrate just a few.
+See if you can figure out what the problem is with each case and then fix it.
+</p><p>
+The buggy behavior will differ for each example. Some hints are provided
+below.
+</p><p>
+<b>Note:</b> Please use the Intel (icc, ifort) compile commands for these
+exercises.
+</p><p>
+<table border="1" cellspacing="0" cellpadding="3" width="90%">
+<tbody><tr valign="top">
+<th>Code</th>
+<th>Behavior</th>
+<th>Hints/Notes</th>
+</tr><tr valign="top">
+<td><tt><b>omp_bug1
+<br>omp_bug1fix</b></tt></td>
+<td>Fails compilation. Solution provided - must compile solution file.</td>
+<td><font size="-1"><input type="button" value="Explanation" onclick="Answers(&#39;openMPex01&#39;)"></font></td>
+</tr><tr valign="top"> 
+<td><tt><b>omp_bug2</b></tt></td>
+<td>Thread identifiers are wrong. Wrong answers.</td>
+<td><font size="-1"><input type="button" value="Explanation" onclick="Answers(&#39;openMPex02&#39;)"></font></td>
+</tr><tr valign="top"> 
+<td><tt><b>omp_bug3</b></tt></td>
+<td>Run-time error, hang.</td>
+<td><font size="-1"><input type="button" value="Explanation" onclick="Answers(&#39;openMPex03&#39;)"></font></td>
+</tr><tr valign="top"> 
+<td><tt><b>omp_bug4
+<br>omp_bug4fix</b></tt></td>
+<td>Causes a segmentation fault. Solution provided - note that it is a 
+script and will need to be "sourced". For example: "source omp_bug4fix". 
+Be sure to examine the solution file to see what's going on - especially
+the last line, where you may need to change the name of the executable to
+match yours.
+</td>
+<td><font size="-1"><input type="button" value="Explanation" onclick="Answers(&#39;openMPex04&#39;)"></font></td>
+</tr><tr valign="top"> 
+<td><tt><b>omp_bug5
+<br>omp_bug5fix</b></tt></td>
+<td>Program hangs. Solution provided - must compile solution file.</td>
+<td><font size="-1"><input type="button" value="Explanation" onclick="Answers(&#39;openMPex05&#39;)"></font></td>
+</tr><tr valign="top"> 
+<td><tt><b>omp_bug6</b></tt></td>
+<td>Failed compilation</td>
+<td><font size="-1"><input type="button" value="Explanation" onclick="Answers(&#39;openMPex06&#39;)"></font></td>
+
+</tr></tbody></table>
+
+</p></li></ol>
+
+
+
+
+<p></p><hr><p>
+
+<b>This completes the exercise.</b>
+</p><p>
+<table border="0" cellpadding="0" cellspacing="0">
+<tbody><tr valign="top">
+<td><a href="https://computing.llnl.gov/tutorials/evaluation/index.html" target="evalForm">
+    <img src="./OpenMP Exercise_files/evaluationForm.gif" border="0" alt="Evaluation Form"></a> &nbsp; &nbsp; &nbsp;</td>
+<td>Please complete the online evaluation form if you have not already done
+    so for this tutorial. </td>
+</tr>
+</tbody></table>
+</p><p>
+<b>Where would you like to go now?</b>
+</p><ul>
+<li><a href="https://computing.llnl.gov/tutorials/agenda/index.html">Agenda</a>
+</li><li><a href="https://computing.llnl.gov/tutorials/openMP/index.html">Back to the tutorial</a>
+</li></ul>
+
+<!---------
+<UL>
+<LI>Return to <A HREF=index.html>OpenMP Tutorial</A>
+<LI>Return to <A HREF="javascript://" onClick="resetTop('../index.html');">Workshop Home</A>
+</UL>
+---------->
+
+<!-------------------------------------------------------------------------->
+
+<script language="JavaScript">PrintFooter("UCRL-MI-133316")</script><p></p><hr><span class="footer">https://computing.llnl.gov/tutorials/openMP/exercise.html<br>Last Modified: 06/30/2016 16:32:18 <a href="mailto:blaiseb@llnl.gov">blaiseb@llnl.gov</a><br>UCRL-MI-133316<p>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+
+
+</p></span></font></body></html>

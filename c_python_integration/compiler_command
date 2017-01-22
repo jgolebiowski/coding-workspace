@@ -1,0 +1,11 @@
+#------ Normal compilation
+g++ -std=c++11 -Wall -Wextra -O2 -o main_example.out example.cpp 
+
+#------ Shared library 
+g++ -std=c++11 -Wall -Wextra -O2 -fPIC -shared  -o testlib.so testlib.cpp 
+
+#------ Normal comilation OpenMP
+g++-6 -std=c++11 -Wall -Wextra -O2 -fopenmp -o main_testlib.out testlib.cpp
+
+#------ Shared library OpenMP
+g++-6 -std=c++11 -Wall -Wextra -O2 -fPIC -shared -fopenmp -o testlib.so testlib.cpp

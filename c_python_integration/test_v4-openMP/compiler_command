@@ -1,0 +1,2 @@
+g++-6 -Wall -Wextra -fopenmp -o testlib_main.out testlib.cpp
+g++-6 -Wall -Wextra -fPIC -shared -fopenmp -o testlib.so testlib.cpp

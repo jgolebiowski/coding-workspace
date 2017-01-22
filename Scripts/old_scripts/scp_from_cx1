@@ -1,0 +1,2 @@
+#!/bin/bash
+scp -r jg2214@login.cx1.hpc.ic.ac.uk:$1 $2

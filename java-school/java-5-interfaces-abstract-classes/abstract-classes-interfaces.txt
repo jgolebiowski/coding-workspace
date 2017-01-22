@@ -1,0 +1,107 @@
+Inheritance
+
+
+
+Consider a car and a bus. They are two different vehicles. But still they share some common properties like they have a steering, brakes, gears, engine etc.
+So with the inheritance concept this can be represented as following..
+
+public class Vehicle {
+    public Driver driver;
+    public Seat[] seatArray; //In java and most of the Object Oriented Programming(OOP) languages, square brackets are used to denote arrays(Collections).
+    //You can define as many properties as you want here..
+}
+
+
+
+
+Now a Bicycle..
+
+public class Bicycle extends Vehicle {
+    //You define properties which are unique to bicycles here..
+    public Pedal pedal;
+}
+
+
+
+And a Car..
+
+public class Car extends Vehicle {
+    public Engine engine;
+    public Door[] doors;
+}
+
+
+That's all about Inheritance. We use them to classify objects into simpler Base forms and their children as we saw above.
+
+
+
+
+
+Abstract Classes
+
+Abstract classes are incomplete objects. To understand it further, let's consider the vehicle analogy once again.
+A vehicle can be driven. Right? But different vehicles are driven in different ways.. For example, You cannot drive a car just as you drive a Bicycle.
+So how to represent the drive function of a vehicle? It is harder to check what type of vehicle it is and drive it with its own function; you would have to change the Driver class again and again when adding a new type of vehicle.
+Here comes the role of abstract classes and methods. You can define the drive method as abstract to tell that every inheriting children must implement this function.
+So if you modify the vehicle class..
+
+
+
+//......Code of Vehicle Class
+abstract public void Drive();
+//.....Code continues
+
+
+The Bicycle and Car must also specify how to drive it. Otherwise the code won't compile and an error is thrown.
+In short.. an abstract class is a partially incomplete class with some incomplete functions, which the inheriting children must specify their own.
+
+
+
+
+
+Interfaces 
+
+Interfaces are totally incomplete. They do not have any properties. They just indicate that the inheriting children is capable of doing something..
+Suppose you have different types of mobile phones with you. Each of them have different ways to do different functions; Ex: call a person. The maker of the phone specifies how to do it. Here the mobile phones can dial a number - that is, it is dial-able. Let's represent this as an interface.
+
+
+
+public interface Dialable {
+    public void Dial(Number n);
+}
+
+
+
+Here the maker of the Dialable defines how to dial a number. You just need to give it a number to dial.
+
+Dialable myPhone1 = new Dialable() {
+    public void Dial(Number n) {
+        //Do the phone1's own way to dial a number
+    }
+}
+
+
+
+Dialable myPhone2 = new Dialable() {
+    public void Dial(Number n) {
+        //Do the phone2's own way to dial a number
+    }
+}
+
+
+
+Here by using interfaces instead of abstract classes, you need not worry about it's properties. Ex: Does it have a touch-screen or dial pad, Is it a fixed landline phone or mobile phone. You just need to know if it is dialable; does it inherit(or implement) the Dialable interface.
+Interfaces are commonly used by developers to ensure interoperability(use interchangeably) between objects, as far as they share a common function (just like you may change to a landline or mobile phone, as far as you just need to dial a number). In short, interfaces are much simpler version of abstract classes, without any properties.
+Also note that that you may implement(inherit) as many interfaces as you want but you may only extend(inherit) a single parent class.
+
+
+
+When to use abstract class and interface in Java
+
+Here are some guidelines on when to use an abstract class and when to use interfaces in Java:
+
+An abstract class is good if you think you will plan on using inheritance since it provides a common base class implementation to derived classes.
+An abstract class is also good if you want to be able to declare non-public members. In an interface, all methods must be public.
+If you think you will need to add methods in the future, then an abstract class is a better choice. Because if you add new method headings to an interface, then all of the classes that already implement that interface will have to be changed to implement the new methods. That can be quite a hassle.
+Interfaces are a good choice when you think that the API will not change for a while.
+Interfaces are also good when you want to have something similar to multiple inheritance, since you can implement multiple interfaces.

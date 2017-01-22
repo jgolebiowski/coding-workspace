@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=20:mem=2000mb
+
+module load intel-suite
+module load mpi
+module load castep/7.0.3
+
+cp $PBS_O_WORKDIR/Butane_66_CNT_cluster_convergence.Butane-2_flakes* $TMPDIR
+mkdir $PBS_O_WORKDIR/input_files
+mv $PBS_O_WORKDIR/Butane_66_CNT_cluster_convergence.Butane-2_flakes* $PBS_O_WORKDIR/input_files
+cd $TMPDIR
+pbsexec mpiexec castep.mpi -dryrun Butane_66_CNT_cluster_convergence.Butane-2_flakes
+cp $TMPDIR/Butane_66_CNT_cluster_convergence.Butane-2_flakes* $PBS_O_WORKDIR

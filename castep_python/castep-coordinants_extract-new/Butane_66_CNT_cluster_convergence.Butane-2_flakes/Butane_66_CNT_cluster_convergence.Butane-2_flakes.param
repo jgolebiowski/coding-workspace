@@ -1,0 +1,15 @@
+cut_off_energy = 600  eV
+
+xc_functional   = PBE
+
+!!! Parameters
+task            	= GeometryOptimization
+grid_scale      	= 2.0
+fine_grid_scale 	= 2
+elec_energy_tol 	= 1e-5
+opt_strategy		= speed
+iprint			= 1
+WRITE_CELL_STRUCTURE	= true
+backup_interval 	= 14400
+MAX_SCF_CYCLES		= 50
+geom_max_iter		= 100

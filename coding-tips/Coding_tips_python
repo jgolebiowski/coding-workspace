@@ -1,0 +1,79 @@
+######################################
+## Dictionaries
+######################################
+
+
+### Making a dictionary ###
+
+data = {}
+# OR
+data = dict()
+
+### Initially adding values ###
+
+data = {'a':1,'b':2,'c':3}
+# OR
+data = dict(a=1, b=2, c=3)
+
+### Inserting/Updating value ###
+
+data['a']=1  # updates if 'a' exists, else adds 'a'
+# OR
+data.update({'a':1})
+# OR
+data.update(dict(a=1))
+# OR
+data.update(a=1)
+
+### Merging 2 dictionaries ###
+
+data.update(data2)  # Where data2 is also a dict.
+
+### Deleting items in dictionary ###
+
+del data[key] #Remove specific element in a dictionary
+data.pop(key) #Removes the key & returns the value
+data.clear() #Clear entire dictionary
+
+#############################
+## Get a command line input as a varibale
+#############################
+
+import sys
+
+script_name = str(sys.argv[0])
+first_argument = str(sys.argv[1])
+
+
+#############################
+# CFFI vs Ctypes
+#############################
+CFFI
+
+calling functions - negligible time 
+breakdown
+
+call function:  100 ns 
+cast array as *double: 
+                        3 us with ffi.cast("double *", arr.ctypes.data)
+                        4 us with ffi.cast("double *", arr.__array_interface__["data"][0])
+                        
+cast a float as double : 750 ns
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The time necessary ot cast a matrix does not vary on the matrix length 
+as it is passed by reference 
+
+If there are matrixes with a lot of rows (100,3) it might be not ideal to 
+cast a matrix as 100 array of 3 entries 
+
+It is better to transpose the matrix first and cast 3 arrays of 100 entries 
+Or even cast the matrix as a 1d array and acces the entries as A[i][j] = A[i * cols + j]
+
+CTYPES
+
+calling function: 500 ns
+calling functon that requires casting an array: 6 us
+
+
+

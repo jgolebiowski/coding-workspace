@@ -1,0 +1,42 @@
+ 
+Imperial College London HPC Service
+-----------------------------------
+Job sub.ButCC.Butan, jobid 2188625.cx1b, username jg2214 - started execution at 18:31:18 Sat 11/06/16 on system cx1-29-18-1.cx1.hpc.ic.ac.uk
+ 
+Defaulting to ethernet
+No MPI process pinning
+Starting MPD ring...
+/opt/pbs/default/bin/pbs_tmrsh cx1-29-18-1.cx1.hpc.ic.ac.uk -n /opt/pbs/default/bin/pbs_attach -j 2188625.cx1b /apps/intel/ict/mpi/3.1.038/bin/mpd -n -h cx1-29-18-1 -p 43427 --ncpus=1 -e -d
+48479
+PBS has allocated the following nodes:
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+cx1-29-18-1
+---
+mpiexec.intel -genv I_MPI_DEVICE ssm -genv I_MPI_DEBUG 0 -genv I_MPI_PIN yes -genv I_MPI_PIN_MODE lib -genv I_MPI_FALLBACK_DEVICE disable -genv DAPL_MAX_CM_RETRIES 500 -genv DAPL_MAX_CM_RESPONSE_TIME 300 -genv I_MPI_DAPL_CONNECTION_TIMEOUT 300 -machinefile /var/tmp/pbs.2188625.cx1b/tmp.Zbk5opgGY3 -n 20 -wdir /var/tmp/pbs.2188625.cx1b castep.mpi Butane_66_CNT_cluster_convergence.Butane-2_flakes
+
+Job output begins below
+-----------------------
+Job terminated normally
+ 
+Imperial College London HPC Service
+-----------------------------------
+Job sub.ButCC.Butan, jobid 2188625.cx1b, username jg2214 - end of execution at 18:46:29 Sat 11/06/16 on system cx1-29-18-1.cx1.hpc.ic.ac.uk
+ 

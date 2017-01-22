@@ -1,0 +1,12 @@
+def get_celldata(self, k_points='yes', lattice_vec = 'yes', atom_pos='yes', ion_constrain='yes', extra_p='yes'):
+        """Run all the get_ functions"""
+                if k_points == 'yes':
+                        self.get_k_points()
+                if lattice_vec == 'yes':
+                        self.get_lattice_vec()
+                if atom_pos == 'yes':
+                        self.get_atomic_positions()
+                if ion_constrain == 'yes':
+                        self.get_ionic_constrains()
+                if extra_p == 'yes':
+                        self.get_extra_parameters()

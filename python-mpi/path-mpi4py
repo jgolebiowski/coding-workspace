@@ -1,0 +1,2 @@
+module load gcc openmpi
+export PYTHONPATH=${PYTHONPATH}:/home/jg2214/workspace/local
