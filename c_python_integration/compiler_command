@@ -1,11 +1,20 @@
 #------ Normal compilation
-g++ -std=c++11 -Wall -Wextra -O3 -o main_example.out example.cpp 
+g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3
 
 #------ Shared library 
-g++ -std=c++11 -Wall -Wextra -O3 -fPIC -shared  -o testlib.so testlib.cpp 
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -fPIC -shared
 
 #------ Normal comilation OpenMP
-g++-6 -std=c++11 -Wall -Wextra -O3 -fopenmp -o main_testlib.out testlib.cpp
+g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3 -fopenmp
+g++-6 example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3 -fopenmp
 
 #------ Shared library OpenMP
-g++-6 -std=c++11 -Wall -Wextra -O3 -fPIC -shared -fopenmp -o testlib.so testlib.cpp
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -fPIC -shared -fopenmp
+g++-6 testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -fPIC -shared -fopenmp
+
+#------ compilation with Eigen
+g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3 -I ../../local/eigen-3.3.2
+
+#------ Shared library with Eigen
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -I ../../local/eigen-3.3.2 -fPIC -shared 
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -I ../../local/eigen-3.3.2 -fPIC -shared -fopenmp

@@ -3,9 +3,6 @@
 #include <string>
 #include <vector>
 
-// Include the nodebug macro to atop the asserts
-#define NDEBUG
-#include <assert.h>
 
 extern "C"
 {
