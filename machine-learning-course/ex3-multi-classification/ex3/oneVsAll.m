@@ -50,14 +50,29 @@ X = [ones(m, 1) X];
 %
 
 
+for index=1:num_labels
+	%Obtain the vector of values for this class
+	localY = eq(y, index);
+
+	%Minimize the theta parameter vector:
+	% Set Initial theta
+    initial_theta = zeros(n + 1, 1);
+    
+    % Set options for fminunc
+    options = optimset('GradObj', 'on', 'MaxIter', 50);
+
+    % Run fmincg to obtain the optimal theta
+    % This function will return theta and the cost 
+    [theta] = ...
+        fmincg (@(t)(lrCostFunction(t, X, localY, lambda)), ...
+                initial_theta, options);
+
+    %Set the rightvector for the final theta
+    all_theta(index, :) = theta;
 
 
 
-
-
-
-
-
+endfor
 
 
 % =========================================================================

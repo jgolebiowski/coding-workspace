@@ -39,14 +39,16 @@ grad = zeros(size(theta));
 
 
 
+h = sigmoid(X * theta);
+lambdaVec = ones(length(theta), 1) * lambda;
+lambdaVec(1) = 0;
 
+% Evaluate the cost
+J = (1/m) * ( -y' * log(h) - (1-y)' * log(1-h) ) + (1/ (2 * m)) * (lambdaVec .* theta)' * theta;
 
-
-
-
+%Evaluate gradient
+grad = (1/m) * X' * (h - y) + (1/m) * lambdaVec .* theta;
 
 % =============================================================
-
-grad = grad(:);
 
 end

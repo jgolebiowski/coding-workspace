@@ -30,11 +30,13 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
+%Evaluate the probabilities of all elements
 
+%Get a vector of theta T x 
+probability = sigmoid(X * all_theta');
 
-
-
-
+[values, clas] = max(probability, [], 2);
+p=clas;
 
 % =========================================================================
 
