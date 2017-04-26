@@ -1,20 +1,20 @@
 #------ Normal compilation
-g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3
+g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 
 
 #------ Shared library 
-g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -fPIC -shared
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -fPIC -shared
 
 #------ Normal comilation OpenMP
-g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3 -fopenmp
-g++-6 example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3 -fopenmp
+g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -fopenmp
+g++-6 example.cpp -o main_example.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -fopenmp
 
 #------ Shared library OpenMP
-g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -fPIC -shared -fopenmp
-g++-6 testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -fPIC -shared -fopenmp
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -fPIC -shared -fopenmp
+g++-6 testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -fPIC -shared -fopenmp
 
 #------ compilation with Eigen
-g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -O3 -I ../../local/eigen-3.3.2
+g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2
 
 #------ Shared library with Eigen
-g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -I ../../local/eigen-3.3.2 -fPIC -shared 
-g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -O3 -I ../../local/eigen-3.3.2 -fPIC -shared -fopenmp
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2 -fPIC -shared 
+g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2 -fPIC -shared -fopenmp

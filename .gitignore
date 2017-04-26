@@ -1,0 +1,5 @@
+#Ignore outputs of compilations
+
+*\.pyc
+*\.out
+*\.so
