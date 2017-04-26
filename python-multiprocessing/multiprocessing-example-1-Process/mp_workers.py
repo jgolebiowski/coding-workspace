@@ -1,5 +1,6 @@
 import random
 import time
+import os
 import numpy as np
 
 random.seed(123)
@@ -36,6 +37,10 @@ def integrateRangeQueue(queue, a, b, n, f):
     b - end of the bracket
     n - number of points
     f - function to integrate"""
+
+    thread = int(a * 10) + 1
+    os.environ['OMP_NUM_THREADS']='{:d}'.format(thread)
+    os.system("echo $OMP_NUM_THREADS")
     
     integral = -(f(a) + f(b))/2.0
     # n+1 endpoints, but n trapazoids

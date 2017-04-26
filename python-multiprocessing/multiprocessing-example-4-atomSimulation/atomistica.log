@@ -1,0 +1,323 @@
+Welcome to - Atomistica -
+
+   Atomistica revision:  0.5.1+4.g8323844
+   Atomistica rev date:  2017-02-28T13:26:01+0000
+   Atomistica URL:       https://github.com/Atomistica/atomistica.git
+
+   architecture:         x86_64
+
+   build host:           fourier
+   build date:           Feb 28 2017 15:11:01
+   compiler version:     
+   compile options:      
+
+   run date:             Apr 24 2017 20:37:1
+
+- materials_read_database -
+     Looking for tables in directory '/workspace/jg2214/cnp-interface/simulations/DFTB-mio'.
+
+- materials_read_elements_hotbit -
+     No 'elements.dat' found in database directory. Skipping.
+
+- materials_read_elements_bopfox -
+     No 'atoms.bx' found in database directory. Skipping.
+
+- materials_read_sltab_hotbit -
+
+- materials_read_sltab_dftb -
+     DFTB tables for H-H found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for H-C found.
+     DFTB tables for H-N found.
+     DFTB tables for H-O found.
+     DFTB tables for H-P found.
+     DFTB tables for H-S found.
+     DFTB tables for C-H found.
+     DFTB tables for C-C found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for C-N found.
+     DFTB tables for C-O found.
+     DFTB tables for C-P found.
+     DFTB tables for C-S found.
+     DFTB tables for N-H found.
+     DFTB tables for N-C found.
+     DFTB tables for N-N found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for N-O found.
+     DFTB tables for N-P found.
+     DFTB tables for N-S found.
+     DFTB tables for O-H found.
+     DFTB tables for O-C found.
+     DFTB tables for O-N found.
+     DFTB tables for O-O found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for O-P found.
+     DFTB tables for O-S found.
+     DFTB tables for P-H found.
+     DFTB tables for P-C found.
+     DFTB tables for P-N found.
+     DFTB tables for P-O found.
+     DFTB tables for P-P found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for P-S found.
+     DFTB tables for S-H found.
+     DFTB tables for S-C found.
+     DFTB tables for S-N found.
+     DFTB tables for S-O found.
+     DFTB tables for S-P found.
+     DFTB tables for S-S found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+
+- materials_read_sltab_bopfox -
+     No 'bonds.bx' file found in database directory. Skipping.
+
+- materials_read_spin_params -
+     No spin parameters found, expecting non-spin-polarized calculation.
+     element number charge orbitals Hubbard-U on-site levels
+     ======= ====== ====== ======== ========= ==============
+          H       1  1.000      s      11.415    -6.493
+          C       6  4.000      sp      9.924   -13.739    -5.289    -5.289    -5.289
+          N       7  5.000      sp     11.725   -17.415    -7.095    -7.095    -7.095
+          O       8  6.000      sp     13.481   -23.914    -9.038    -9.038    -9.038
+          P      15  5.000      sp      7.875   -13.895    -5.518    -5.518    -5.518
+          S      16  6.000      sp      8.947   -17.143    -7.021    -7.021    -7.021
+
+- dense_solver_lapack_init -
+     Using divide-and-conquer driver
+
+ - particles_update_elements -
+     1 elements found.
+     1 = H  (   668 atoms found)
+
+ - particles_update_elements -
+     3 elements found.
+     1 = H  (   102 atoms found)
+     2 = C  (   546 atoms found)
+     3 = O  (    20 atoms found)
+
+- dense_notb_bind_to -
+     The tight-binding module has been compiled for real arithmetics.
+- neighbors_request_interaction_range -
+     old interaction range  = .00000000000000000
+     request                = 5.27060540004000000
+
+- neighbors_update -
+     Initializing neighbor list.
+     interaction_range  =         5.2706054000
+     verlet_shell       =         0.0000000000
+     cutoff             =         5.2706054000
+     avgn               =       1000
+     Memory estimate: 20.39595031738281250 MB
+
+- neighbors_binning_init -
+     Binning enabled.
+     cutoff     =      5.271
+     box_size   = (    150.000   200.000   150.000 )
+
+   Atomistica revision:  0.5.1+4.g8323844
+   Atomistica rev date:  2017-02-28T13:26:01+0000
+   Atomistica URL:       https://github.com/Atomistica/atomistica.git
+
+   architecture:         x86_64
+
+   build host:           fourier
+   build date:           Feb 28 2017 15:11:01
+   compiler version:     
+   compile options:      
+
+   run date:             Apr 24 2017 20:37:1
+
+- materials_read_database -
+     Looking for tables in directory '/workspace/jg2214/cnp-interface/simulations/DFTB-mio'.
+
+- materials_read_elements_hotbit -
+     No 'elements.dat' found in database directory. Skipping.
+
+- materials_read_elements_bopfox -
+     No 'atoms.bx' found in database directory. Skipping.
+
+- materials_read_sltab_hotbit -
+
+- materials_read_sltab_dftb -
+     DFTB tables for H-H found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for H-C found.
+     DFTB tables for H-N found.
+     DFTB tables for H-O found.
+     DFTB tables for H-P found.
+     DFTB tables for H-S found.
+     DFTB tables for C-H found.
+     DFTB tables for C-C found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for C-N found.
+     DFTB tables for C-O found.
+     DFTB tables for C-P found.
+     DFTB tables for C-S found.
+     DFTB tables for N-H found.
+     DFTB tables for N-C found.
+     DFTB tables for N-N found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for N-O found.
+     DFTB tables for N-P found.
+     DFTB tables for N-S found.
+     DFTB tables for O-H found.
+     DFTB tables for O-C found.
+     DFTB tables for O-N found.
+     DFTB tables for O-O found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for O-P found.
+     DFTB tables for O-S found.
+     DFTB tables for P-H found.
+     DFTB tables for P-C found.
+     DFTB tables for P-N found.
+     DFTB tables for P-O found.
+     DFTB tables for P-P found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for P-S found.
+     DFTB tables for S-H found.
+     DFTB tables for S-C found.
+     DFTB tables for S-N found.
+     DFTB tables for S-O found.
+     DFTB tables for S-P found.
+     DFTB tables for S-S found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+
+- materials_read_sltab_bopfox -
+     No 'bonds.bx' file found in database directory. Skipping.
+
+- materials_read_spin_params -
+     No spin parameters found, expecting non-spin-polarized calculation.
+     element number charge orbitals Hubbard-U on-site levels
+     ======= ====== ====== ======== ========= ==============
+          H       1  1.000      s      11.415    -6.493
+          C       6  4.000      sp      9.924   -13.739    -5.289    -5.289    -5.289
+          N       7  5.000      sp     11.725   -17.415    -7.095    -7.095    -7.095
+          O       8  6.000      sp     13.481   -23.914    -9.038    -9.038    -9.038
+          P      15  5.000      sp      7.875   -13.895    -5.518    -5.518    -5.518
+          S      16  6.000      sp      8.947   -17.143    -7.021    -7.021    -7.021
+
+- dense_solver_lapack_init -
+     Using divide-and-conquer driver
+
+ - particles_update_elements -
+     1 elements found.
+     1 = H  (   669 atoms found)
+
+ - particles_update_elements -
+     3 elements found.
+     1 = H  (   103 atoms found)
+     2 = C  (   546 atoms found)
+     3 = O  (    20 atoms found)
+
+- dense_notb_bind_to -
+     The tight-binding module has been compiled for real arithmetics.
+- neighbors_request_interaction_range -
+     old interaction range  = .00000000000000000
+     request                = 5.27060540004000000
+
+- neighbors_update -
+     Initializing neighbor list.
+     interaction_range  =         5.2706054000
+     verlet_shell       =         0.0000000000
+     cutoff             =         5.2706054000
+     avgn               =       1000
+     Memory estimate: 20.42648315429687500 MB
+
+- neighbors_binning_init -
+     Binning enabled.
+     cutoff     =      5.271
+     box_size   = (    150.000   200.000   150.000 )
+
+   Atomistica revision:  0.5.1+4.g8323844
+   Atomistica rev date:  2017-02-28T13:26:01+0000
+   Atomistica URL:       https://github.com/Atomistica/atomistica.git
+
+   architecture:         x86_64
+
+   build host:           fourier
+   build date:           Feb 28 2017 15:11:01
+   compiler version:     
+   compile options:      
+
+   run date:             Apr 24 2017 20:37:1
+
+- materials_read_database -
+     Looking for tables in directory '/workspace/jg2214/cnp-interface/simulations/DFTB-mio'.
+
+- materials_read_elements_hotbit -
+     No 'elements.dat' found in database directory. Skipping.
+
+- materials_read_elements_bopfox -
+     No 'atoms.bx' found in database directory. Skipping.
+
+- materials_read_sltab_hotbit -
+
+- materials_read_sltab_dftb -
+     DFTB tables for H-H found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for H-C found.
+     DFTB tables for H-N found.
+     DFTB tables for H-O found.
+     DFTB tables for H-P found.
+     DFTB tables for H-S found.
+     DFTB tables for C-H found.
+     DFTB tables for C-C found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for C-N found.
+     DFTB tables for C-O found.
+     DFTB tables for C-P found.
+     DFTB tables for C-S found.
+     DFTB tables for N-H found.
+     DFTB tables for N-C found.
+     DFTB tables for N-N found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for N-O found.
+     DFTB tables for N-P found.
+     DFTB tables for N-S found.
+     DFTB tables for O-H found.
+     DFTB tables for O-C found.
+     DFTB tables for O-N found.
+     DFTB tables for O-O found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for O-P found.
+     DFTB tables for O-S found.
+     DFTB tables for P-H found.
+     DFTB tables for P-C found.
+     DFTB tables for P-N found.
+     DFTB tables for P-O found.
+     DFTB tables for P-P found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+     DFTB tables for P-S found.
+     DFTB tables for S-H found.
+     DFTB tables for S-C found.
+     DFTB tables for S-N found.
+     DFTB tables for S-O found.
+     DFTB tables for S-P found.
+     DFTB tables for S-S found.
+     WARNING: Overriding self-energies and Hubbard-U from 'elements.dat'.
+
+- materials_read_sltab_bopfox -
+     No 'bonds.bx' file found in database directory. Skipping.
+
+- materials_read_spin_params -
+     No spin parameters found, expecting non-spin-polarized calculation.
+     element number charge orbitals Hubbard-U on-site levels
+     ======= ====== ====== ======== ========= ==============
+          H       1  1.000      s      11.415    -6.493
+          C       6  4.000      sp      9.924   -13.739    -5.289    -5.289    -5.289
+          N       7  5.000      sp     11.725   -17.415    -7.095    -7.095    -7.095
+          O       8  6.000      sp     13.481   -23.914    -9.038    -9.038    -9.038
+          P      15  5.000      sp      7.875   -13.895    -5.518    -5.518    -5.518
+          S      16  6.000      sp      8.947   -17.143    -7.021    -7.021    -7.021
+
+- dense_solver_lapack_init -
+     Using divide-and-conquer driver
+
+
+   simulation started:  Apr 24 2017 20:37:1
+   simulation ended:    Apr 24 2017 20:37:5
+
+====> TIMINGS <====
+                                                                   time[s]     calls
+                                                                   -------     -----
+ MDCORE                                                              4.665         1
