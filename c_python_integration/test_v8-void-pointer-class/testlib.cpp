@@ -29,7 +29,7 @@ class Atoms
 		Atoms(int nAtoms, double * positionsArray)
 		{
 			this->nAtoms = nAtoms;
-			// This implementaition means that the position array is not 
+			// This implementaition means that the Atoms.position array is not 
 			// connected ot the data arrray passed ot the initialized but is a standalone object
 
 			// this->positions = new double [nAtoms * nDim];
@@ -107,7 +107,12 @@ void initialize_Atoms_void_pointer_from_array(void ** voidAtomsPointer, double *
 	Atoms *atoms = new Atoms(numAtoms, data_array);
 
 	// Set the vPointer that the void pointer points to a pointer to Atoms object
-	// voidAtomsPointer = static_cast<void *>(atoms);
+	//
+	//WARNING
+	// In This implementaition, Atoms.position array is not 
+	// connected ot the data arrray passed ot the initialized but is a standalone object
+
+	//
 	*voidAtomsPointer = static_cast<void *>(atoms);
 
 	//Test call

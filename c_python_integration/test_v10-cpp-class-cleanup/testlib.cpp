@@ -15,19 +15,15 @@ void hello_world(){
     std::cout << day << std::endl;
     }
 
-double * testFunct(){
-	const int nRows = 10;
-	const int nCols = 5;
-
-	Eigen::Matrix< double, nRows, nCols, Eigen::RowMajor> testMat = Eigen::Matrix< double, nRows, nCols, Eigen::RowMajor>::Random();
-	std::cout << testMat <<std::endl;
-	return testMat.data();
-}
 
 class Atoms
 {
 	Eigen::Map< Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > positions;
-	Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> neighbourList;
+	Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> someArray;
+
+	std::vector< std::vector<int> > neighbourList;
+	std::vector<int> numNeighbours;
+
 	double * positionsPointer;
 	int nAtoms;
 	static const int nDim = 3;
@@ -47,18 +43,15 @@ class Atoms
 			// because the syntax specifies the location for storing the result.
 			new (&(this->positions)) Eigen::Map< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > 
 														(positionsArray, nAtoms, nDim);
+
+			this->neighbourList.resize(nAtoms);
+			this->numNeighbours.resize(nAtoms, 0);
 		}
 
 		//Empty constructor
 		Atoms():
 			positions(NULL, 0, 0) 
 			{}
-
-		//Destructor to free memory
-		// ~Atoms() {delete[] this->positions;}
-
-		//Dummy do-nothing function
-		void do_nothing() {}
 
 		//Simple functions to obtain nAtoms
 		inline int get_nAtoms() {return this->nAtoms;}
@@ -69,20 +62,52 @@ class Atoms
 			this->positions(atomNumber,dimNumber) = newPosition;
 		}
 
-		void initialize_neighbour_list(int nNeighbours)
+		void initialize_someArray(int nColumns)
 		{
-			this->neighbourList = Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>::Constant(this->nAtoms, nNeighbours, -1);
-			std::cout<< this->neighbourList << std::endl;
+			this->someArray = Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>::Constant(this->nAtoms, nColumns, -1);
+			std::cout<< this->someArray << std::endl;
 		}
 
-		double * get_neighbourList_data()
+		double * get_someArray_data()
 		{
-			return this->neighbourList.data();
+			return this->someArray.data();
+		}
+
+		void print_someArray()
+		{
+			std::cout << this->someArray << std::endl;
+		}
+
+		void initialize_neighbourList()
+		{
+			int maxNeighs = 2;
+			for (unsigned int i = 0; i < this->neighbourList.size(); i++)
+			{
+				this->neighbourList.at(i).resize(maxNeighs, -1);
+				this->numNeighbours.at(i) = maxNeighs;
+			}
 		}
 
 		void print_neighbourList()
 		{
-			std::cout << this->neighbourList << std::endl;
+			for (unsigned int i = 0; i < this->neighbourList.size(); i++)
+			{
+				for	(unsigned int j = 0; j < this->neighbourList.at(i).size(); j++)
+				{
+					std::cout << std::setw(4) << neighbourList.at(i).at(j) << "	";
+				}
+				std::cout << std::endl;
+			}
+		}
+
+		std::vector<int> get_neighbours(int atomNumber)
+		{
+			return this->neighbourList.at(atomNumber);
+		}
+
+		int * get_neighbours_pointer (int atomNumber)
+		{
+			return this->neighbourList.at(atomNumber).data();
 		}
 
 		// Print positions to screen
@@ -113,12 +138,16 @@ void initialize_Atoms_with_positions(void ** voidAtomsPointer, double * data_arr
 	
 	Atoms *atoms = new Atoms(numAtoms, data_array);
 
-	// Set the vPointer that the void pointer points to a pointer to Atoms object
-	*voidAtomsPointer = static_cast<void *>(atoms);
-
 	//Test call
 	std::cout << std::endl << "Initializing atoms" << std::endl;
-	static_cast<Atoms *>(*voidAtomsPointer)->print_positions();
+	atoms->print_positions();
+	// static_cast<Atoms *>(*voidAtomsPointer)->print_positions();
+
+	//Initialize neighbour list with random values
+	atoms->initialize_neighbourList();
+
+	// Set the vPointer that the void pointer points to a pointer to Atoms object
+	*voidAtomsPointer = static_cast<void *>(atoms);
 }
 
 void print_Atoms_pointer_positions(void * voidAtomsPointer)
@@ -145,6 +174,14 @@ void modify_Atoms_pointer_positions(void * voidAtomsPointer, int atomNumber, int
 	atomsPointer->modify_position(atomNumber, dimNumber, newPosition);
 }
 
+int * get_Atoms_pointer_neighbours_pointer(void * voidAtomsPointer, int atomNumber)
+{
+	//Cast the pointer as an atoms pointer
+	Atoms *atomsPointer = static_cast<Atoms *>(voidAtomsPointer);
+
+	return atomsPointer->get_neighbours_pointer(0);
+}
+
 
 void destroy_Atoms_void_pointer(void * voidAtomsPointer)
 {
@@ -160,23 +197,6 @@ int main()
 {
 	hello_world();
 
-	const int nRows = 10;
-	const int nCols = 3;
-	double * testOut = testFunct();
-
-	for (int i = 0; i < nRows; i++)
-	{
-		for	(int j = 0; j < nCols; j++)
-		{
-			std::cout << std::setw(6) << testOut[i * nCols + j] << "	";
-		}
-		std::cout << std::endl;
-	}
-
-	std::cout << testOut[0] << std::endl;
-	std::cout << Eigen::Map< Eigen::Matrix<double, nRows, nCols, Eigen::RowMajor> > (testOut) << std::endl;
-
-
 	//Create a new instance of Atoms by a pointer
 	int numAtoms = 5;
 	int numDim = 3;
@@ -189,32 +209,14 @@ int main()
 		data_array[i * numDim + j] = i * numDim + j;
 	}
 
-	//Use the initializer function for stufferino
-	void *testVoidAtomsPointer;
+	Atoms *atoms = new Atoms(numAtoms, data_array);
+	atoms->initialize_neighbourList();
+	atoms->print_neighbourList();
 
-	initialize_Atoms_with_positions(&testVoidAtomsPointer, data_array, numAtoms);
-	print_Atoms_pointer_positions(testVoidAtomsPointer);
-	modify_Atoms_pointer_positions(testVoidAtomsPointer, 3, 2, 100.7);
-	print_Atoms_pointer_positions(testVoidAtomsPointer);
-
-	static_cast<Atoms *>(testVoidAtomsPointer)->initialize_neighbour_list(10);
-	double * testOut2 = static_cast<Atoms *>(testVoidAtomsPointer)->get_neighbourList_data();
-
-
-	for (int i = 0; i < numAtoms; i++)
-	{
-		for	(int j = 0; j < 10; j++)
-		{
-			std::cout << std::setw(6) << testOut2[i * nCols + j] << "	";
-		}
-		std::cout << std::endl;
-	}
-
-	testOut2[0] = 10;
-
-	static_cast<Atoms *>(testVoidAtomsPointer)->print_neighbourList();
-	// destroy_Atoms_void_pointer(testVoidAtomsPointer);
-
+	int * testPoint = atoms->get_neighbours_pointer(0);
+	std::cout<< testPoint[0] << std::endl;
+	std::cout<< atoms->get_neighbours(0).at(0) << std::endl;
+	std::cout<< atoms->get_neighbours(0).data()[0] << std::endl;
 }
 
 

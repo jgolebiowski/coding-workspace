@@ -47,7 +47,8 @@ class cAtoms(object):
 testAtoms = cAtoms()
 testArray = np.ones((10,3))
 testAtoms.initialize_from_array(testArray)
+# testAtoms.initialize_atoms()
 testAtoms.print_atoms()
 
-testArray[0, 0] = 0
+testArray[0, 0] = 0.5
 testAtoms.print_atoms()

@@ -14,6 +14,8 @@ g++-6 testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3
 
 #------ compilation with Eigen
 g++ example.cpp -o main_example.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2
+g++ testlib.cpp -o main_example.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2
+g++ workspace_src.cpp -o main_workspace.out -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2
 
 #------ Shared library with Eigen
 g++ testlib.cpp -o testlib.so -std=c++11 -Wall -Wextra -fdiagnostics-color -O3 -I ../../local/eigen-3.3.2 -fPIC -shared 
