@@ -19,6 +19,7 @@ function [J grad] = nnCostFunction(nn_params, ...
 Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
                  hidden_layer_size, (input_layer_size + 1));
 
+
 Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
                  num_labels, (hidden_layer_size + 1));
 
@@ -62,10 +63,69 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+%------ Part 1: Forward propagation
+
+
+X = [ones(m, 1) X];
+
+matA2 = sigmoid(X * Theta1');
+m2 = size(matA2, 1);
+matA2 = [ones(m2, 1) matA2];
+
+matA3 = sigmoid(matA2 * Theta2');
+
+matY = zeros(m, num_labels);
+for i = 1:m
+	matY(i, y(i)) = 1;
+endfor
+
+mat1_Y = 1 - matY;
+mat1_A3 = 1 - matA3;
 
 
 
+%%% Disclaimer: in general sum(A .* B', 2) = diag(A * B)
+J = (1/m) * sum((-sum(matY .* log(matA3), 2) - sum((1 - matY) .* log(1 - matA3), 2)));
 
+RegTheta1 = Theta1;
+RegTheta1(:, 1) = 0;
+
+RegTheta2 = Theta2;
+RegTheta2(:, 1) = 0;
+
+J = J + (lambda/(2*m)) * (sum(sum(RegTheta1 .^ 2)) + sum(sum(RegTheta2 .^ 2)));
+
+%------ Part 1: Forward propagation using a for-loop
+% matY = zeros(m, num_labels);
+% for i = 1:m
+% 	matY(i, y(i)) = 1;
+% endfor
+
+% J = 0;
+% vecMiniJ = [];
+% for i = 1:m
+% 	a1 = X(i, :)';
+% 	a1 = [1 ; a1];
+
+% 	z2 = Theta1 * a1;
+% 	a2 = [1; sigmoid(z2)];
+
+% 	z3 = Theta2 * a2;
+% 	a3 = [sigmoid(z3)];
+
+% 	miniJ = - matY(i, :) * log(a3) - (1 - matY(i, :)) * log(1 - a3);
+% 	vecMiniJ =  [miniJ; vecMiniJ];
+
+% endfor
+
+% J = (1/m) * sum(vecMiniJ);
+% RegTheta1 = Theta1;
+% RegTheta1(:, 1) = 0;
+
+% RegTheta2 = Theta2;
+% RegTheta2(:, 1) = 0;
+
+% J = J + (1/(2*m)) * (sum(sum(RegTheta1 .^ 2)) + sum(sum(RegTheta2 .^ 2)));
 
 
 
