@@ -1,4 +1,4 @@
-function [J grad] = nnCostFunction(nn_params, ...
+function [J grad] = nnCostFunction_vectorized(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
                                    num_labels, ...
@@ -64,51 +64,37 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ====================== For-loop implementation ======================
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ====================== Vectorized implementation ======================
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%------ Forward propagation
+
+matA1 = [ones(m, 1) X];
+
+matZ2 = matA1 * Theta1';
+m2 = size(matZ2, 1);
+matA2 = [ones(m2, 1) sigmoid(matZ2)];
+
+matA3 = sigmoid(matA2 * Theta2');
 
 matY = zeros(m, num_labels);
 for i = 1:m
 	matY(i, y(i)) = 1;
 endfor
 
-J = 0;
-for i = 1:m
-	%------ Forward propagation
-	a1 = X(i, :)';
-	a1 = [1 ; a1];
+%%% Disclaimer: in general sum(A .* B', 2) = diag(A * B)
+J = (1/m) * sum((-sum(matY .* log(matA3), 2) - sum((1 - matY) .* log(1 - matA3), 2)));
 
-	z2 = Theta1 * a1;
-	a2 = [1; sigmoid(z2)];
 
-	z3 = Theta2 * a2;
-	a3 = [sigmoid(z3)];
+%------ Backwards propagation
 
-	%------ Calculating cost contributions
+matDelta3 = (matA3 - matY);
 
-	miniJ = - matY(i, :) * log(a3) - (1 - matY(i, :)) * log(1 - a3);
-	J = J + miniJ;
+matDelta2 = matDelta3 * Theta2;
+matDelta2 = matDelta2(:, 2:end) .* sigmoidGradient(matZ2);
 
-	%------ Backwards propagation
-
-	delta3 = (a3 - matY(i, :)');
-
-	delta2 = Theta2' * delta3;
-	delta2 = delta2(2 : end) .* sigmoidGradient(z2);
-
-	%------ Calculating gradient contributions
-
-	miniTheta1_grad = delta2 * a1';
-	miniTheta2_grad = delta3 * a2';
-
-	Theta1_grad = Theta1_grad + miniTheta1_grad;
-	Theta2_grad = Theta2_grad + miniTheta2_grad;
-
-endfor
-
-J = (1/m) * J;
-Theta1_grad = (1/m) * Theta1_grad;
-Theta2_grad = (1/m) * Theta2_grad;
+Theta1_grad = (1/m) * (matDelta2' * matA1);
+Theta2_grad = (1/m) * (matDelta3' * matA2);
 
 
 %------ Regularization
@@ -123,6 +109,19 @@ J = J + (lambda/(2*m)) * (sum(sum(RegTheta1 .^ 2)) + sum(sum(RegTheta2 .^ 2)));
 
 Theta1_grad = Theta1_grad + (lambda/m) * RegTheta1;
 Theta2_grad = Theta2_grad + (lambda/m) * RegTheta2;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 % -------------------------------------------------------------
 
