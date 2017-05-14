@@ -53,11 +53,24 @@ error_val   = zeros(m, 1);
 
 % ---------------------- Sample Solution ----------------------
 
+for exampleIndex = 1:m
+	% Select only a subset of training data
+	xLocal = X(1:exampleIndex, :);
+	yLocal = y(1:exampleIndex);
 
+	% Use the subset to train linear regression
+	[theta] = trainLinearReg(xLocal, yLocal, lambda);
 
+	% Calculate the cost given obtained thetas
+	testLambda = 0;
+	[JT, gradT] = linearRegCostFunction(xLocal, yLocal, theta, testLambda);
 
+	% Calculate the error on cross validation data
+	[JCV, gradCV] = linearRegCostFunction(Xval, yval, theta, testLambda);
 
-
+	%Recurd the values
+	error_train(exampleIndex) = JT;
+	error_val(exampleIndex) = JCV;
 
 % -------------------------------------------------------------
 

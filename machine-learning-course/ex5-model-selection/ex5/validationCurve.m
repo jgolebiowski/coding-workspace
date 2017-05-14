@@ -11,6 +11,7 @@ function [lambda_vec, error_train, error_val] = ...
 
 % Selected values of lambda (you should not change this)
 lambda_vec = [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]';
+mLambda = size(lambda_vec, 1);
 
 % You need to return these variables correctly.
 error_train = zeros(length(lambda_vec), 1);
@@ -39,7 +40,23 @@ error_val = zeros(length(lambda_vec), 1);
 %
 %
 
+for lambdaIndex = 1:mLambda
+	% Select an appropriate lambda
+	lambda = lambda_vec(lambdaIndex);
 
+	% Use the subset to train linear regression
+	[theta] = trainLinearReg(X, y, lambda);
+
+	% Calculate the cost given obtained thetas
+	testLambda = 0;
+	[JT, gradT] = linearRegCostFunction(X, y, theta, testLambda);
+
+	% Calculate the error on cross validation data
+	[JCV, gradCV] = linearRegCostFunction(Xval, yval, theta, testLambda);
+
+	%Recurd the values
+	error_train(lambdaIndex) = JT;
+	error_val(lambdaIndex) = JCV;
 
 
 
