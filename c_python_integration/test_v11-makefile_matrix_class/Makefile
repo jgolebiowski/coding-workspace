@@ -7,8 +7,8 @@ CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color -fPIC -shared
 
 # define any directories containing header files other than /usr/include
 #
-# INCLUDES = -I./include -I../../local/eigen-3.3.2
-INCLUDES= -I./include
+INCLUDES = -I./include -I../../local/eigen-3.3.2
+# INCLUDES= -I./include
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify

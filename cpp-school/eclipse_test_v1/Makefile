@@ -3,13 +3,12 @@ CC = g++
 
 # define any compile-time flags
 # CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color -fPIC -shared
-# CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color
-CFLAGS = -std=c++11 -Wall -Wextra -O3 -openmp -fdiagnostics-color
+CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color
 
 # define any directories containing header files other than /usr/include
 #
-# INCLUDES = -I./include -I../../local/eigen-3.3.2
-INCLUDES= -I./include
+INCLUDES = -I./include -I../../local/eigen-3.3.2
+# INCLUDES= -I./include
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
