@@ -24,7 +24,8 @@ int main()
 	data_mymatrix.print_data();
 	std::cout << "Printed data" << std::endl;
 
-	square_mymatrix(data_mymatrix);
+	square_mymatrix(data_mymatrix);	
+	
 	data_mymatrix.print_data();
 
 	return 0;
