@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -10,17 +11,19 @@
 
 class Atoms
 {
+public:
     Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> positions;
-    Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> velocity;
+    Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> velocities;
     Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> forces;
+    Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> energies;
     Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> masses;
 
-    int nAtoms
-    int kinEne, potEne
+    int nAtoms;
+    int kinEne, potEne;
+    static const int nDim = 3;
 
-public:
     //Standard constructor with num of atoms
-    Atoms(double nAtoms);
+    Atoms(double numAtoms);
 
     //Empty constructor just in case
     Atoms();
@@ -29,11 +32,9 @@ public:
     // ~Atoms();
 
     //Print atoms to file
-    void printAtomsXYZ(String fileName);
+    void printAtomsXYZ(std::string fileName);
 
     //Read atoms from file
-    void readAtomsXYZ(String fileName);
+    void readAtomsXYZ(std::string fileName);
     
 };
-
-// Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>::Constant(nAtoms, nColumns, -1
