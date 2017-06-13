@@ -16,7 +16,7 @@ int main()
     testComplexTwo = (testComplexTwo * testComplexTwo) + testComplexTwo;
 
     //Run the Mandelbrot area evaluation
-    double manArea = calculateMandelbrotAreaForLoops(500, 500);
+    double manArea = calculateMandelbrotAreaForLoops(2000, 2000);
     std::cout << "Area of the set is " << manArea << std::endl;
 
 	return 0;

@@ -1,10 +1,9 @@
 # define the C compiler to use
-CC = g++
+CC = g++-7
 
 # define any compile-time flags
 # CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color -fPIC -shared
-# CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color
-CFLAGS = -std=c++11 -Wall -Wextra -O3 -openmp -fdiagnostics-color
+CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color
 
 # define any directories containing header files other than /usr/include
 #
