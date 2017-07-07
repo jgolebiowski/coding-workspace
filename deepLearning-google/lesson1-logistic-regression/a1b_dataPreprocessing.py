@@ -80,7 +80,8 @@ def loadAndPickleDataSet(dataSetDirectory, minExamplesPerClass, force=False):
 
 
 if __name__ == "__main__":
-    clasNames = loadAndPickleDataSet("dataSet/notMNIST_small", 1700, force=True)
+    clasNamesTest = loadAndPickleDataSet("dataSet/notMNIST_large", 45000, force=True)
+    clasNamesTrain = loadAndPickleDataSet("dataSet/notMNIST_small", 1700, force=True)
 
     # Test data
     doTest = False
