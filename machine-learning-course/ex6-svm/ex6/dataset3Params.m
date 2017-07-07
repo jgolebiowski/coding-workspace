@@ -23,11 +23,30 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+cList = [0.001 0.003 0.01 0.03 0.1 0.3 1 3 10 30];
+sigmaList = [0.001 0.003 0.01 0.03 0.1 0.3 1 3 10 30];
 
+outputValues = [0 0 0];
 
+for cLocal = cList
+    for sigmaLocal = sigmaList
+        % Train with Gaussian Kernel
+        model = svmTrain(X, y, cLocal, @(x1, x2) gaussianKernel(x1, x2, sigmaLocal)); 
 
+        %Obtain predictions with the model
+        predictions = svmPredict(model, Xval);
 
+        % Check accuracy, the higher the better 
+        accuracy = mean(double(predictions == yval));
 
+        if (accuracy > outputValues(3));
+            outputValues = [cLocal sigmaLocal accuracy];
+        endif
+    endfor
+endfor
+
+C = outputValues(1)
+sigma = outputValues(2)
 
 % =========================================================================
 
