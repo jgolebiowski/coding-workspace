@@ -12,16 +12,18 @@ extern "C"
 // Does not have an empty constructor, only a (NULL, dim1, dim2) one
 JointObject::JointObject(int numRows, int numCols, double * valuesArray):
                 mappedMatrix (NULL, 0, 0),
-                nRows (numRows),
-                nCols (numCols)
+                nRowsMapped (numRows),
+                nColsMapped (numCols),
+                nRowsNative (numRows),
+                nColsNative (numCols)
 {
     // Despite appearances, this does not invoke the memory allocator, 
     // because the syntax specifies the location for storing the result.
     new (&(this->mappedMatrix)) Eigen::Map< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > 
-                                                        (valuesArray, numRows, nCols);
+                                                        (valuesArray, numRows, numCols);
 
     //Initialize the native matrix
-    this->nativeMatrix = Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>::Constant(numRows, nCols, 0);
+    this->nativeMatrix = Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>::Constant(numRows, numCols, 0);
 }
 
 // Get the data of a native matrix
@@ -33,12 +35,12 @@ double * JointObject::getNativeMatrixData()
 // Set data for already defined matrix object
 void JointObject::setMappedMatrixData(int numRows, int numCols, double * valuesArray)
 {
-    this->nRows = numRows;
-    this->nCols = numCols;
+    this->nRowsMapped = numRows;
+    this->nColsMapped = numCols;
     // Despite appearances, this does not invoke the memory allocator, 
     // because the syntax specifies the location for storing the result.
     new (&(this->mappedMatrix)) Eigen::Map< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > 
-                                                        (valuesArray, numRows, nCols);
+                                                        (valuesArray, numRows, numCols);
 
 }
 
@@ -57,10 +59,10 @@ void JointObject::modifyNativeMatrix(int indexRow, int indexColumn, double newVa
 //print Mapped Matrix
 void JointObject::printMappedMatrix()
 {
-    std::cout << "mappedMatrix w nRows: "
-              << this->nRows
-              << " and nCols: "
-              << this->nCols
+    std::cout << "mappedMatrix w nRowsMapped: "
+              << this->nRowsMapped
+              << " and nColsMapped: "
+              << this->nColsMapped
               << std::endl;
     std::cout << this->mappedMatrix << std::endl << std::endl;
 }
@@ -69,9 +71,9 @@ void JointObject::printMappedMatrix()
 void JointObject::printNativeMatrix()
 {
     std::cout << "nativeMatrix w nRows: "
-              << this->nRows
+              << this->nRowsNative
               << " and nCols: "
-              << this->nCols
+              << this->nColsNative
               << std::endl;
     std::cout << this->nativeMatrix << std::endl << std::endl;
 }

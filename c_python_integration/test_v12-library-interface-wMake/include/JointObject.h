@@ -15,11 +15,13 @@ class JointObject
     Eigen::Matrix< double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
             nativeMatrix;
 
-    //Extra parameters
-    int nRows;
-    int nCols;
-
 public:
+    //Extra parameters
+    int nRowsMapped;
+    int nColsMapped;
+    int nRowsNative;
+    int nColsNative;
+
     // Standard constructor prividing a pre-existant array
     // Adressing positions in initializaton list is necessary since Map< Matrix<xxx> >
     // Does not have an empty constructor, only a (NULL, dim1, dim2) one

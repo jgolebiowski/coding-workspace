@@ -12,6 +12,24 @@ void JointObjectPointer_initializeWithArray(void ** voidjoPointer,
                                             int numCols,
                                             double * valuesArray);
 
+// Given a void pointer to a jointObject instance, call a
+// setMappedMatrixData function that:
+// Sets data for already defined matrix object
+void JointObjectPointer_setMappedMatrixData(void * voidJointObjectPointer,
+                                            int numRows,
+                                            int numCols,
+                                            double * valuesArray);
+
+// Given a void pointer to a jointObject instance,
+// Obtain the dimensions of the Native array
+void JointObjectPointer_getNativeDimensions(void * voidJointObjectPointer,
+                                            int * numRows,
+                                            int * numCols);
+
+// Given a void pointer to a jointObject instance,
+// Obtain the data of the Native array
+double * JointObjectPointer_getNativeMatrixData(void * voidJointObjectPointer);
+
 // Given a void pointer to a jointObject instance, call a 
 // modifyMappedMatrix function
 void JointObjectPointer_modifyMappedMatrix(void * voidJointObjectPointer,
@@ -19,11 +37,12 @@ void JointObjectPointer_modifyMappedMatrix(void * voidJointObjectPointer,
                                            int indexColumn,
                                            double newValue);
 
-
-//TODO: Add functions to:
-// provide a new (replace) data array(pointer) to the mapped array
-// extract the data pointer from the native array
-
+// Given a void pointer to a jointObject instance, call a 
+// modifyNativeMatrix function
+void JointObjectPointer_modifyNativeMatrix(void * voidJointObjectPointer,
+                                           int indexRow,
+                                           int indexColumn,
+                                           double newValue);
 
 // Given a void pointer to a jointObject instance, call a 
 // print Native Matrix function
