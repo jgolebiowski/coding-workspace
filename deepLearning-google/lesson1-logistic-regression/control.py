@@ -2,6 +2,8 @@ from simpleLogisticRegression import SoftmaxLinearRegression
 import cPickle as pickle
 import numpy as np
 import scipy.optimize
+import matplotlib.pyplot as plt
+
 
 """Control script"""
 
@@ -9,33 +11,40 @@ pickleFilename = "dataSet/notMNISTreformatted.pkl"
 with open(pickleFilename, "rb") as fp:
     allDatasets = pickle.load(fp)
 
-X = allDatasets["testDataset"]
-Y = allDatasets["testLabels"]
+X = allDatasets["trainDataset"][0:30000]
+Y = allDatasets["trainLabels"][0:30000]
 
-# X = np.array([[0, 1],
-#               [2, 3],
-#               [4, 12],
-#               [6, 7]])
+Xtest = allDatasets["testDataset"]
+Ytest = allDatasets["testLabels"]
 
-# Y = np.array([[1., 0., 0.],
-#               [0., 1., 0.],
-#               [0., 0., 1.],
-#               [0., 1., 0.]])
-
-logReg = SoftmaxLinearRegression(X, Y, 1)
+logReg = SoftmaxLinearRegression(X, Y, 0.0001)
 param0 = np.random.random(logReg.nClasses + logReg.nClasses * logReg.nFeatures)
-print(logReg.getCostOnly(param0))
+print(logReg.getCost(param0, X, Y))
 
-# numGrad = logReg.getNumericalGradient(param0)
-# _, analGrad = logReg.getCost(param0)
+# res = scipy.optimize.minimize(logReg.getCost, param0, args=(X, Y), method="BFGS", jac=True)
+# print res
+# logReg.attachParameters(res.x)
 
-# for i in range(len(numGrad)):
-#     print numGrad[i], analGrad[i]
+# with open("logReg.pkl", "wb") as fp:
+#     pickle.dump(logReg, fp)
+with open("logReg.pkl", "rb") as fp:
+    logReg = pickle.load(fp)
 
-res = scipy.optimize.minimize(logReg.getCost, param0, method="BFGS", jac=True)
-print res
+print("Accuracy on train set:", logReg.calculateAccuracy(X, Y))
+print("Accuracy on test set:", logReg.calculateAccuracy(Xtest, Ytest))
 
-# print(Y)
-w, b = logReg.unrollParameters(res.x)
-# print(logReg.makePredictions(X, w, b))
-print(logReg.calculateAccuracy(X, Y, w, b))
+
+def predictLetter(X, Y, index):
+    labelsMap = np.array(["J", "D", "B", "F", "A", "G", "E", "I", "C", "H"])
+    labels = logReg.makePredictions(X[index])
+    print("The letter according to predictions: ", labelsMap[labels.argmax()])
+    print("The letter according to label: ", labelsMap[Y[index].argmax()])
+
+    fig = plt.figure()
+    timer = fig.canvas.new_timer(interval = 2000)
+    timer.add_callback(plt.close)
+
+    plt.imshow(X[index].reshape(28, 28))
+    timer.start()
+    plt.show()
+    plt.close()

@@ -31,18 +31,14 @@ class SoftmaxLinearRegression(object):
                  trainLabels,
                  lambdaValue=0):
 
-        self.nExamples = trainDataset.shape[0]
         self.nFeatures = trainDataset.shape[1]
         self.nClasses = trainLabels.shape[1]
-
-        self.trainDataset = trainDataset
-        self.trainLabels = trainLabels
 
         self.lambdaValue = lambdaValue
         self.weigths = None
         self.bias = None
 
-    def makePredictions(self, x, w, b):
+    def makePredictions(self, x, w=None, b=None):
         """Return predicions for each example
 
         Parameters
@@ -56,16 +52,20 @@ class SoftmaxLinearRegression(object):
         b: vector of biases
             b.shape = (nClasses, )
         """
+        if (w is None):
+            w = self.weights
+        if (b is None):
+            b = self.biases
 
-        probMat = self.findPredictionMatrix(x, w, b)
-        for i in range(probMat.shape[0]):
-            indexMax = np.argmax(probMat[i])
-            probMat[i][:] = 0
-            probMat[i][indexMax] = 1
+        predbMat = self.findPredictionMatrix(x, w, b)
+        for i in range(predbMat.shape[0]):
+            indexMax = np.argmax(predbMat[i])
+            predbMat[i][:] = 0
+            predbMat[i][indexMax] = 1
 
-        return probMat
+        return predbMat
 
-    def calculateAccuracy(self, x, y, w, b):
+    def calculateAccuracy(self, x, y, w=None, b=None):
         """Calculate accuracy given the test set
 
         Parameters
@@ -82,6 +82,10 @@ class SoftmaxLinearRegression(object):
         b: vector of biases
             b.shape = (nClasses, )
         """
+        if (w is None):
+            w = self.weights
+        if (b is None):
+            b = self.biases
 
         predictionMat = self.makePredictions(x, w, b)
         error = np.sum(np.abs(predictionMat - y)) / (2 * x.shape[0])
@@ -127,16 +131,17 @@ class SoftmaxLinearRegression(object):
         b: vector of biases
             b.shape = (nClasses, )
         """
+        nExamples = x.shape[0]
         predictions = self.findPredictionMatrix(x, w, b)
 
         # ------ apply cross entropy to get cost
         predLog = -np.log(predictions)
         cEntropyMat = np.multiply(y, predLog)
-        cost = (1.0 / self.nExamples) * np.sum(cEntropyMat)
+        cost = (1.0 / nExamples) * np.sum(cEntropyMat)
 
         # ------ Calculate gradient
-        gradW = (-1.0 / self.nExamples) * (np.dot((y - predictions).T, x))
-        gradB = (-1.0 / self.nExamples) * (np.dot((y - predictions).T, np.ones(x.shape[0])))
+        gradW = (-1.0 / nExamples) * (np.dot((y - predictions).T, x))
+        gradB = (-1.0 / nExamples) * (np.dot((y - predictions).T, np.ones(x.shape[0])))
 
         # ------ Add regularization
         cost += np.sum(np.square(w)) * self.lambdaValue / 2
@@ -145,7 +150,8 @@ class SoftmaxLinearRegression(object):
         return cost, gradW, gradB
 
     def unrollParameters(self, param):
-        """Calculate matrixes from a params vector
+        """Given a vector of parameters, return a matrix
+        of weights and a vecto rof biaes
 
         Parameters
         ----------
@@ -166,13 +172,24 @@ class SoftmaxLinearRegression(object):
 
         return weights, biases
 
-    def getCost(self, x):
-        """Calculate cost given a parameters vector,
+    def attachParameters(self, param):
+        """Given a vector of parameters, attach
+        a matrix of weights and a vecto of biases
+        to self.
+
+        See unrollParameters for formatting"""
+        w, b = self.unrollParameters(param)
+        self.weights = w
+        self.biases = b
+
+
+    def getCost(self, w, dataset, labels):
+        """Calculate cost given a parametes vector and dataset,
         see self.unrollParameters for more details on formatting"""
 
-        weights, biases = self.unrollParameters(x)
+        weights, biases = self.unrollParameters(w)
         cost, gradW, gradB =\
-            self.calculateCost(self.trainDataset, self.trainLabels, weights, biases)
+            self.calculateCost(dataset, labels, weights, biases)
 
         grad = np.hstack((gradB.ravel(), gradW.ravel()))
         return cost, grad
