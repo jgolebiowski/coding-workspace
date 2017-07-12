@@ -1,4 +1,9 @@
 #pragma once
+#include <Atoms.h>
+#include <string>
+
+// Initialize an atoms object from a xyz file
+Atoms initializeAtomsFromXYZ(std::string fileName);
 
 /*Print hello world*/
 void hello_world();

@@ -20,16 +20,14 @@ int main()
     hello_world();
 
     //Test Atoms object
-    double numAtoms = 2;
-    Atoms simAtoms(numAtoms);
+    Atoms simAtoms;
 
-    simAtoms.positions << 0, 0, 0,
-                          1, 0, 0;
+    simAtoms = initializeAtomsFromXYZ("inputTestfile.xyz");    
 
     std::cout << simAtoms.positions << std::endl << std::endl;
-    std::string fileName = "testFile.xyz";
+    std::string fileName = "outputTestFile.xyz";
     std::remove(fileName.c_str());
-    simAtoms.printAtomsXYZ("testFile.xyz");
+    simAtoms.printAtomsXYZ(fileName);
 
     //Initialize LJcalculator
     double sigma = 0.5;
@@ -39,18 +37,11 @@ int main()
     LJCalculator lennardCalc(sigma, epsilon, rCutoff);
 
     double timestep = 1e-10;
-    Dynamics dynamics(&simAtoms, &lennardCalc, 0.5, fileName);
+    Dynamics dynamics(&simAtoms, &lennardCalc, timestep, fileName);
 
     //Run MD
     int steps = 10;
-    #pragma omp parallel default(shared)
-    {
-        for (int i = 0; i < steps; i++)
-        {
-            dynamics.stepOMPorphan();
-    
-        }
-    }
+    dynamics.run(steps);
 
 
     // Rerun with serial MD
@@ -62,13 +53,13 @@ int main()
 
     std::remove(fileName.c_str());
 
-    Dynamics dynamics2(&simAtoms, &lennardCalc, 0.5, fileName);
+    Dynamics dynamics2(&simAtoms, &lennardCalc, timestep, fileName);
 
     steps = 10;
     //Run MD
     for (int i = 0; i < steps; i++)
     {
-        dynamics2.stepOMP();
+        dynamics2.step();
 
     }
 

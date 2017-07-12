@@ -1,5 +1,6 @@
 # define the C compiler to use
-CC = g++-7
+# CC = g++-7
+CC = g++
 
 # define any compile-time flags
 # CFLAGS = -std=c++11 -Wall -Wextra -O3 -fopenmp -fdiagnostics-color -fPIC -shared

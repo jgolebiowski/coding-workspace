@@ -1,7 +1,58 @@
 #include <iostream>
 #include <omp.h>
-#include <UtilityFunctions.h>
 #include <vector>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+#include <Eigen/Dense>
+#include <UtilityFunctions.h>
+#include <Atoms.h>
+
+// Initialize an Atoms object from a xyz file
+Atoms initializeAtomsFromXYZ(std::string fileName)
+{
+    int lineNo = 0;
+    int nAtoms = 0;
+    Atoms simAtoms;
+    std::istringstream iss;
+    std::string element;
+
+    // Open the initial geometry
+    std::fstream myfile;
+    myfile.open(fileName, std::ios::in);
+
+    if (myfile.is_open())
+    {
+        std::string line;
+        while ( getline (myfile,line) )
+            {
+                std::cout << line << '\n';
+                if (lineNo == 0)
+                {
+                    // If reading first line, check the number of atoms
+                    std::stringstream convert(line);
+                    convert >> nAtoms;
+                    simAtoms = Atoms(nAtoms);
+                }
+
+                if (lineNo >= 2)
+                {
+                    iss = std::istringstream(line);
+                    iss >> element;
+                    iss >> simAtoms.positions(lineNo - 2, 0);
+                    iss >> simAtoms.positions(lineNo - 2, 1);
+                    iss >> simAtoms.positions(lineNo - 2, 2);
+                }
+                lineNo++;
+            }
+        myfile.close();    
+    }
+
+    return simAtoms;
+}
+
+/* Those are Hello world function to test openMP */
 
 // Print hello world
 void hello_world()

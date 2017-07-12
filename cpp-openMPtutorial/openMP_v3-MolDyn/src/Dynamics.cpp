@@ -34,6 +34,19 @@ void Dynamics::Initialize()
 }
 
 
+// Run the dynamics
+void Dynamics::run(int nSteps)
+{
+    #pragma omp parallel default(shared)
+    {
+        for (int i = 0; i < nSteps; i++)
+        {
+            this->stepOMPorphan();
+    
+        }
+    }
+}
+
 // Perform one MD step
 void Dynamics::step()
 {
@@ -70,6 +83,8 @@ void Dynamics::stepOMPorphan()
     calculator->calculate(atoms);
 
 
+    // This could be vectorized to leverage Eigen parallelism instead of parallelizng by openMP
+    // using the library is the point of this excercise though.
     #pragma omp for schedule(static)
     for (int i = 0; i < atoms->nAtoms; i++)
     {

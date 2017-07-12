@@ -37,6 +37,9 @@ public:
     // Initialize dynamics
     void Initialize();
 
+    // Run the dynamics
+    void run(int nSteps);
+
     // Perform one MD step
     void step();
 
