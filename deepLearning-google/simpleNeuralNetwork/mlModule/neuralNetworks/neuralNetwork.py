@@ -105,7 +105,7 @@ class NeuralNetwork(object):
 
         """
 
-        predictionMat = self.makePredictions(x, w, b)
+        predictionMat = self.makePredictions(x)
         error = np.sum(np.abs(predictionMat - y)) / (2 * x.shape[0])
         return 1 - error
 
