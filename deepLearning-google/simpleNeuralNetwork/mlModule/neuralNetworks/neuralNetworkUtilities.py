@@ -82,7 +82,8 @@ class SoftmaxActivation(object):
     @staticmethod
     def prime(z):
         """Derevative of the softmax function"""
-        raise NotImplementedError("Not yet implemented as it is rarely used")
+        raise NotImplementedError(
+            "Not yet implemented as the derevative is build-in in the CrossEntropy cost function")
 
 
 class QuadraticCost(object):
