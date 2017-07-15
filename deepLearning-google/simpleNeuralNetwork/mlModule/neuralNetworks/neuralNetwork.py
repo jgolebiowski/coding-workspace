@@ -133,6 +133,11 @@ class NeuralNetwork(object):
             raise ValueError("This routine works onle for num examples > 1")
 
         # ------ Feed forward while storing activation values and scores
+        # In this representation weights(l) are weights from layer l to layer l+1
+        # which is slightly different from the normal representation which is 
+        # w(l) propagates from l-1 to l
+        # This is how indexing played out
+
         a = X
         activations = [X]
         scores = [None]

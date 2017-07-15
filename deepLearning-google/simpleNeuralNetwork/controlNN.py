@@ -32,9 +32,9 @@ Ycheck = np.array([1, 0])
 
 net = NeuralNetwork(sizes=sizes,
                     lambdaValue=1,
-                    activationHidden=SigmoidActivation,
-                    activationFinal=SigmoidActivation,
-                    cost=CrossEntropyCostSigmoid)
+                    activationHidden=ReluActivation,
+                    activationFinal=SoftmaxActivation,
+                    cost=CrossEntropyCostSoftmax)
 
 # net.weights = [np.arange(1, 13).reshape(4, 3), np.arange(1, 9).reshape(2, 4)]
 # net.biases = [np.arange(1, 5), np.arange(1, 3)]

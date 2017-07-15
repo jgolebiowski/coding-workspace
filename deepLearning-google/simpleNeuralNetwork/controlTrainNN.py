@@ -31,9 +31,9 @@ sizes = np.array([X.shape[1], 100, Y.shape[1]])
 
 net = NeuralNetwork(sizes=sizes,
                     lambdaValue=0.3,
-                    activationHidden=SigmoidActivation,
-                    activationFinal=SigmoidActivation,
-                    cost=CrossEntropyCostSigmoid)
+                    activationHidden=ReluActivation,
+                    activationFinal=SoftmaxActivation,
+                    cost=CrossEntropyCostSoftmax)
 
 param0 = net.ravelParameters(net.weights, net.biases)
 

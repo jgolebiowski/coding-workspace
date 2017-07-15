@@ -30,6 +30,19 @@ class ReluActivation(object):
         """The derevative of thr Relu function"""
         return ReluActivation.val(z) / z
 
+class SoftmaxActivation(object):
+    """Class to implement softmax activation function"""
+
+    @staticmethod
+    def val(z):
+        """Simple softmax"""
+        expMat = np.exp(z)
+        return np.divide(expMat.T, np.sum(expMat, 1)).T
+
+    @staticmethod
+    def prime(z):
+        """Derevative of the softmax function"""
+        raise NotImplementedError("Not yet implemented as it is rarely used")
 
 class QuadraticCost(object):
     """Class for calculating cost
@@ -76,6 +89,39 @@ class CrossEntropyCostSigmoid(object):
 
         """
         return (1.0 / len(a)) * np.sum(np.nan_to_num(-y * np.log(a) - (1 - y) * np.log(1 - a)))
+
+    def prime(self, a, y, z):
+        """Return the error delta from the output layer.
+        Given by te derevative of the cost with respect to
+        the score
+        """
+        return (a - y)
+
+
+class CrossEntropyCostSoftmax(object):
+    """Class for calculating cost using cross-entropy,
+    this is optimized to be used with a Softmax activation function in the last layer,
+    Will not work properly with a different activation function"""
+
+    def __init__(self, activationFinal):
+        if (activationFinal.__name__ != "SoftmaxActivation"):
+            raise ValueError("This cost works only with Softmax activation function")
+        self.activationFinal = activationFinal
+
+    @staticmethod
+    def val(a, y):
+        """Return the cost associated with an output ``a`` and desired output
+        ``y``.  Note that np.nan_to_num is used to ensure numerical
+        stability.  In particular, if both ``a`` and ``y`` have a 1.0
+        in the same slot, then the expression (1-y)*np.log(1-a)
+        returns nan.  The np.nan_to_num ensures that that is converted
+        to the correct value (0.0).
+
+        """
+        predLog = np.nan_to_num(-np.log(a))
+        cEntropyMat = np.multiply(y, predLog)
+        cost = (1.0 / len(a)) * np.sum(cEntropyMat)
+        return cost
 
     def prime(self, a, y, z):
         """Return the error delta from the output layer.
