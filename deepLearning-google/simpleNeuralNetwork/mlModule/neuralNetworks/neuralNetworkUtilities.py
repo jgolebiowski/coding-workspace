@@ -50,9 +50,6 @@ class QuadraticCost(object):
 
 class CrossEntropyCostSigmoid(object):
 
-    def __init__(self, activation):
-        self.activation = activation
-
     @staticmethod
     def val(a, y):
         """Return the cost associated with an output ``a`` and desired output
