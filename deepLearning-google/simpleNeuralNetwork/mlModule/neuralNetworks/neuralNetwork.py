@@ -84,7 +84,7 @@ class NeuralNetwork(object):
             x.shape = (nExamples, nFeatures)
         """
 
-        probMat = self.feedforward(X)
+        probMat = self.feedforward(x)
         for i in range(probMat.shape[0]):
             indexMax = np.argmax(probMat[i])
             probMat[i][:] = 0
