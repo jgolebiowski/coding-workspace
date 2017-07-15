@@ -3,10 +3,8 @@ from mlModule.adaptiveSGD import adaptiveSGD
 from mlModule.neuralNetworks.neuralNetwork import *
 from mlModule.neuralNetworks.neuralNetworkUtilities import *
 
-import cPickle as pickle
 import numpy as np
-import scipy.optimize
-import matplotlib.pyplot as plt
+
 
 
 """Control script"""
@@ -25,24 +23,24 @@ import matplotlib.pyplot as plt
 # Yvalid = allDatasets["validLabels"]
 
 sizes = np.array([3, 4, 2])
-Xcheck = np.array([1, 2, 3])
-Ycheck = np.array([3, 4])
 
 Xcheck2 = np.arange(1, 7).reshape((2, 3))
-Ycheck2 = np.array([[3, 4], [5, 6]])
+Ycheck2 = np.array([[1, 0], [0, 1]])
+
+Xcheck = np.arange(1, 4).reshape((1, 3))
+Ycheck = np.array([1, 0])
 
 net = NeuralNetwork(sizes=sizes,
+                    lambdaValue=1,
                     activationHidden=SigmoidActivation,
                     activationFinal=SigmoidActivation,
-                    cost=QuadraticCost)
+                    cost=CrossEntropyCostSigmoid)
 
-
-from mlModule.neuralNetworks.neutalNetworkExamplev0 import Network
-oldNet = Network(sizes)
-# oldNet.weights = net.weights[:]
-# oldNet.biases = net.biases[:]
+# net.weights = [np.arange(1, 13).reshape(4, 3), np.arange(1, 9).reshape(2, 4)]
+# net.biases = [np.arange(1, 5), np.arange(1, 3)]
 
 params = net.ravelParameters(net.weights, net.biases)
-print net.getCost(params, Xcheck, Ycheck)
-print net.getNumericalGradient(params, Xcheck, Ycheck)
-print oldNet.backprop(Xcheck, Ycheck)
+analCost, analGrad = net.getCost(params, Xcheck2, Ycheck2)
+numGrad = net.getNumericalGradient(params, Xcheck2, Ycheck2)
+
+print np.sum(np.abs(analGrad - numGrad))
