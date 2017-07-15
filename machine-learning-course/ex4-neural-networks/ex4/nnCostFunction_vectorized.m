@@ -71,16 +71,18 @@ Theta2_grad = zeros(size(Theta2));
 
 matA1 = [ones(m, 1) X];
 
-matZ2 = matA1 * Theta1';
+matZ2 = matA1 * Theta1'
 m2 = size(matZ2, 1);
 matA2 = [ones(m2, 1) sigmoid(matZ2)];
 
-matA3 = sigmoid(matA2 * Theta2');
+matZ3 = matA2 * Theta2';
+matA3 = sigmoid(matZ3);
 
 matY = zeros(m, num_labels);
 for i = 1:m
 	matY(i, y(i)) = 1;
 endfor
+
 
 %%% Disclaimer: in general sum(A .* B', 2) = diag(A * B)
 J = (1/m) * sum((-sum(matY .* log(matA3), 2) - sum((1 - matY) .* log(1 - matA3), 2)));

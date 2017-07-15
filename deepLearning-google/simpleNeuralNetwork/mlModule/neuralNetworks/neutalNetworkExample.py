@@ -31,8 +31,7 @@ class QuadraticCost(object):
         ``y``.
 
         """
-        return 0.5 * np.linalg.norm(a - y)**2
-
+        return (0.5 / len(y)) * np.sum(np.sum(np.square(a - y), axis=1))
     @staticmethod
     def delta(z, a, y):
         """Return the error delta from the output layer."""
@@ -67,7 +66,7 @@ class CrossEntropyCost(object):
 # Main Network class
 class Network(object):
 
-    def __init__(self, sizes, cost=QuadraticCost):
+    def __init__(self, sizes, cost=CrossEntropyCost):
         """The list ``sizes`` contains the number of neurons in the respective
         layers of the network.  For example, if the list was [2, 3, 1]
         then it would be a three-layer network, with the first layer
@@ -219,14 +218,13 @@ class Network(object):
         activations = [x]  # list to store all the activations, layer by layer
         zs = []  # list to store all the z vectors, layer by layer
         for b, w in zip(self.biases, self.weights):
-            z = np.inner(w, activation) + b.T
+            z = np.inner(w, activation) + b
+            print "Z:", z
             zs.append(z)
             activation = sigmoid(z)
             activations.append(activation)
         # backward pass
-        print "zs", zs
         delta = (self.cost).delta(zs[-1], activations[-1], y)
-        print delta
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Note that the variable l in the loop below is used a little
