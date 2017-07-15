@@ -24,8 +24,8 @@ import numpy as np
 
 sizes = np.array([3, 4, 2])
 
-Xcheck2 = np.arange(1, 7).reshape((2, 3))
-Ycheck2 = np.array([[1, 0], [0, 1]])
+Xcheck2 = np.arange(1, 7).reshape((2, 3)).astype(np.float)
+Ycheck2 = np.array([[1, 0], [0, 1]]).astype(np.float)
 
 Xcheck = np.arange(1, 4).reshape((1, 3))
 Ycheck = np.array([1, 0])

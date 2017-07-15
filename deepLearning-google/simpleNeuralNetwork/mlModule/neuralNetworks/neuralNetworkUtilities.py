@@ -30,19 +30,60 @@ class ReluActivation(object):
         """The derevative of thr Relu function"""
         return ReluActivation.val(z) / z
 
+
 class SoftmaxActivation(object):
     """Class to implement softmax activation function"""
 
     @staticmethod
-    def val(z):
-        """Simple softmax"""
-        expMat = np.exp(z)
-        return np.divide(expMat.T, np.sum(expMat, 1)).T
+    def val(X, theta=1.0, axis=1):
+        """
+        Compute the softmax of each element along an axis of X.
+
+        Parameters
+        ----------
+        X: ND-Array. Probably should be floats.
+        theta (optional): float parameter, used as a multiplier
+            prior to exponentiation. Default = 1.0
+        axis (optional): axis to compute values along. Default is the
+            first non-singleton axis.
+
+        Returns an array the same size as X. The result will sum to 1
+        along the specified axis.
+        """
+
+        # make X at least 2d
+        y = np.atleast_2d(X)
+
+        # find axis
+        if axis is None:
+            axis = next(j[0] for j in enumerate(y.shape) if j[1] > 1)
+
+        # multiply y against the theta parameter,
+        y = y * float(theta)
+
+        # subtract the max for numerical stability
+        y = y - np.expand_dims(np.max(y, axis=axis), axis)
+
+        # exponentiate y
+        y = np.exp(y)
+
+        # take the sum along the specified axis
+        ax_sum = np.expand_dims(np.sum(y, axis=axis), axis)
+
+        # finally: divide elementwise
+        p = y / ax_sum
+
+        # flatten if X was 1D
+        if len(X.shape) == 1:
+            p = p.flatten()
+
+        return p
 
     @staticmethod
     def prime(z):
         """Derevative of the softmax function"""
         raise NotImplementedError("Not yet implemented as it is rarely used")
+
 
 class QuadraticCost(object):
     """Class for calculating cost
