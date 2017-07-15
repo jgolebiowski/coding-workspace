@@ -27,10 +27,10 @@ Xvalid = allDatasets["validDataset"]
 Yvalid = allDatasets["validLabels"]
 
 
-sizes = np.array([X.shape[1], 20, Y.shape[1]])
+sizes = np.array([X.shape[1], 100, Y.shape[1]])
 
 net = NeuralNetwork(sizes=sizes,
-                    lambdaValue=1,
+                    lambdaValue=0.3,
                     activationHidden=SigmoidActivation,
                     activationFinal=SigmoidActivation,
                     cost=CrossEntropyCostSigmoid)
@@ -41,16 +41,16 @@ adaGrad = adaptiveSGD(trainingData=X,
                       trainingLabels=Y,
                       param0=param0,
                       epochs=1e2,
-                      miniBatchSize=1000,
-                      initialLearningRate=1e-2,
+                      miniBatchSize=2000,
+                      initialLearningRate=5e-2,
                       momentumTerm=0.9,
                       function=net.getCost)
 
 
-# params = adaGrad.minimize(adaGrad.epochs)
-# net.unravelParameters(params)
-# with open("nnSGD.pkl", "wb") as fp:
-#     pickle.dump(net, fp)
+params = adaGrad.minimize(adaGrad.epochs)
+net.unravelParameters(params)
+with open("nnSGD.pkl", "wb") as fp:
+    pickle.dump(net, fp)
 with open("nnSGD.pkl", "rb") as fp:
     net = pickle.load(fp)
 
