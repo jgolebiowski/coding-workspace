@@ -40,17 +40,17 @@ param0 = net.ravelParameters(net.weights, net.biases)
 adaGrad = adaptiveSGD(trainingData=X,
                       trainingLabels=Y,
                       param0=param0,
-                      epochs=1e4,
-                      miniBatchSize=2000,
-                      initialLearningRate=5e-3,
+                      epochs=1e2,
+                      miniBatchSize=1000,
+                      initialLearningRate=1e-2,
                       momentumTerm=0.9,
                       function=net.getCost)
 
 
-params = adaGrad.minimize(1e3)
-net.unravelParameters(params)
-with open("nnSGD.pkl", "wb") as fp:
-    pickle.dump(net, fp)
+# params = adaGrad.minimize(adaGrad.epochs)
+# net.unravelParameters(params)
+# with open("nnSGD.pkl", "wb") as fp:
+#     pickle.dump(net, fp)
 with open("nnSGD.pkl", "rb") as fp:
     net = pickle.load(fp)
 
