@@ -217,7 +217,6 @@ class NeuralNetwork(object):
         nNeurons = a.shape[1]
         nNeuronsToDrop = int(nNeurons * probs)
         weightingFactor = 1.0 / (1 - probs)
-        print "WF:", weightingFactor
         neuronsToDrop = np.random.choice(nNeurons, nNeuronsToDrop, replace=False)
 
         if (a is not None):
