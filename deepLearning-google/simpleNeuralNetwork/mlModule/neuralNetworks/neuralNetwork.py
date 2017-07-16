@@ -19,6 +19,8 @@ class NeuralNetwork(object):
 
     def __init__(self, sizes=None,
                  lambdaValue=None,
+                 dropoutInput=None,
+                 dropoutHidden=None,
                  activationHidden=SigmoidActivation,
                  activationFinal=SigmoidActivation,
                  cost=QuadraticCost):
@@ -26,6 +28,8 @@ class NeuralNetwork(object):
         self.nLayers = len(sizes)
         self.sizes = sizes
         self.lambdaValue = float(lambdaValue)
+        self.dropoutInput = dropoutInput
+        self.dropoutHidden = dropoutHidden
 
         self.activationHidden = activationHidden
         self.activationFinal = activationFinal
@@ -134,12 +138,16 @@ class NeuralNetwork(object):
 
         # ------ Feed forward while storing activation values and scores
         # In this representation weights(l) are weights from layer l to layer l+1
-        # which is slightly different from the normal representation which is 
+        # which is slightly different from the normal representation which is
         # w(l) propagates from l-1 to l
         # This is how indexing played out
 
-        a = X
-        activations = [X]
+
+        # ------ Copy inouts and apply dropout on input by zeroing nodes
+        a = X.copy()
+        if (self.dropoutInput > 0.0):
+            self.doDropout(a=a, s=None, probs=self.dropoutInput)
+        activations = [a]
         scores = [None]
 
         for lIndex in range(self.nLayers - 1):
@@ -149,13 +157,20 @@ class NeuralNetwork(object):
             scores.append(a)
 
             # If final layer, apply the final activation
-            # Otherwise, apply the hidden one
+            # Otherwise, apply the hidden one, possibly with dropout
             if (lIndex == self.nLayers - 2):
                 a = self.activationFinal.val(a)
                 activations.append(a)
             else:
                 a = self.activationHidden.val(a)
                 activations.append(a)
+                # ------ Apply dropout to the hidden layers by zeroing nodes
+                if (self.dropoutHidden > 0.0):
+                    for lIndex in range(1, self.nLayers - 1):
+                        self.doDropout(a=activations[lIndex],
+                                       s=scores[lIndex],
+                                       probs=self.dropoutHidden)
+
         cost = self.cost.val(a, Y)
 
         # ------ Propagate backwards
@@ -181,9 +196,37 @@ class NeuralNetwork(object):
             cost += np.sum(np.square(w)) * self.lambdaValue / (2.0 * nExamples)
             gradW[lIndex] += (self.lambdaValue / nExamples) * w
 
-        # print "gradW:", gradW
-        # print "gradB:", gradB
+        # for s in scores:
+        #     print "Scores:\n", s
+        # for a in activations:
+        #     print "Activation:\n", a
+        # for d in deltas:
+        #     print "Deltas:\n", d
+        # for gw in gradW:
+        #     print "gradW:\n", gw
+        # for gb in gradB:
+        #     print "gradB:\n", gb
         return cost, gradW, gradB
+
+    def doDropout(self, a=None, s=None, probs=None):
+        """Apply dropout by setting a set of scores to zero and
+        increasing the rest by an appropriate amout"""
+        if ((a is None) and (s is None)):
+            raise ValueError("Cannot have both a and s set to none. The call is futile.")
+
+        nNeurons = a.shape[1]
+        nNeuronsToDrop = int(nNeurons * probs)
+        weightingFactor = 1.0 / (1 - probs)
+        print "WF:", weightingFactor
+        neuronsToDrop = np.random.choice(nNeurons, nNeuronsToDrop, replace=False)
+
+        if (a is not None):
+            a[:, neuronsToDrop] = 0
+            a *= weightingFactor
+
+        if (s is not None):
+            s[:, neuronsToDrop] = 0
+            s *= weightingFactor
 
     def getCost(self, params, X, Y):
         """Obtain cost and gradient given a vector of parameters and

@@ -27,6 +27,21 @@ class ReluActivation(object):
 
     @staticmethod
     def prime(z):
+        """The derevative of the Relu function"""
+        return np.nan_to_num(ReluActivation.val(z) / z)
+
+ 
+class ReluDropoutActivation(object):
+    """Simple class to implement a ReLU activation function
+    with dropout"""
+
+    @staticmethod
+    def val(z):
+        """The ReLu function"""
+        return np.maximum(z, 0)
+
+    @staticmethod
+    def prime(z):
         """The derevative of thr Relu function"""
         return ReluActivation.val(z) / z
 

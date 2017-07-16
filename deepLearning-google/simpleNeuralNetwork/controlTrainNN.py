@@ -30,7 +30,7 @@ Yvalid = allDatasets["validLabels"]
 sizes = np.array([X.shape[1], 100, Y.shape[1]])
 
 net = NeuralNetwork(sizes=sizes,
-                    lambdaValue=0.3,
+                    lambdaValue=1,
                     activationHidden=ReluActivation,
                     activationFinal=SoftmaxActivation,
                     cost=CrossEntropyCostSoftmax)
