@@ -95,7 +95,7 @@ class adaptiveSGD(object):
                     self.costLists.append(iterCost)
                     print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %f" %
                           (indexMB, self.nMiniBatches, indexE, self.epochs, iterCost))
-                    print "Median of the learning rate is", np.median(self.learningRate)
+                    # print "Median of the learning rate is", np.median(self.learningRate)
                     iterCost = 0
 
         return self.params
