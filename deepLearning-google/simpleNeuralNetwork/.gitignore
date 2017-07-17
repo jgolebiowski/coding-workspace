@@ -4,3 +4,6 @@ dataSet
 # Do not add any pickle files that might be used throughtout the run
 *\.pkl
 *\.pickle
+
+# Do not add logfiles
+*\.log
