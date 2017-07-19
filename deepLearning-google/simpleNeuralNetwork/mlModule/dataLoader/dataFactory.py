@@ -1,7 +1,7 @@
-from a1a_dataSet import *
-from a1b_dataPreprocessing import *
-from a1c_divideDatasets import *
-from a2a_dataSet_reformatting import *
+from .a1a_dataSet import *
+from .a1b_dataPreprocessing import *
+from .a1c_divideDatasets import *
+from .a2a_dataSet_reformatting import *
 
 
 def getNotMNIST():

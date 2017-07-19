@@ -46,5 +46,5 @@ numGrad = net.getNumericalGradient(params, Xcheck2, Ycheck2)
 # numGrad = np.ones(len(params))
 
 for i in range(len(params)):
-    print analGrad[i], numGrad[i]
-print np.sum(np.abs(analGrad - numGrad))
+    print(analGrad[i], numGrad[i])
+print(np.sum(np.abs(analGrad - numGrad)))

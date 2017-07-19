@@ -1,7 +1,7 @@
 from mlModule.softmaxLogisticRegression import SoftmaxLinearRegression
 from mlModule.adaptiveSGD import adaptiveSGD
 
-import cPickle as pickle
+import pickle as pickle
 import numpy as np
 import scipy.optimize
 import matplotlib.pyplot as plt

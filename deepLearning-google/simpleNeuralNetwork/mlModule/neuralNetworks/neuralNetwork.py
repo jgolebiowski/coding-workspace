@@ -11,7 +11,7 @@ features.
 
 import numpy as np
 import scipy.optimize
-from neuralNetworkUtilities import *
+from .neuralNetworkUtilities import *
 
 
 class NeuralNetwork(object):

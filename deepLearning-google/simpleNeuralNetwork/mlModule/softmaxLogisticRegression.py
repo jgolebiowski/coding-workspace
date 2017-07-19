@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import numpy as np
 from six.moves import cPickle as pickle
 import scipy.optimize

@@ -4,7 +4,7 @@ from mlModule.neuralNetworks.neuralNetwork import *
 from mlModule.neuralNetworks.neuralNetworkUtilities import *
 
 
-import cPickle as pickle
+import pickle as pickle
 import numpy as np
 import scipy.optimize
 import matplotlib.pyplot as plt
@@ -30,7 +30,7 @@ Yvalid = allDatasets["validLabels"]
 sizes = np.array([X.shape[1], 800, Y.shape[1]])
 
 for index in [0, 0.1]:
-    print("Training with:", index)
+    print(("Training with:", index))
     net = NeuralNetwork(sizes=sizes,
                         lambdaValue=index,
                         dropoutInput=0.25,

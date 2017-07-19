@@ -51,7 +51,7 @@ class adaptiveSGD(object):
         self.gVector = np.ones(len(param0)) * 1e-8
 
         self.nMiniBatches = len(trainingData) / miniBatchSize
-        self.miniBatchIndexList = range(0, len(trainingData), self.miniBatchSize)
+        self.miniBatchIndexList = list(range(0, len(trainingData), self.miniBatchSize))
 
         self.trainingDataBatches = [self.trainingData[index: index + self.miniBatchSize]
                                     for index in self.miniBatchIndexList]
@@ -77,7 +77,7 @@ class adaptiveSGD(object):
         iterationsToPrint = int(self.epochs * self.nMiniBatches / monitorTrainigCost)
         self.costLists = []
         iterCost = 0
-        randomMiniBatchIndexList = range(self.nMiniBatches)
+        randomMiniBatchIndexList = list(range(self.nMiniBatches))
 
         for indexE in range(self.epochs):
             random.shuffle(randomMiniBatchIndexList)

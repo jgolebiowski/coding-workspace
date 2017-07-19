@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -8,7 +8,7 @@ from IPython.display import display, Image
 from scipy import ndimage
 from six.moves.urllib.request import urlretrieve
 from six.moves import cPickle as pickle
-import a1b_dataPreprocessing as a1b
+from . import a1b_dataPreprocessing as a1b
 
 """Generate training, cross-validation and test sets"""
 # imageSize = 28
