@@ -36,6 +36,7 @@ class Variable(Node):
     def assignData(self, data):
         """Set the data being held by this operation"""
         self.result = data
+        self.setShape()
 
     def getGradient(self, input=None):
         """Obtain gradient with respect to the input.

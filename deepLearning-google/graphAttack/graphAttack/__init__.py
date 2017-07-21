@@ -9,4 +9,4 @@ from .coreNode import *
 from .coreOperation import *
 from .coreDataContainers import *
 
-from .operations import *
+from .twoInputOperations import *
