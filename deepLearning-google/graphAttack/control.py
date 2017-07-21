@@ -6,25 +6,61 @@ import numpy as np
 
 mainGraph = ga.Graph()
 
-data1 = np.arange(1000)
-data2 = np.arange(1000)
-
+data1a = 10
 data1b = 2
-data2b = 10
 
-feeder1a = ga.Variable(data1)
-feeder2a = ga.Variable(data2)
-operationA = ga.MultiplyOperation(feeder1a, feeder2a)
+data2a = np.arange(3)
+data2b = 7
 
-feeder1b = ga.Variable(data1b)
-feeder2b = ga.Variable(data2b)
-operationB = ga.MultiplyOperation(feeder1b, feeder2b)
+# f0 = mainGraph.addOperation(ga.Variable(data1a), doGradient=True)
+# f1 = mainGraph.addOperation(ga.Variable(data1b), doGradient=True)
+# f2 = mainGraph.addOperation(ga.Variable(data2a), doGradient=True)
+# f3 = mainGraph.addOperation(ga.Variable(data2b), doGradient=True)
 
-operation3 = ga.MultiplyOperation(operationA, operationB)
-print(operation3.get_value())
+# f4 = mainGraph.addOperation(
+#     ga.MultiplyOperation(f0, f1),
+#     doGradient=False,
+#     finalOperation=False)
+# f5 = mainGraph.addOperation(
+#     ga.MultiplyOperation(f2, f3),
+#     doGradient=False,
+#     finalOperation=False)
+# f6 = mainGraph.addOperation(
+#     ga.AddOperation(f4, f5),
+#     doGradient=False,
+#     finalOperation=True)
+
+# mainGraph.printGraph()
+# print(mainGraph.feedForward())
+# print(mainGraph.feedBackward())
 
 
-def f():
-    for i in range(1000):
-        operationA.get_value()
-        operationA.reset()
+X = np.array([[1, 2, 3],
+              [2, 3, 4],
+              [5, 6, 7]])
+W = np.array([[2, 3, 4],
+              [2, 3, 4]])
+B = np.array([1, 2])
+
+f0 = mainGraph.addOperation(ga.Variable(X), doGradient=False)
+f1 = mainGraph.addOperation(ga.Variable(W.T), doGradient=True)
+f2 = mainGraph.addOperation(ga.Variable(B), doGradient=True)
+
+f3 = mainGraph.addOperation(
+    ga.MatmulOperation(f0, f1),
+    doGradient=False,
+    finalOperation=False)
+f4 = mainGraph.addOperation(
+    ga.AddOperation(f3, f2),
+    doGradient=False,
+    finalOperation=True)
+
+print(mainGraph)
+print(mainGraph.feedForward())
+for op in mainGraph:
+    print(op.name, op.shape)
+
+print("Gradients:")
+mainGraph.getGradients()
+print(f1.getGradient())
+print(f2.getGradient())

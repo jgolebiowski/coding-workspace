@@ -5,8 +5,8 @@
 __all__ = []
 
 from .coreGraph import *
-from .coreTensor import *
+from .coreNode import *
 from .coreOperation import *
+from .coreDataContainers import *
 
-from .operationsDataContainers import *
 from .operations import *
