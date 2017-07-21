@@ -1,7 +1,7 @@
 """This where implementations of individual operations live"""
 
 from .coreOperation import *
-from .coreNode import broadcast_shape
+from .coreNode import broadcast_shape, reduce_shape
 import numpy as np
 
 
@@ -51,10 +51,17 @@ class AddOperation(TwoInputOperation):
                 grad = np.ones(self.inputA.shape)
             elif (input == 1):
                 grad = np.ones(self.inputB.shape)
+            else:
+                raise ValueError
         else:
-            grad = np.zeros(self.shape)
+            if (input == 0):
+                grad = np.zeros(self.inputA.shape)
+            elif (input == 1):
+                grad = np.zeros(self.inputB.shape)
+            else:
+                raise ValueError
             for out in self.outputs:
-                grad += out.getGradient(self)
+                grad += reduce_shape(out.getGradient(self), grad)
 
         return grad
 

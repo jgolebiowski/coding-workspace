@@ -54,3 +54,8 @@ def broadcast_shape(shp1, shp2):
     except ValueError:
         raise ValueError("Arrays cannot be broadcasted - %s and %s " % (str(shp1), str(shp2)))
 
+
+def reduce_shape(inputArr, targetArr):
+    """Reduce the dimensions by summing over necesary axis"""
+    if (inputArr.shape == targetArr.shape):
+        return inputArr
