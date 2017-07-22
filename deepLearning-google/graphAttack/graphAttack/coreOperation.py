@@ -21,6 +21,11 @@ class Operation(Node):
         """Obtain value of the oprtation"""
         raise NotImplementedError("This is not yet implemented")
 
+    def getValueExt(self, *args, **kwargs):
+        """Return a vaue of this Variable for use outside of the graph
+        computations"""
+        return self.getValue(*args, **kwargs)
+
     def perform(self, *args, **kwargs):
         """Return the value of the operation given inputs"""
         raise NotImplementedError("This is an abstract class, this routine should be implemented in children")
@@ -33,6 +38,12 @@ class Operation(Node):
         """Return the derevative of this operation with respect to
         each input"""
         raise NotImplementedError("This is an abstract class, this routine should be implemented in children")
+
+    def getGradientExt(self, *args, **kwargs):
+        """Obtain gradient with respect to the input for use outside
+        of the graph computations.
+        parameter input added for consistancy"""
+        return self.getGradient(*args, **kwargs)
 
 
 class TwoInputOperation(Operation):
@@ -90,7 +101,7 @@ class TwoInputOperation(Operation):
             raise ValueError("Must select either gradient from inputA or inputB")
 
 
-class OneInputOperation(Operation):
+class SingleInputOperation(Operation):
     """Operation accepting one input and returning one output"""
     name = "OneInputOperation"
 
@@ -127,7 +138,7 @@ class OneInputOperation(Operation):
             self.result = self.perform(self.inputA.getValue())
         return self.result
 
-    def getGradient(self, input):
+    def getGradient(self, input=None):
         """Obtain gradient with respect to the input.
         parameter input added for consistancy"""
 
@@ -136,4 +147,4 @@ class OneInputOperation(Operation):
                 self.gradA = self.performGradient()
             return self.gradA
         else:
-            raise ValueError("Must select either gradient from inputA")
+            raise ValueError("Must select gradient from inputA")

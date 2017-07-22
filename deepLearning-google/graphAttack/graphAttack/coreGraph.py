@@ -43,6 +43,12 @@ class Graph(object):
         of the final operation"""
         return self.finalOperation.getValue()
 
+    def getValue(self):
+        """Reset the graph and feed forwards through the graph obtaining the value
+        of the final operation"""
+        self.resetAll()
+        return self.feedForward()
+
     def feedBackward(self):
         """Propagate backwards, gathering all the graients"""
         gradients = []
@@ -51,8 +57,8 @@ class Graph(object):
         return gradients
 
     def getGradients(self):
-        """Get gradients of the specified variables
-        this function simply executes feedBackward()"""
+        """Reset th graph and get gradients of the specified variables"""
+        self.resetAll()
         return self.feedBackward()
 
     def resetAll(self):
@@ -64,3 +70,4 @@ class Graph(object):
         """Print out all of the operations"""
         for op in self.operations:
             print(op)
+

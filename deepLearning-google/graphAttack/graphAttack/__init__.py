@@ -10,3 +10,4 @@ from .coreOperation import *
 from .coreDataContainers import *
 
 from .twoInputOperations import *
+from .singleInputOperations import *

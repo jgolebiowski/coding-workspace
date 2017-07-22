@@ -59,3 +59,21 @@ def reduce_shape(inputArr, targetArr):
     """Reduce the dimensions by summing over necesary axis"""
     if (inputArr.shape == targetArr.shape):
         return inputArr
+
+    try:
+        if (inputArr.shape[1] == targetArr.shape[0]):
+            return np.sum(inputArr, axis=0)
+    except (IndexError):
+        pass
+    except (TypeError):
+        pass
+
+    try:
+        if (inputArr.shape[0] == targetArr.shape[1]):
+            return np.sum(inputArr, axis=1)
+    except (IndexError):
+        pass
+    except (TypeError):
+        pass
+
+    raise ValueError("The two arrays cannot be reduced properly")

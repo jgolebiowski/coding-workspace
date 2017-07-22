@@ -19,17 +19,27 @@ class MultiplyOperation(TwoInputOperation):
         inputA => 0
         inputB => 1"""
         if (self.endNode):
-            grad = np.ones(self.shape)
+            if (input == 0):
+                grad = np.ones(self.inputA.shape)
+            elif (input == 1):
+                grad = np.ones(self.inputB.shape)
+            else:
+                raise ValueError
         else:
-            grad = np.zeros(self.shape)
+            if (input == 0):
+                grad = np.zeros(self.inputA.shape)
+            elif (input == 1):
+                grad = np.zeros(self.inputB.shape)
+            else:
+                raise ValueError
+
             for out in self.outputs:
-                grad += out.getGradient(self)
+                grad += reduce_shape(out.getGradient(self), grad)
 
-        if (input == 0):
-            grad *= self.inputB.getValue()
-        elif (input == 1):
-            grad *= self.inputA.getValue()
-
+            if (input == 0):
+                grad *= self.inputB.getValue()
+            elif (input == 1):
+                grad *= self.inputA.getValue()
         return grad
 
 
@@ -60,25 +70,22 @@ class AddOperation(TwoInputOperation):
                 grad = np.zeros(self.inputB.shape)
             else:
                 raise ValueError
+
             for out in self.outputs:
                 grad += reduce_shape(out.getGradient(self), grad)
-
         return grad
 
 
-class MatmulOperation(TwoInputOperation):
-    '''MatrixMultiplication'''
-    name = "MatmulOperation"
+class MatMatmulOperation(TwoInputOperation):
+    '''MatrixMultiplication for 2d matrices'''
+    name = "MatMatmulOperation"
 
     def setShape(self):
         """Set the output shape"""
-        if ((len(self.inputA.shape) < 2) or (len(self.inputB.shape) < 2)):
-            raise ValueError("This should be used on arrays of ndims >= 2")
-        if (len(self.inputA.shape) == 3):
-            self.shape = self.inputA.shape[0], self.inputA.shape[1], self.inputB.shape[2]
-        else:
-            self.shape = self.inputA.shape[0], self.inputB.shape[1]
+        if not (len(self.inputA.shape) == 2 == len(self.inputB.shape)):
+            raise ValueError("This should be used on arrays of ndims == 2")
 
+        self.shape = self.inputA.shape[0], self.inputB.shape[1]
 
     def perform(self, a, b):
         """Perform MatMul"""
