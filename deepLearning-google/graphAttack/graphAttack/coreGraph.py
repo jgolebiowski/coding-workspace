@@ -1,4 +1,6 @@
 """Graph definition"""
+from .coreDataContainers import Variable
+import numpy as np
 
 
 class Graph(object):
@@ -38,6 +40,26 @@ class Graph(object):
             self.finalOperation = operation
         return operation
 
+    def unrollGradientParameters(self):
+        """For each variable (NOT operation) that needs a gradient calculated
+        obtain the inouts and unroll them into a nice vector"""
+        params = np.empty(0)
+        for op in self.gradientOps:
+            if isinstance(op, Variable):
+                params = np.hstack((params, np.ravel(op.getValueExt())))
+        return params
+
+    def attachParameters(self, params):
+        """Given a params vector, attach it as data to all variables,
+        NOT operations, that need a gradient evaluation"""
+        pointer = 0
+        for op in self.gradientOps:
+            if isinstance(op, Variable):
+                nElems = np.size(op.result)
+                shaperino = op.shapeExt
+                op.assignData(np.reshape(params[pointer: pointer + nElems], shaperino))
+                pointer += nElems
+
     def feedForward(self):
         """feed forwards through the graph obtaining the value
         of the final operation"""
@@ -70,4 +92,3 @@ class Graph(object):
         """Print out all of the operations"""
         for op in self.operations:
             print(op)
-

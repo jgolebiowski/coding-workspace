@@ -50,7 +50,7 @@ class TwoInputOperation(Operation):
     """Operation accepting two input and returning one output"""
     name = "TwoInputOperation"
 
-    def __init__(self, inputA, inputB):
+    def __init__(self, inputA=None, inputB=None):
         super().__init__()
         self.inputA = inputA
         self.inputB = inputB
@@ -105,7 +105,7 @@ class SingleInputOperation(Operation):
     """Operation accepting one input and returning one output"""
     name = "OneInputOperation"
 
-    def __init__(self, inputA):
+    def __init__(self, inputA=None):
         super().__init__()
         self.inputA = inputA
 
@@ -148,3 +148,34 @@ class SingleInputOperation(Operation):
             return self.gradA
         else:
             raise ValueError("Must select gradient from inputA")
+
+
+class CostOperation(SingleInputOperation):
+    """Operation accepting one input and one label, returning the cost
+    Labels are to be provided as a standard numpy array, not an operation."""
+    name = "CostOperation"
+
+    def __init__(self, inputA, labels):
+        super().__init__(inputA)
+        self.labels = labels
+        self.setShape()
+
+        if (np.ndim(labels) >= 2):
+            self.nExamples = labels.shape[0]
+        else:
+            self.nExamples = 1
+
+    def reset(self):
+        """Reset the values and gradients held by this operation"""
+        self.result = None
+        self.gradA = None
+
+    def getValue(self):
+        """Return a vaue of this operation"""
+        if (self.result is None):
+            self.result = self.perform(self.inputA.getValue(), self.labels)
+        return self.result
+
+    def setShape(self):
+        """Set the output shape"""
+        self.shape = (1, )

@@ -35,17 +35,28 @@ data2b = 7
 # print(mainGraph.feedBackward())
 
 
-X = np.array([[1, 2, 3],
-              [2, 10, 4],
-              [5, 6, 7]])
-W1 = np.array([[2, 3, 4],
-               [2, 10, 4]])
+X = np.array([[1.7, 0.2, 3],
+              [0.5, 1.4, 1.2],
+              [2.3, 1.1, 2.2]], dtype=float)
+
+# labels = np.array([[0, 0, 1],
+#                    [1, 0, 0],
+#                    [0, 1, 0]], dtype=float)
+
+labels = np.array([1, 0, 1])
+
+W1 = np.array([[2, 0.2, 1.1],
+               [0.3, 1, 4]])
 B1 = np.array([1, 2])
 
-W2 = np.array([[1, 3],
+W2 = np.array([[1.1, 3],
                [2, 3],
-               [10, 20]])
+               [1, 1]])
 B2 = np.array([1, 2, 3])
+
+test = np.array([1, 3, 5])
+
+ftest = mainGraph.addOperation(ga.Variable(test), doGradient=False)
 
 f0 = mainGraph.addOperation(ga.Variable(X), doGradient=False)
 f1 = mainGraph.addOperation(ga.TransposedVariable(W1), doGradient=True)
@@ -71,9 +82,13 @@ f8 = mainGraph.addOperation(
     doGradient=False,
     finalOperation=False)
 
-
 f9 = mainGraph.addOperation(
-    ga.SumSquaredOperation(f8),
+    ga.SoftmaxOperation(f8, axis=1),
+    doGradient=False,
+    finalOperation=False)
+
+f10 = mainGraph.addOperation(
+    ga.QuadratiCcostOperation(f9, labels),
     doGradient=False,
     finalOperation=True)
 
@@ -100,58 +115,78 @@ for op in mainGraph:
     except AttributeError:
         pass
 
+gradW1 = f1.getGradientExt().copy()
+gradB1 = f2.getGradientExt().copy()
+gradW2 = f3.getGradientExt().copy()
+gradB2 = f4.getGradientExt().copy()
 
 import scipy.optimize
-params = np.hstack((B1.ravel(), W1.ravel(), B2.ravel(), W2.ravel()))
+# params = np.hstack((B1.ravel(), W1.ravel(), B2.ravel(), W2.ravel()))
+params = mainGraph.unrollGradientParameters()
 print(params)
+mainGraph.attachParameters(params)
+for op in mainGraph.gradientOps:
+    print(op, op.getValueExt())
+
+
+def f(x):
+    mainGraph.attachParameters(x)
+    return mainGraph.getValue()
+
+
+numGrad = scipy.optimize.approx_fprime(params, f, 1e-4)
+
+print("Total Grads")
+print((numGrad[0:6].reshape(2, 3) - gradW1))
+print((numGrad[6:8] - gradB1))
+print((numGrad[8:14].reshape(3, 2) - gradW2))
+print((numGrad[14:17] - gradB2))
+
+
+print("Reduced Grads")
+print((numGrad[0:6].reshape(2, 3) - gradW1) / gradW1)
+print((numGrad[6:8] - gradB1) / gradB1)
+print((numGrad[8:14].reshape(3, 2) - gradW2) / gradW2)
+print((numGrad[14:17] - gradB2) / gradB2)
+
+
+print(params)
+p = mainGraph.unrollGradientParameters()
+print(p)
+mainGraph.attachParameters(p)
+p = mainGraph.unrollGradientParameters()
+print(p)
+
+
+p = X.ravel()
 
 
 def f(x):
     mainGraph = ga.Graph()
-    X = np.array([[1, 2, 3],
-                  [2, 10, 4],
-                  [5, 6, 7]])
+    X = x.reshape((3, 3))
+    labels = np.array([[0, 0, 1],
+                       [1, 0, 0],
+                       [0, 1, 0]], dtype=float)
+    f0 = mainGraph.addOperation(ga.Variable(X), doGradient=True)
 
-    W1 = x[2:8].reshape(2, 3)
-    B1 = x[0:2]
-
-    W2 = x[11:17].reshape(3, 2)
-    B2 = x[8:11]
-
-    f0 = mainGraph.addOperation(ga.Variable(X), doGradient=False)
-    f1 = mainGraph.addOperation(ga.TransposedVariable(W1), doGradient=True)
-    f2 = mainGraph.addOperation(ga.Variable(B1), doGradient=True)
-    f3 = mainGraph.addOperation(ga.TransposedVariable(W2), doGradient=True)
-    f4 = mainGraph.addOperation(ga.Variable(B2), doGradient=True)
-
-    f5 = mainGraph.addOperation(
-        ga.MatMatmulOperation(f0, f1),
-        doGradient=False,
-        finalOperation=False)
-    f6 = mainGraph.addOperation(
-        ga.AddOperation(f5, f2),
-        doGradient=False,
-        finalOperation=False)
-
-    f7 = mainGraph.addOperation(
-        ga.MatMatmulOperation(f6, f3),
-        doGradient=False,
-        finalOperation=False)
-    f8 = mainGraph.addOperation(
-        ga.AddOperation(f7, f4),
-        doGradient=False,
-        finalOperation=False)
-
-    f9 = mainGraph.addOperation(
-        ga.SumSquaredOperation(f8),
-        doGradient=False,
+    f1 = mainGraph.addOperation(
+        ga.SoftmaxOperation(f0, axis=1),
+        doGradient=True,
         finalOperation=True)
+    # print(f1.getValueExt())
+    # print(np.sum(np.square((mainGraph.getValue() - labels))))
+    return np.sum(np.square((mainGraph.getValue() - labels)))
 
-    return mainGraph.getValue()
+print("Second Test")
+numGrad = scipy.optimize.approx_fprime(p, f, 1e-6)
+print(numGrad)
 
+mainGraph = ga.Graph()
+f0 = mainGraph.addOperation(ga.Variable(X), doGradient=True)
 
-numGrad = scipy.optimize.approx_fprime(params, f, 1e-6)
-print(numGrad[2:8].reshape(2, 3))
-print(numGrad[0:2])
-print(numGrad[11:17].reshape(3, 2))
-print(numGrad[8:11])
+f1 = mainGraph.addOperation(
+    ga.SoftmaxOperation(f0, axis=1),
+    doGradient=True,
+    finalOperation=False)
+
+print(f1.getGradient(f0))

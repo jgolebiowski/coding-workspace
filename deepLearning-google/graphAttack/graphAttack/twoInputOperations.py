@@ -37,9 +37,47 @@ class MultiplyOperation(TwoInputOperation):
                 grad += reduce_shape(out.getGradient(self), grad)
 
             if (input == 0):
-                grad *= self.inputB.getValue()
+                grad = grad * self.inputB.getValue()
             elif (input == 1):
-                grad *= self.inputA.getValue()
+                grad = grad * self.inputA.getValue()
+        return grad
+
+
+class DivideOperation(TwoInputOperation):
+    """Divide two inputs"""
+    name = "DivideOperation"
+
+    def perform(self, a, b):
+        """Multiply two together"""
+        return np.divide(a, b)
+
+    def performGradient(self, input):
+        """Find out the gradient with respect to the parameter
+        the key is:
+        inputA => 0
+        inputB => 1"""
+        if (self.endNode):
+            if (input == 0):
+                grad = np.ones(self.inputA.shape)
+            elif (input == 1):
+                grad = np.ones(self.inputB.shape)
+            else:
+                raise ValueError
+        else:
+            if (input == 0):
+                grad = np.zeros(self.inputA.shape)
+            elif (input == 1):
+                grad = np.zeros(self.inputB.shape)
+            else:
+                raise ValueError
+
+            for out in self.outputs:
+                grad += reduce_shape(out.getGradient(self), grad)
+
+            if (input == 0):
+                grad = np.divide(grad, self.inputB.getValue())
+            elif (input == 1):
+                grad = np.divide(grad, np.square(self.inputA.getValue()))
         return grad
 
 

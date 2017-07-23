@@ -27,6 +27,7 @@ class Variable(Node):
     def setShape(self):
         """Set the shape of the output of this Variable"""
         self.shape = np.shape(self.result)
+        self.shapeExt = self.shape
 
     def getValue(self):
         """Return a vaue of this Variable"""
@@ -41,9 +42,12 @@ class Variable(Node):
             raise AttributeError("A value for the variable must be set")
         return self.result
 
-    def assignData(self, data):
+    def assignData(self, data, transpose=False):
         """Set the data being held by this operation"""
-        self.result = data
+        if transpose:
+            self.result = data.T
+        else:
+            self.result = data
         self.setShape()
 
     def reset(self):
@@ -90,10 +94,21 @@ class TransposedVariable(Variable):
         self.gradA = None
         self.setShape()
 
-    def assignData(self, data):
+    def assignData(self, data, transpose=True):
         """Set the data being held by this operation"""
-        self.result = data.T
+        if transpose:
+            self.result = data.T
+        else:
+            self.result = data
         self.setShape()
+
+    def setShape(self):
+        """Set the shape of the output of this Variable"""
+        self.shape = np.shape(self.result)
+        try:
+            self.shapeExt = np.shape(self.result.T)
+        except AttributeError:
+            pass
 
     def getValueExt(self):
         """Return a vaue of this Variable for use outside of the graph
