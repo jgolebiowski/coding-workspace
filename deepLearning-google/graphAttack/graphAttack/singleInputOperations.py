@@ -184,9 +184,7 @@ class SoftmaxOperation(SingleInputOperation):
             for out in self.outputs:
                 grad += out.getGradient(self)
 
-        # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n Value:\n", self.getValue())
-        grad = (np.identity(self.shape[0]) - self.getValue()) * grad * self.getValue()
-        # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\nGrad:\n", grad)
+        grad = self.getValue() * np.subtract(grad, np.sum(grad * self.getValue(), axis=self.axis)[:, None])
         return grad
 
 

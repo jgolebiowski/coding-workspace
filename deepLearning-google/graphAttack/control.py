@@ -150,43 +150,48 @@ print((numGrad[8:14].reshape(3, 2) - gradW2) / gradW2)
 print((numGrad[14:17] - gradB2) / gradB2)
 
 
-print(params)
-p = mainGraph.unrollGradientParameters()
-print(p)
-mainGraph.attachParameters(p)
-p = mainGraph.unrollGradientParameters()
-print(p)
+# print(params)
+# p = mainGraph.unrollGradientParameters()
+# print(p)
+# mainGraph.attachParameters(p)
+# p = mainGraph.unrollGradientParameters()
+# print(p)
 
 
-p = X.ravel()
+# p = X.ravel()
 
 
-def f(x):
-    mainGraph = ga.Graph()
-    X = x.reshape((3, 3))
-    labels = np.array([[0, 0, 1],
-                       [1, 0, 0],
-                       [0, 1, 0]], dtype=float)
-    f0 = mainGraph.addOperation(ga.Variable(X), doGradient=True)
+# def f(x):
+#     mainGraph = ga.Graph()
+#     X = x.reshape((3, 3))
 
-    f1 = mainGraph.addOperation(
-        ga.SoftmaxOperation(f0, axis=1),
-        doGradient=True,
-        finalOperation=True)
-    # print(f1.getValueExt())
-    # print(np.sum(np.square((mainGraph.getValue() - labels))))
-    return np.sum(np.square((mainGraph.getValue() - labels)))
+#     f0 = mainGraph.addOperation(ga.Variable(X), doGradient=True)
 
-print("Second Test")
-numGrad = scipy.optimize.approx_fprime(p, f, 1e-6)
-print(numGrad)
+#     f1 = mainGraph.addOperation(
+#         ga.SoftmaxOperation(f0, axis=1),
+#         doGradient=False,
+#         finalOperation=False)
+#     f2 = mainGraph.addOperation(
+#         ga.SumSquaredOperation(f1),
+#         doGradient=False,
+#         finalOperation=True)
 
-mainGraph = ga.Graph()
-f0 = mainGraph.addOperation(ga.Variable(X), doGradient=True)
+#     return mainGraph.getValue()
 
-f1 = mainGraph.addOperation(
-    ga.SoftmaxOperation(f0, axis=1),
-    doGradient=True,
-    finalOperation=False)
+# print("Second Test")
+# numGrad = scipy.optimize.approx_fprime(p, f, 1e-6)
+# print(numGrad.reshape(3,3))
 
-print(f1.getGradient(f0))
+# mainGraph = ga.Graph()
+# f0 = mainGraph.addOperation(ga.Variable(X), doGradient=True)
+
+# f1 = mainGraph.addOperation(
+#     ga.SoftmaxOperation(f0, axis=1),
+#     doGradient=False,
+#     finalOperation=False)
+# f2 = mainGraph.addOperation(
+#     ga.SumSquaredOperation(f1),
+#     doGradient=False,
+#     finalOperation=True)
+
+# print(f1.getGradient(f0))

@@ -35,6 +35,9 @@ class Graph(object):
                 self.endOperations.remove(op)
 
         if (doGradient):
+            if not (isinstance(operation, Variable)):
+                raise ValueError("Graph can only provide gradients with respect to variables!\
+                    Call individual ops for individual gradients.")
             self.gradientOps.append(operation)
         if (finalOperation):
             self.finalOperation = operation
