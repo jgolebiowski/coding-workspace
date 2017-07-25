@@ -35,7 +35,7 @@ for index in [0]:
     l2 = ga.addDenseLayer(mainGraph, 10,
                           inputOperation=l1,
                           activation=ga.SoftmaxActivation,
-                          dropoutRate=0.5,
+                          dropoutRate=0,
                           w=None,
                           b=None)
     fcost = mainGraph.addOperation(
