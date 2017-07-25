@@ -158,18 +158,17 @@ class CostOperation(SingleInputOperation):
     name = "CostOperation"
 
     def __init__(self, inputA, labels):
-        super().__init__(inputA)
         self.labels = labels
+        super().__init__(inputA)
         self.setShape()
-
-        if (np.ndim(labels) >= 2):
-            self.nExamples = labels.shape[0]
-        else:
-            self.nExamples = 1
 
     def setShape(self):
         """Set the output shape"""
         self.shape = (1, )
+        if (np.ndim(self.labels) >= 2):
+            self.nExamples = self.labels.shape[0]
+        else:
+            self.nExamples = 1
 
     def reset(self):
         """Reset the values and gradients held by this operation"""
@@ -180,10 +179,7 @@ class CostOperation(SingleInputOperation):
     def assignLabels(self, labels):
         """Assign a new set of labels"""
         self.labels = labels
-        if (np.ndim(labels) >= 2):
-            self.nExamples = labels.shape[0]
-        else:
-            self.nExamples = 1
+        self.setShape()
 
     def getValue(self):
         """Return a vaue of this operation"""

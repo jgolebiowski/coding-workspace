@@ -42,10 +42,10 @@ def f(x):
 
 
 def fprime(p, data, labels):
-    mainGraph.resetAll()
     mainGraph.feederOperation.assignData(data)
     mainGraph.costOperation.assignLabels(labels)
     mainGraph.attachParameters(p)
+    mainGraph.resetAll()
     c = mainGraph.feedForward()
     mainGraph.feedBackward()
     g = mainGraph.unrollGradients()

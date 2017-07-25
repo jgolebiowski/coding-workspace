@@ -9,10 +9,6 @@ class QuadratiCcostOperation(CostOperation):
     '''Evaliate the quadratic cost given the labels'''
     name = "QuadratiCcostOperation"
 
-    def setShape(self):
-        """Set the output shape"""
-        self.shape = (1, )
-
     def perform(self, a, y):
         """Perform costOperation"""
         return (0.5 / self.nExamples) * np.sum(np.square(a - y))
@@ -34,10 +30,6 @@ class QuadratiCcostOperation(CostOperation):
 class CrossEntropyCostSoftmax(CostOperation):
     '''Evaliate the CrossEntropy cost given the labels, works with softmax activation ONLY'''
     name = "CrossEntropyCostSoftmax"
-
-    def setShape(self):
-        """Set the output shape"""
-        self.shape = (1, )
 
     def perform(self, a, y):
         """Perform costOperation"""
