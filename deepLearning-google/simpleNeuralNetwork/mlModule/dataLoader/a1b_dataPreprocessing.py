@@ -3,7 +3,8 @@ import numpy as np
 import os
 import sys
 import tarfile
-from IPython.display import display, Image
+from IPython.display import display
+from PIL import Image
 from scipy import ndimage
 from six.moves.urllib.request import urlretrieve
 from six.moves import cPickle as pickle
