@@ -9,6 +9,12 @@ from .coreNode import *
 from .coreOperation import *
 from .coreDataContainers import *
 
-from .twoInputOperations import *
-from .singleInputOperations import *
-from.costOperations import *
+from .operations.twoInputOperations import *
+from .operations.singleInputOperations import *
+from .operations.costOperations import *
+from .operations.activationOperations import *
+
+from .gaUtilities.misc import *
+from .gaUtilities.neuralNetwork import *
+
+from .adaptiveSGD import adaptiveSGD

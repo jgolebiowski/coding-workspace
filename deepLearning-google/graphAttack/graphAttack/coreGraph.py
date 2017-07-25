@@ -1,5 +1,6 @@
 """Graph definition"""
 from .coreDataContainers import Variable
+from .coreOperation import CostOperation
 import numpy as np
 
 
@@ -9,6 +10,8 @@ class Graph(object):
         self.operations = []
         self.gradientOps = []
         self.finalOperation = None
+        self.costOperation = None
+        self.feederOperation = None
         self.endOperations = []
 
         self.nOperations = 0
@@ -23,7 +26,7 @@ class Graph(object):
     def __iter__(self):
         return iter(self.operations)
 
-    def addOperation(self, operation, doGradient=False, finalOperation=False):
+    def addOperation(self, operation, doGradient=False, finalOperation=False, feederOperation=False):
         """Add an operation ot the graph"""
         self.operations.append(operation)
         operation.assignReferenceNumber(self.nOperations)
@@ -37,10 +40,17 @@ class Graph(object):
         if (doGradient):
             if not (isinstance(operation, Variable)):
                 raise ValueError("Graph can only provide gradients with respect to variables!\
-                    Call individual ops for individual gradients.")
+                    Call individual ops.getGradient(inputOperation) for individual gradients.")
             self.gradientOps.append(operation)
         if (finalOperation):
             self.finalOperation = operation
+            if (isinstance(operation, CostOperation)):
+                self.costOperation = operation
+        if (feederOperation):
+            if (isinstance(operation, Variable)):
+                self.feederOperation = operation
+            else:
+                raise ValueError("Only variables can be feeders")
         return operation
 
     def unrollGradientParameters(self):
@@ -66,7 +76,7 @@ class Graph(object):
     def feedForward(self):
         """feed forwards through the graph obtaining the value
         of the final operation"""
-        return self.finalOperation.getValue()
+        return self.finalOperation.getValueExt()
 
     def getValue(self):
         """Reset the graph and feed forwards through the graph obtaining the value
@@ -78,13 +88,27 @@ class Graph(object):
         """Propagate backwards, gathering all the graients"""
         gradients = []
         for op in self.gradientOps:
-            gradients.append((op.referenceNumber, op.name, op.getGradient()))
+            gradients.append((op.referenceNumber, op.name, op.getGradientExt()))
         return gradients
 
     def getGradients(self):
         """Reset th graph and get gradients of the specified variables"""
         self.resetAll()
         return self.feedBackward()
+
+    def makePredictions(self):
+        """Get predictions from a cost operation"""
+        if self.costOperation is None:
+            raise AttributeError("Must add a cost operation")
+        return self.costOperation.makePredictions()
+
+    def unrollGradients(self):
+        """Provide gradiens in the same form the unrolled parameters are provided"""
+        grads = np.empty(0)
+        for op in self.gradientOps:
+            if isinstance(op, Variable):
+                grads = np.hstack((grads, np.ravel(op.getGradientExt())))
+        return grads
 
     def resetAll(self):
         """Reset all of the operations"""

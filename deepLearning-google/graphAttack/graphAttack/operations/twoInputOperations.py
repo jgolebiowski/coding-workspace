@@ -1,7 +1,7 @@
 """This where implementations of individual operations live"""
 
-from .coreOperation import *
-from .coreNode import broadcast_shape, reduce_shape
+from ..coreOperation import *
+from ..coreNode import broadcast_shape, reduce_shape
 import numpy as np
 
 

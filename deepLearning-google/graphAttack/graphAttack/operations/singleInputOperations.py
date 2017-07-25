@@ -1,7 +1,7 @@
 """This where implementations of individual operations live"""
 
-from .coreOperation import *
-from .coreNode import broadcast_shape, reduce_shape
+from ..coreOperation import *
+from ..coreNode import broadcast_shape, reduce_shape
 from .twoInputOperations import DivideOperation
 import numpy as np
 
@@ -122,70 +122,6 @@ class ExpOperation(SingleInputOperation):
 
         return grad * self.getValue()
 
-
-class SoftmaxOperation(SingleInputOperation):
-    """Perform softmax on a given axis"""
-    name = "SoftmaxOperation"
-
-    def __init__(self, inputA=None, axis=1):
-        super().__init__(inputA)
-        self.axis = axis
-
-    def perform(self, X, theta=1.0):
-        """
-        Compute the softmax of each element along an axis of X.
-
-        Parameters
-        ----------
-        X: ND-Array. Probably should be floats.
-        theta (optional): float parameter, used as a multiplier
-            prior to exponentiation. Default = 1.0
-        axis (optional): axis to compute values along. Default is the
-            first non-singleton axis.
-
-        Returns an array the same size as X. The result will sum to 1
-        along the specified axis.
-        """
-        axis = self.axis
-        # make X at least 2d
-        y = np.atleast_2d(X)
-
-        # find axis
-        if axis is None:
-            axis = next(j[0] for j in enumerate(y.shape) if j[1] > 1)
-
-        # multiply y against the theta parameter,
-        y = y * float(theta)
-
-        # subtract the max for numerical stability
-        y = y - np.expand_dims(np.max(y, axis=axis), axis)
-
-        # exponentiate y
-        y = np.exp(y)
-
-        # take the sum along the specified axis
-        ax_sum = np.expand_dims(np.sum(y, axis=axis), axis)
-
-        # finally: divide elementwise
-        p = y / ax_sum
-
-        # flatten if X was 1D
-        if len(X.shape) == 1:
-            p = p.flatten()
-
-        return p
-
-    def performGradient(self, inputA=None):
-        """Evaluate the gradient of softmax"""
-        if (self.endNode):
-            grad = np.ones(self.inputA.shape)
-        else:
-            grad = np.zeros(self.inputA.shape)
-            for out in self.outputs:
-                grad += out.getGradient(self)
-
-        grad = self.getValue() * np.subtract(grad, np.sum(grad * self.getValue(), axis=self.axis)[:, None])
-        return grad
 
 
 # class ReducedExpOperation(SingleInputOperation):

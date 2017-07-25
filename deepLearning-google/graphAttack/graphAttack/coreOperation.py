@@ -165,10 +165,22 @@ class CostOperation(SingleInputOperation):
         else:
             self.nExamples = 1
 
+    def setShape(self):
+        """Set the output shape"""
+        self.shape = (1, )
+
     def reset(self):
         """Reset the values and gradients held by this operation"""
         self.result = None
         self.gradA = None
+
+    def assignLabels(self, labels):
+        """Assign a new set of labels"""
+        self.labels = labels
+        if (np.ndim(labels) >= 2):
+            self.nExamples = labels.shape[0]
+        else:
+            self.nExamples = 1
 
     def getValue(self):
         """Return a vaue of this operation"""
@@ -176,6 +188,17 @@ class CostOperation(SingleInputOperation):
             self.result = self.perform(self.inputA.getValue(), self.labels)
         return self.result
 
-    def setShape(self):
-        """Set the output shape"""
-        self.shape = (1, )
+    def makePredictions(self):
+        """Do not evaluate the cost but instead make predictions besed on input"""
+        shape = self.inputA.getValue().shape
+        predictions = np.zeros(shape)
+
+        if np.size(shape) == 1:
+            indexMax = np.argmax(self.inputA.getValue())
+            predictions[indexMax] = 1
+        else:
+            for i, example in enumerate(self.inputA.getValue()):
+                indexMax = np.unravel_index(example.argmax(), example.shape)
+                predictions[i, indexMax] = 1
+
+        return predictions
