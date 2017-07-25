@@ -96,7 +96,7 @@ class adaptiveSGD(object):
                 if ((iterNo % iterationsToPrint == 0) and (monitorTrainigCost != 0)):
                     iterCost /= iterationsToPrint
                     self.costLists.append(iterCost)
-                    print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %f" %
+                    print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %e" %
                           (indexMB, self.nMiniBatches, indexE, self.epochs, iterCost))
                     # print "Median of the learning rate is", np.median(self.learningRate)
                     iterCost = 0
