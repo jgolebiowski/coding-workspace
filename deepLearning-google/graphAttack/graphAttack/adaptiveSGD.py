@@ -123,8 +123,6 @@ class adaptiveSGD(object):
         # Update the parameters according to Nesterov accelerated gradient
         paramsNAG = params - self.momentum * self.learningRate
         cost, gradient = self.func(paramsNAG, X, Y)
-        print(cost)
-        print(gradient)
 
         # Calculate the decrease in learning rate according to adaGrad
 
