@@ -11,6 +11,10 @@ with open(pickleFilename, "rb") as fp:
 X = allDatasets["trainDataset"]
 Y = allDatasets["trainLabels"]
 
+with open("testData.pkl", "wb") as fp:
+    dset = dict(X=X[0:10000], Y=Y[0:1000])
+    pickle.dump(dset, fp)
+    
 Xtest = allDatasets["testDataset"]
 Ytest = allDatasets["testLabels"]
 
