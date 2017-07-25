@@ -11,6 +11,7 @@ class Operation(Node):
     def __init__(self):
         super().__init__()
         self.result = None
+        self.testing = False
 
     def __repr__(self):
         """Represent as a string - usefull for printing"""

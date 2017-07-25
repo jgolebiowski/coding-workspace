@@ -17,12 +17,19 @@ Ytest = allDatasets["testLabels"]
 Xvalid = allDatasets["validDataset"]
 Yvalid = allDatasets["validLabels"]
 
+# pickleFilename = "testData.pkl"
+# with open(pickleFilename, "rb") as fp:
+#     allDatasets = pickle.load(fp)
+
+# X = allDatasets["X"][0:1000]
+# Y = allDatasets["Y"]
+
 
 for index in [0]:
     print(("Training with:", index))
 
     mainGraph = ga.Graph()
-    ffeed = mainGraph.addOperation(ga.Variable(Xtest), doGradient=False, feederOperation=True)
+    ffeed = mainGraph.addOperation(ga.Variable(X), doGradient=False, feederOperation=True)
     feedDrop = mainGraph.addOperation(ga.DropoutOperation(
         ffeed, 0.25), doGradient=False, finalOperation=False)
 
@@ -39,7 +46,7 @@ for index in [0]:
                           w=None,
                           b=None)
     fcost = mainGraph.addOperation(
-        ga.CrossEntropyCostSoftmax(l2, Ytest),
+        ga.CrossEntropyCostSoftmax(l2, Y),
         doGradient=False,
         finalOperation=True)
 

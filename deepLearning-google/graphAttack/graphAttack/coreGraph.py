@@ -1,6 +1,7 @@
 """Graph definition"""
 from .coreDataContainers import Variable
 from .coreOperation import CostOperation
+from .operations.activationOperations import DropoutOperation
 import numpy as np
 
 
@@ -100,7 +101,17 @@ class Graph(object):
         """Get predictions from a cost operation"""
         if self.costOperation is None:
             raise AttributeError("Must add a cost operation")
-        return self.costOperation.makePredictions()
+
+        # ------ Set all operations to testing
+        for op in self.operations:
+            op.testing = True
+        self.resetAll()
+        pred = self.costOperation.makePredictions()
+        # ------ Set all operations to training
+        for op in self.operations:
+            op.testing = False
+
+        return pred
 
     def unrollGradients(self):
         """Provide gradiens in the same form the unrolled parameters are provided"""

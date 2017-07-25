@@ -129,9 +129,13 @@ class DropoutOperation(SingleInputOperation):
         self.setShape()
         self.dropoutRate = dropoutRate
         self.generateMask()
+        self.testing = False
 
     def generateMask(self):
         """Generate dropout mask"""
+        if (self.testing):
+            self.dropoutMask = np.ones(self.shape[1:])
+
         self.dropoutMask = np.ones(self.shape[1:])
         nNeurons = np.size(self.dropoutMask)
         nNeuronsToDrop = int(nNeurons * self.dropoutRate)

@@ -10,7 +10,12 @@ def generateRandomVariable(shape, transpose=False):
     If the transpose flag is set, generate a transposeVariable with the
     external shape given by shape"""
 
-    X = np.random.random(shape)
+    if np.size(shape) == 1:
+        reduction = 1
+    else:
+        reduction = shape[0]
+
+    X = np.random.random(shape) / reduction
     if (transpose):
         return TransposedVariable(X)
     else:
