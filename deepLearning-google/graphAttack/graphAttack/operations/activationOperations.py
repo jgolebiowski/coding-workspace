@@ -145,6 +145,7 @@ class DropoutOperation(SingleInputOperation):
         """Reset the values and gradients held by this operation"""
         self.result = None
         self.gradA = None
+        self.setShape()
         self.generateMask()
 
     def setShape(self):

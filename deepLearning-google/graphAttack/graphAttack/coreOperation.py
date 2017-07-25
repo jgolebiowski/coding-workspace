@@ -80,6 +80,7 @@ class TwoInputOperation(Operation):
         self.result = None
         self.gradA = None
         self.gradB = None
+        self.setShape()
 
     def getValue(self):
         """Return a vaue of this operation"""
@@ -131,6 +132,7 @@ class SingleInputOperation(Operation):
         """Reset the values and gradients held by this operation"""
         self.result = None
         self.gradA = None
+        self.setShape()
 
     def getValue(self):
         """Return a vaue of this operation"""
@@ -173,6 +175,7 @@ class CostOperation(SingleInputOperation):
         """Reset the values and gradients held by this operation"""
         self.result = None
         self.gradA = None
+        self.setShape()
 
     def assignLabels(self, labels):
         """Assign a new set of labels"""

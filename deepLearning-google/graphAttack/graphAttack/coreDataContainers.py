@@ -53,6 +53,7 @@ class Variable(Node):
     def reset(self):
         """Reset the gradient of this variable"""
         self.gradA = None
+        self.setShape()
 
     def getGradient(self, input=None):
         """Obtain gradient with respect to the input.
