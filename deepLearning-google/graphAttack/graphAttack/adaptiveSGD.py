@@ -94,7 +94,7 @@ class adaptiveSGD(object):
 
                 iterCost += cost
                 if ((iterNo % iterationsToPrint == 0) and (monitorTrainigCost != 0)):
-                    iterCost /= iterationsToPrint
+                    # iterCost /= iterationsToPrint
                     self.costLists.append(iterCost)
                     print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %f" %
                           (indexMB, self.nMiniBatches, indexE, self.epochs, iterCost))
