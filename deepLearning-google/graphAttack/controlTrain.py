@@ -64,14 +64,21 @@ for index in [0]:
     adaGrad = ga.adaptiveSGD(trainingData=X,
                              trainingLabels=Y,
                              param0=param0,
-                             epochs=1e2,
+                             epochs=1e3,
                              miniBatchSize=200,
-                             initialLearningRate=1e-2,
+                             initialLearningRate=5e-3,
                              momentumTerm=0.9,
                              function=fprime)
 
     params = adaGrad.minimize(1e3)
     mainGraph.attachParameters(params)
+
+    pickleFileName = "graphSGD_" + str(index) + ".pkl"
+    with open(pickleFileName, "wb") as fp:
+        pickle.dump(mainGraph, fp)
+    with open(pickleFileName, "rb") as fp:
+        mainGraph = pickle.load(fp)
+
     print("train: Trained with:", index)
     print("train: Accuracy on train set:", ga.calculateAccuracy(mainGraph, X, Y))
     print("train: Accuracy on cv set:", ga.calculateAccuracy(mainGraph, Xvalid, Yvalid))

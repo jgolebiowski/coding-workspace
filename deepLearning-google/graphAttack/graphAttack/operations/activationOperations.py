@@ -121,7 +121,11 @@ class SoftmaxActivation(SingleInputOperation):
 
 
 class DropoutOperation(SingleInputOperation):
-    '''Drops out some of the elements to prevent overfitting'''
+    '''Drops out some of the elements to prevent overfitting
+    In default, the operation is active (performing dropout).
+    For testing purposes (asking for prediction) the self.testing
+    flag should be set to True to disable dropout and use all the
+    neurons for prediction'''
     name = "DropoutOperation"
 
     def __init__(self, inputA=None, dropoutRate=0):
@@ -135,15 +139,15 @@ class DropoutOperation(SingleInputOperation):
         """Generate dropout mask"""
         if (self.testing):
             self.dropoutMask = np.ones(self.shape[1:])
-
-        self.dropoutMask = np.ones(self.shape[1:])
-        nNeurons = np.size(self.dropoutMask)
-        nNeuronsToDrop = int(nNeurons * self.dropoutRate)
-        weightingFactor = 1.0 / (1 - self.dropoutRate)
-        neuronsToDrop = np.random.choice(nNeurons, nNeuronsToDrop, replace=False)
-        self.dropoutMask.ravel()[neuronsToDrop] = 0
-        self.dropoutMask.reshape(self.shape[1:])
-        self.dropoutMask *= weightingFactor
+        else:
+            self.dropoutMask = np.ones(self.shape[1:])
+            nNeurons = np.size(self.dropoutMask)
+            nNeuronsToDrop = int(nNeurons * self.dropoutRate)
+            weightingFactor = 1.0 / (1 - self.dropoutRate)
+            neuronsToDrop = np.random.choice(nNeurons, nNeuronsToDrop, replace=False)
+            self.dropoutMask.ravel()[neuronsToDrop] = 0
+            self.dropoutMask.reshape(self.shape[1:])
+            self.dropoutMask *= weightingFactor
 
     def reset(self):
         """Reset the values and gradients held by this operation"""

@@ -13,7 +13,11 @@ def generateRandomVariable(shape, transpose=False):
     if np.size(shape) == 1:
         reduction = 1
     else:
-        reduction = shape[0]
+        reduction = np.sqrt(shape[0])
+        # reduction = 1
+        # for num in shape[1:]:
+        #     reduction *= num
+        # reduction = np.sqrt(reduction)
 
     X = np.random.random(shape) / reduction
     if (transpose):
