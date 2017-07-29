@@ -68,9 +68,10 @@ for index in [0]:
                              miniBatchSize=200,
                              initialLearningRate=5e-3,
                              momentumTerm=0.9,
+                             testFrequency=1e4,
                              function=fprime)
 
-    params = adaGrad.minimize(1e3)
+    params = adaGrad.minimize(True)
     mainGraph.attachParameters(params)
 
     pickleFileName = "graphSGD_" + str(index) + ".pkl"

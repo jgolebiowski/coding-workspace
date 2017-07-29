@@ -35,12 +35,16 @@ class adaptiveSGD(object):
                  miniBatchSize=None,
                  initialLearningRate=None,
                  momentumTerm=0.9,
+                 testFrequency=None,
                  function=None):
 
         self.trainingData = trainingData
         self.trainingLabels = trainingLabels
         self.params = param0
         self.momentum = np.zeros(len(param0))
+        self.testFrequency = testFrequency
+        if (self.testFrequency is None):
+            self.testFrequency = int(epochs)
 
         self.epochs = int(epochs)
         self.miniBatchSize = miniBatchSize
@@ -59,7 +63,7 @@ class adaptiveSGD(object):
 
         self.func = function
 
-    def minimize(self, monitorTrainigCost=0):
+    def minimize(self, monitorTrainigCost=True):
         """find the minimum of the function
 
         Parameters
@@ -68,13 +72,10 @@ class adaptiveSGD(object):
         x0 : vector of initial weights
 
 
-        monitorTrainigCost : set how often to print cost data,
-            0 for no printout
-            1 for 1 printout per training
-            10 for 10 printouts per training
+        monitorTrainigCost : set whether to print cost data
         """
 
-        iterationsToPrint = int(self.epochs * self.nMiniBatches / monitorTrainigCost)
+        iterationBetweenTests = int(self.epochs * self.nMiniBatches / self.testFrequency)
         self.costLists = []
         iterCost = 0
         randomMiniBatchIndexList = list(range(self.nMiniBatches))
@@ -93,12 +94,13 @@ class adaptiveSGD(object):
                                             self.trainingLabels[mBatchBeggining: mBatchEnd])
 
                 iterCost += cost
-                if ((iterNo % iterationsToPrint == 0) and (monitorTrainigCost != 0)):
-                    iterCost /= iterationsToPrint
+                if ((iterNo % iterationBetweenTests == 0) and (self.testFrequency != 0)):
+                    iterCost /= iterationBetweenTests
                     self.costLists.append(iterCost)
                     print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %e" %
                           (indexMB, self.nMiniBatches, indexE, self.epochs, iterCost))
                     # print "Median of the learning rate is", np.median(self.learningRate)
+                    #TODO print out cross validation cost every time + use it to implement early stopping
                     iterCost = 0
 
         return self.params
