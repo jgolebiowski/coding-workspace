@@ -48,6 +48,7 @@ class Variable(Node):
             self.result = data.T
         else:
             self.result = data
+        self.inputA = self.result
         self.setShape()
 
     def reset(self):
@@ -101,6 +102,7 @@ class TransposedVariable(Variable):
             self.result = data.T
         else:
             self.result = data
+        self.inputA = self.result
         self.setShape()
 
     def setShape(self):

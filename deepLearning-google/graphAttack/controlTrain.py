@@ -75,6 +75,7 @@ for index in [0]:
 
     pickleFileName = "graphSGD_" + str(index) + ".pkl"
     with open(pickleFileName, "wb") as fp:
+        mainGraph.resetAll()
         pickle.dump(mainGraph, fp)
     with open(pickleFileName, "rb") as fp:
         mainGraph = pickle.load(fp)
