@@ -13,6 +13,7 @@ from .operations.twoInputOperations import *
 from .operations.singleInputOperations import *
 from .operations.costOperations import *
 from .operations.activationOperations import *
+from .operations.transformationOperations import *
 
 from .gaUtilities.misc import *
 from .gaUtilities.neuralNetwork import *
