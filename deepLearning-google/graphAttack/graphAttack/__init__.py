@@ -14,6 +14,7 @@ from .operations.singleInputOperations import *
 from .operations.costOperations import *
 from .operations.activationOperations import *
 from .operations.transformationOperations import *
+from .operations.convolutionOperation import *
 
 from .gaUtilities.misc import *
 from .gaUtilities.neuralNetwork import *

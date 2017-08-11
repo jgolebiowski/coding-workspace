@@ -5,7 +5,23 @@ import numpy as np
 
 
 class Variable(Node):
-    """Store some data ot feed in into the graph"""
+    """Store some data ot feed in into the graph
+
+    Attributes
+    ----------
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : np.array
+        data held by this variable, reference to self.result
+    name : str
+        Name of this operation
+    result : np.array
+        data held by this variable
+    shape : tuple
+        shape of ths output
+    shapeExt : tuple
+        Shape formatted to facilitate easy inspection from the outside
+    """
     name = "Variable"
 
     def __init__(self, data=None):
@@ -30,20 +46,50 @@ class Variable(Node):
         self.shapeExt = self.shape
 
     def getValue(self):
-        """Return a vaue of this Variable"""
+        """Return a vaue of this Variable
+
+        Returns
+        -------
+        np.array
+            Data stored by the variable
+
+        Raises
+        ------
+        AttributeError
+            A value for the variable must be set
+        """
         if (self.result is None):
             raise AttributeError("A value for the variable must be set")
         return self.result
 
     def getValueExt(self):
         """Return a vaue of this Variable for use outside of the graph
-        computations"""
+        computations
+
+        Returns
+        -------
+        np.array
+            Data stored by the variable for external consumption
+
+        Raises
+        ------
+        AttributeError
+            A value for the variable must be set
+        """
         if (self.result is None):
             raise AttributeError("A value for the variable must be set")
         return self.result
 
     def assignData(self, data, transpose=False):
-        """Set the data being held by this operation"""
+        """Set the data being held by this operation
+
+        Parameters
+        ----------
+        data : np.array
+            Data to be held by the variable
+        transpose : bool
+            if true, hold the data transposed
+        """
         if transpose:
             self.result = data.T
         else:
@@ -58,7 +104,18 @@ class Variable(Node):
 
     def getGradient(self, input=None):
         """Obtain gradient with respect to the input.
-        parameter input added for consistancy"""
+        parameter input added for consistancy
+
+        Parameters
+        ----------
+        input : ga.Operation
+            added for consistancy, this operation should have no inputs
+
+        Returns
+        -------
+        np.array
+            Gradient of the graphs final op with respect to the data in this varibale
+        """
 
         if (self.gradA is None):
             self.gradA = self.performGradient()
@@ -67,7 +124,19 @@ class Variable(Node):
     def getGradientExt(self, input=None):
         """Obtain gradient with respect to the input for use outside
         of the graph computations.
-        parameter input added for consistancy"""
+        parameter input added for consistancy
+
+        Parameters
+        ----------
+        input : ga.Operation
+            added for consistancy, this operation should have no inputs
+
+        Returns
+        -------
+        np.array
+            Gradient of the graphs final op with respect to the data in this varibale
+            for external consumption
+        """
 
         if (self.gradA is None):
             self.gradA = self.performGradient()
@@ -84,7 +153,23 @@ class Variable(Node):
 class TransposedVariable(Variable):
     """This class is used make X * W.T easier by holding
     a set of weights that can be accessed normally but are used
-    transposed in all of the computation"""
+    transposed in all of the computation
+
+    Attributes
+    ----------
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : np.array
+        data held by this variable, reference to self.result
+    name : str
+        Name of this operation
+    result : np.array
+        data held by this variable
+    shape : tuple
+        shape of ths output
+    shapeExt : tuple
+        Shape formatted to facilitate easy inspection from the outside
+    """
 
     name = "TransposedVariable"
 
@@ -97,7 +182,15 @@ class TransposedVariable(Variable):
         self.setShape()
 
     def assignData(self, data, transpose=True):
-        """Set the data being held by this operation"""
+        """Set the data being held by this operation
+
+        Parameters
+        ----------
+        data : np.array
+            Data to be held by the variable
+        transpose : bool
+            if true, hold the data transposed
+        """
         if transpose:
             self.result = data.T
         else:
@@ -115,7 +208,19 @@ class TransposedVariable(Variable):
 
     def getValueExt(self):
         """Return a vaue of this Variable for use outside of the graph
-        computations"""
+        computations
+
+        Returns
+        -------
+        np.array
+            Data stored by the variable for external consumption.
+            In this case the transpose of internally stored gradients
+
+        Raises
+        ------
+        AttributeError
+            A value for the variable must be set
+        """
         if (self.result is None):
             raise AttributeError("A value for the variable must be set")
         return self.result.T
@@ -123,7 +228,18 @@ class TransposedVariable(Variable):
     def getGradientExt(self, input=None):
         """Obtain gradient with respect to the input for use outside
         of the graph computations.
-        parameter input added for consistancy"""
+
+        Parameters
+        ----------
+        input : ga.Operation
+            added for consistancy, this operation should have no inputs
+
+        Returns
+        -------
+        np.array
+            Gradient of the graphs final op with respect to the data in this varibale
+            for external consumption. In this case the transpose of internally stored gradients
+        """
 
         if (self.gradA is None):
             self.gradA = self.performGradient()

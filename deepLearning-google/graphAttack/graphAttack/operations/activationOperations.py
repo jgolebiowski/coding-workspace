@@ -6,7 +6,25 @@ import numpy as np
 
 
 class ReLUActivation(SingleInputOperation):
-    '''ReLu activation function, zeres all negative entries'''
+    """ReLu activation function, zeres all negative entries
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "ReLUActivation"
 
     def setShape(self):
@@ -14,12 +32,34 @@ class ReLUActivation(SingleInputOperation):
         self.shape = self.inputA.shape
 
     def perform(self, a):
-        """Perform ReLU"""
+        """Perform ReLU, element wise
+
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
         self.mask = np.greater(a, 0).astype(int)
         return np.multiply(a, self.mask)
 
     def performGradient(self, input=None):
-        """Find out the gradient with respect to the parameter"""
+        """Find out the gradient with respect to the parameter
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:
@@ -31,7 +71,25 @@ class ReLUActivation(SingleInputOperation):
 
 
 class SigmoidActivation(SingleInputOperation):
-    '''Sigmoid activation function'''
+    """Sigmoid activation function    
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "SigmoidActivation"
 
     def setShape(self):
@@ -39,11 +97,33 @@ class SigmoidActivation(SingleInputOperation):
         self.shape = self.inputA.shape
 
     def perform(self, a):
-        """Perform Sigmoid"""
+        """Perform Sigmoid
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
+
         return 1.0 / (1.0 + np.exp(-a))
 
     def performGradient(self, input=None):
-        """Find out the gradient with respect to the parameter"""
+        """Find out the gradient with respect to the parameter
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:
@@ -55,7 +135,25 @@ class SigmoidActivation(SingleInputOperation):
 
 
 class SoftmaxActivation(SingleInputOperation):
-    """Perform softmax on a given axis"""
+    """Perform softmax on a given axis
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "SoftmaxActivation"
 
     def __init__(self, inputA=None, axis=1):
@@ -107,7 +205,18 @@ class SoftmaxActivation(SingleInputOperation):
         return p
 
     def performGradient(self, inputA=None):
-        """Evaluate the gradient of softmax"""
+        """Evaluate the gradient of softmax
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:
@@ -121,11 +230,29 @@ class SoftmaxActivation(SingleInputOperation):
 
 
 class DropoutOperation(SingleInputOperation):
-    '''Drops out some of the elements to prevent overfitting
+    """Drops out some of the elements to prevent overfitting
     In default, the operation is active (performing dropout).
     For testing purposes (asking for prediction) the self.testing
     flag should be set to True to disable dropout and use all the
-    neurons for prediction'''
+    neurons for prediction
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "DropoutOperation"
 
     def __init__(self, inputA=None, dropoutRate=0):
@@ -161,11 +288,32 @@ class DropoutOperation(SingleInputOperation):
         self.shape = self.inputA.shape
 
     def perform(self, a):
-        """Perform dropout"""
+        """Perform dropout
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
         return np.multiply(a, self.dropoutMask)
 
     def performGradient(self, input=None):
-        """Find out the gradient with respect to the parameter"""
+        """Find out the gradient with respect to the parameter
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:

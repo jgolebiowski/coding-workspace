@@ -64,11 +64,11 @@ for index in [0]:
     adaGrad = ga.adaptiveSGD(trainingData=X,
                              trainingLabels=Y,
                              param0=param0,
-                             epochs=1e3,
+                             epochs=1e2,
                              miniBatchSize=200,
                              initialLearningRate=5e-3,
                              momentumTerm=0.9,
-                             testFrequency=1e4,
+                             testFrequency=1e3,
                              function=fprime)
 
     params = adaGrad.minimize(True)

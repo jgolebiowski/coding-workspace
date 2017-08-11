@@ -7,7 +7,25 @@ import numpy as np
 
 
 class SumAllOperation(SingleInputOperation):
-    '''Sum all elements together'''
+    """Sum all elements together
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "SumAllOperation"
 
     def setShape(self):
@@ -15,14 +33,33 @@ class SumAllOperation(SingleInputOperation):
         self.shape = (1, )
 
     def perform(self, a):
-        """Perform MatMul"""
+        """Summ all elements of the input
+
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
         return np.sum(a)
 
     def performGradient(self, input=None):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:
@@ -34,7 +71,28 @@ class SumAllOperation(SingleInputOperation):
 
 
 class SumAxisOperation(SingleInputOperation):
-    '''Sum all elements together along a given axis'''
+    """Sum all elements together along a given axis
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+
+    axis : int
+        Axis over which to perform the sum
+    """
     name = "SumAllOperation"
 
     def __init__(self, inputA=None, axis=0):
@@ -47,14 +105,33 @@ class SumAxisOperation(SingleInputOperation):
         self.shape = np.delete(self.inputA.shape, self.axis)
 
     def perform(self, a):
-        """Perform MatMul"""
+        """Sum all elements along the given axis
+
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
         return np.sum(a, axis=self.axis)
 
     def performGradient(self, input=None):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:
@@ -70,7 +147,25 @@ class SumAxisOperation(SingleInputOperation):
 
 
 class SumSquaredOperation(SingleInputOperation):
-    '''Sum all elements together'''
+    """Sum all elements together
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "SumSquaresOperation"
 
     def setShape(self):
@@ -78,14 +173,33 @@ class SumSquaredOperation(SingleInputOperation):
         self.shape = (1, )
 
     def perform(self, a):
-        """Perform MatMul"""
+        """Sum all squared elements
+
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
         return np.sum(np.square(a))
 
     def performGradient(self, input=None):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:
@@ -97,7 +211,25 @@ class SumSquaredOperation(SingleInputOperation):
 
 
 class ExpOperation(SingleInputOperation):
-    '''Apply exponential function to all of the elements'''
+    """Apply exponential function to all of the elements
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "ExpOperation"
 
     def setShape(self):
@@ -105,14 +237,33 @@ class ExpOperation(SingleInputOperation):
         self.shape = self.inputA.shape
 
     def perform(self, a):
-        """Perform Operation"""
+        """Calculate the exponens element-wise
+
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
         return np.exp(a)
 
     def performGradient(self, input=None):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
         if (self.endNode):
             grad = np.ones(self.inputA.shape)
         else:

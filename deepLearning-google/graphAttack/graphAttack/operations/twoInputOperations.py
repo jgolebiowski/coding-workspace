@@ -6,18 +6,71 @@ import numpy as np
 
 
 class MultiplyOperation(TwoInputOperation):
-    """Multiply two inputs"""
+    """Multiply two inputs
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    gradB : np.array
+        gradient with respect to inputB
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    inputB : ga.Operation
+        Operation feeding data B into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "MultiplyOperation"
 
     def perform(self, a, b):
-        """Multiply two together"""
+        """Multiply two together
+
+        Parameters
+        ----------
+        a : np.array
+            first set of input data
+        b : np.array
+            second set pf input data
+
+        Returns
+        -------
+        np.aarray
+            Result of the operation
+        """
         return np.multiply(a, b)
 
     def performGradient(self, input):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            Specify an input operation with respect to which the
+            gradient is calculated
+
+            the key is:
+            inputA => 0
+            inputB => 1
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+
+        Raises
+        ------
+        ValueError
+            input has ot be either 0 or 1
+        """
         if (self.endNode):
             if (input == 0):
                 grad = np.ones(self.inputA.shape)
@@ -44,18 +97,71 @@ class MultiplyOperation(TwoInputOperation):
 
 
 class DivideOperation(TwoInputOperation):
-    """Divide two inputs"""
+    """Divide two inputs
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    gradB : np.array
+        gradient with respect to inputB
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    inputB : ga.Operation
+        Operation feeding data B into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "DivideOperation"
 
     def perform(self, a, b):
-        """Multiply two together"""
+        """Multiply two together
+
+        Parameters
+        ----------
+        a : np.array
+            first set of input data
+        b : np.array
+            second set pf input data
+
+        Returns
+        -------
+        np.aarray
+            Result of the operation
+        """
         return np.divide(a, b)
 
     def performGradient(self, input):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            Specify an input operation with respect to which the
+            gradient is calculated
+
+            the key is:
+            inputA => 0
+            inputB => 1
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+
+        Raises
+        ------
+        ValueError
+            input has ot be either 0 or 1
+        """
         if (self.endNode):
             if (input == 0):
                 grad = np.ones(self.inputA.shape)
@@ -82,18 +188,71 @@ class DivideOperation(TwoInputOperation):
 
 
 class AddOperation(TwoInputOperation):
-    """add two inputs"""
+    """add two inputs
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    gradB : np.array
+        gradient with respect to inputB
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    inputB : ga.Operation
+        Operation feeding data B into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "AddOperation"
 
     def perform(self, a, b):
-        """add two together"""
+        """add two together
+
+        Parameters
+        ----------
+        a : np.array
+            first set of input data
+        b : np.array
+            second set pf input data
+
+        Returns
+        -------
+        np.aarray
+            Result of the operation
+        """
         return np.add(a, b)
 
     def performGradient(self, input):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            Specify an input operation with respect to which the
+            gradient is calculated
+
+            the key is:
+            inputA => 0
+            inputB => 1
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+
+        Raises
+        ------
+        ValueError
+            input has ot be either 0 or 1
+        """
         if (self.endNode):
             if (input == 0):
                 grad = np.ones(self.inputA.shape)
@@ -115,7 +274,29 @@ class AddOperation(TwoInputOperation):
 
 
 class MatMatmulOperation(TwoInputOperation):
-    '''MatrixMultiplication for 2d matrices'''
+    """MatrixMultiplication for 2d matrices
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    gradA : np.array
+        gradient with respect to inputA
+    gradB : np.array
+        gradient with respect to inputB
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    inputB : ga.Operation
+        Operation feeding data B into this operation
+    shape : tuple
+        shape of the output
+    """
     name = "MatMatmulOperation"
 
     def setShape(self):
@@ -126,14 +307,45 @@ class MatMatmulOperation(TwoInputOperation):
         self.shape = self.inputA.shape[0], self.inputB.shape[1]
 
     def perform(self, a, b):
-        """Perform MatMul"""
+        """Perform MatMul
+
+        Parameters
+        ----------
+        a : np.array
+            first set of input data
+        b : np.array
+            second set pf input data
+
+        Returns
+        -------
+        np.aarray
+            Result of the operation
+        """
         return np.matmul(a, b)
 
     def performGradient(self, input):
         """Find out the gradient with respect to the parameter
-        the key is:
-        inputA => 0
-        inputB => 1"""
+
+        Parameters
+        ----------
+        input : int
+            Specify an input operation with respect to which the
+            gradient is calculated
+
+            the key is:
+            inputA => 0
+            inputB => 1
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+
+        Raises
+        ------
+        ValueError
+            input has ot be either 0 or 1
+        """
         if (self.endNode):
             grad = np.ones(self.shape)
         else:

@@ -13,7 +13,30 @@ def addDenseLayer(mainGraph, nOutputNodes,
                   dropoutRate=0,
                   w=None,
                   b=None):
-    """Append a dense layer to the graph"""
+    """Append a dense layer to the graph
+
+    Parameters
+    ----------
+    mainGraph : ga.Graph
+        computation graph to which append the dense layer
+    nOutputNodes : int
+        Number of output nodes
+    inputOperation : ga.Operation
+        operation feeding the data to the layer
+    activation : ga.SingleInputOperation
+        activatin operation of choice
+    dropoutRate : float
+        dropout rate at the end of this layer
+    w : np.array
+        weigthts, if None randomly initialized
+    b : np.array
+        biases, if None, randomly initialized
+
+    Returns
+    -------
+    ga.Operation
+        Last operation of the dense layer
+    """
     if (inputOperation is None):
         inputOperation = mainGraph.operations[-1]
 
