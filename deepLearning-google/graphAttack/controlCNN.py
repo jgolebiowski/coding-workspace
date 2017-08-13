@@ -60,6 +60,8 @@ def fprime(p, data, labels):
 
 
 numGrad = scipy.optimize.approx_fprime(params, f, 1e-6)
-analCostGraph, analGradientGraph = fprime(params, X, Y)
+analCostGraph, analGradientGraph = fprime(params, Xt, Yt)
 print(sum(abs(numGrad)))
 print(sum(abs(analGradientGraph - numGrad)), analCostGraph)
+
+print(analGradientGraph - numGrad)

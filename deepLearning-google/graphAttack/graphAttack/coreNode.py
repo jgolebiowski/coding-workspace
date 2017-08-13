@@ -137,6 +137,14 @@ def reduce_shape(inputArr, targetArr):
     if (inputArr.shape == targetArr.shape):
         return inputArr
 
+    if (inputArr.ndim == targetArr.ndim):
+        axReduce = []
+        for dimIndex in range(inputArr.ndim):
+            if targetArr.shape[dimIndex] == 1:
+                axReduce.append(dimIndex)
+        axReduce = tuple(axReduce)
+        return np.sum(inputArr, axis=axReduce, keepdims=True)
+
     try:
         if (inputArr.shape[1] == targetArr.shape[0]):
             return np.sum(inputArr, axis=0)

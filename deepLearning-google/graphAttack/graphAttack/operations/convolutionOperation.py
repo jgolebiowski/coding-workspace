@@ -287,7 +287,7 @@ def conv_forward(X, W, b, stride=1, padding=1):
     X_col = im2col_indicesCS231(X, h_filter, w_filter, padding=padding, stride=stride)
     W_col = W.reshape(n_filters, -1)
 
-    out = W_col @ X_col + b[:, None]
+    out = np.matmul(W_col, X_col) + b[:, None]
     out = out.reshape(n_filters, h_out, w_out, n_x)
     out = out.transpose(3, 0, 1, 2)
 
@@ -305,11 +305,11 @@ def conv_backward(dout, cache):
 
     dout_reshaped = dout.transpose(1, 2, 3, 0)
     dout_reshaped = dout_reshaped.reshape(n_filter, -1)
-    dW = dout_reshaped @ X_col.T
+    dW = np.matmul(dout_reshaped, X_col.T)
     dW = dW.reshape(W.shape)
 
     W_reshape = W.reshape(n_filter, -1)
-    dX_col = W_reshape.T @ dout_reshaped
+    dX_col = np.matmul(W_reshape.T, dout_reshaped)
     dX = col2im_indicesCS231(dX_col, X.shape, h_filter, w_filter, padding=padding, stride=stride)
 
     return dX, dW, db
