@@ -4,18 +4,18 @@ import pickle
 """Control script"""
 
 
-pickleFilename = "dataSet/notMNISTreformatted.pkl"
+pickleFilename = "dataSet/notMNIST.pickle"
 with open(pickleFilename, "rb") as fp:
     allDatasets = pickle.load(fp)
 
-X = allDatasets["trainDataset"]
-Y = allDatasets["trainLabels"]
+X = allDatasets["train_dataset"]
+Y = allDatasets["train_labels"]
 
-Xtest = allDatasets["testDataset"]
-Ytest = allDatasets["testLabels"]
+Xtest = allDatasets["test_dataset"]
+Ytest = allDatasets["test_labels"]
 
-Xvalid = allDatasets["validDataset"]
-Yvalid = allDatasets["validLabels"]
+Xvalid = allDatasets["valid_dataset"]
+Yvalid = allDatasets["valid_labels"]
 
 # pickleFilename = "testData.pkl"
 # with open(pickleFilename, "rb") as fp:
