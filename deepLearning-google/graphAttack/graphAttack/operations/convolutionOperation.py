@@ -175,6 +175,121 @@ class Conv2dOperation(TwoInputOperation):
         return grad
 
 
+class MaxPoolOperation(SingleInputOperation):
+    """Apply max pooling using im2col, quite slow yet simple to understand
+
+    Attributes
+    ----------
+    name : str
+        Name of the operation
+    result : np.array
+        Output of the operation
+    testing : bool
+        Flag specifying if the operation is in testing (making prefictions: True)
+        or training (optimizing parameters: False) mode
+
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+        This shold be the input of convolution in the format of
+        nExamples x nChannels x Height x Width (NCHW)
+    inputA : ga.Operation
+        Operation feeding data A into this operation
+    shape : tuple
+        shape of the output
+    poolHeight : int
+        Heigth of the pooling filter
+    poolWidth : int
+        Width of the pooling filter
+    stride : int
+        step size for scanning an image
+
+    NOTE: stride and filters should be compatible so that
+    Image width/heigth - poolHeigth/Width % stride == 0
+
+    axis : int
+        Axis over which to perform the sum
+    """
+    name = "MaxPoolOperation"
+
+    def __init__(self, inputA=None, poolHeight=2, poolWidth=2, stride=1):
+        self.stride = stride
+        self.poolHeight = poolHeight
+        self.poolWidth = poolWidth
+        super().__init__(inputA)
+
+    def setShape(self):
+        """Set the output shape"""
+        if (((self.inputA.shape[2] - self.poolHeight) % self.stride != 0) or
+            ((self.inputA.shape[3] - self.poolWidth) % self.stride != 0)):
+            raise ValueError("""stride and padding should be compatible so that
+                            Image weigth/heigth - poolHeigth/Width MODULO stride == 0""")
+        # ------ Find the output shape
+        nExamples = self.inputA.shape[0]
+        nChannels = self.inputA.shape[1]
+        outputHeight = int((self.inputA.shape[2] - self.poolHeight) / self.stride + 1)
+        outputWidth = int((self.inputA.shape[3] - self.poolWidth) / self.stride + 1)
+
+        self.shape = (nExamples, nChannels, outputHeight, outputWidth)
+
+    def perform(self, a):
+        """MaxPool each of the images, use im2cols and find argmax of each row
+
+        Parameters
+        ----------
+        a : np.array
+            Input data
+
+        Returns
+        -------
+        np.array
+            Output data
+        """
+        N, C, H, W = self.inputA.shape
+        N, C, oH, oW = self.shape
+        aReshaped = a.reshape(N * C, 1, H, W)
+        self.aCols = im2col_indices(aReshaped, self.poolHeight, self.poolWidth, padding=0, stride=self.stride)
+        self.aColsArgmax = np.argmax(self.aCols, axis=1)
+
+        outCol = self.aCols[np.arange(self.aColsArgmax.size), self.aColsArgmax]
+        outMat = outCol.reshape(oH, oW, N, C)
+        outMat = outMat.transpose(2, 3, 0, 1)
+
+        return outMat
+
+    def performGradient(self, input=None):
+        """Find out the gradient with respect to the parameter
+
+        Parameters
+        ----------
+        input : int
+            placeholder variable since this operation has only one input
+
+        Returns
+        -------
+        np.array
+            Gradient propagated through this operation
+        """
+        if (self.endNode):
+            grad = np.ones(self.shape)
+        else:
+            grad = np.zeros(self.shape)
+            for out in self.outputs:
+                grad += out.getGradient(self)
+
+        N, C, H, W = self.inputA.shape
+        N, C, oH, oW = self.shape
+
+        inpGradCols = grad.transpose(2, 3, 0, 1).flatten()
+        gradCols = np.zeros_like(self.aCols)
+        gradCols[np.arange(self.aColsArgmax.size), self.aColsArgmax] = inpGradCols
+
+        grad = col2im_indices(gradCols, (N * C, 1, H, W), self.poolHeight, self.poolWidth, padding=0, stride=self.stride)
+        grad = grad.reshape(self.inputA.shape)
+        return grad
+
+
+
+
 ###############################################################################
 # Those are im2col and col2im functions copied from the assignement for
 # Stanford CS 231n class:
@@ -313,3 +428,49 @@ def conv_backward(dout, cache):
     dX = col2im_indicesCS231(dX_col, X.shape, h_filter, w_filter, padding=padding, stride=stride)
 
     return dX, dW, db
+
+def max_pool_forward_im2col(x, pool_param):
+    """
+    An implementation of the forward pass for max pooling based on im2col.
+    This isn't much faster than the naive version, so it should be avoided if
+    possible.
+    """
+    N, C, H, W = x.shape
+    pool_height, pool_width = pool_param['pool_height'], pool_param['pool_width']
+    stride = pool_param['stride']
+
+    assert (H - pool_height) % stride == 0, 'Invalid height'
+    assert (W - pool_width) % stride == 0, 'Invalid width'
+
+    out_height = (H - pool_height) // stride + 1
+    out_width = (W - pool_width) // stride + 1
+
+    x_split = x.reshape(N * C, 1, H, W)
+    x_cols = im2col_indicesCS231(x_split, pool_height, pool_width, padding=0, stride=stride)
+    x_cols_argmax = np.argmax(x_cols, axis=0)
+    x_cols_max = x_cols[x_cols_argmax, np.arange(x_cols.shape[1])]
+    out = x_cols_max.reshape(out_height, out_width, N, C).transpose(2, 3, 0, 1)
+
+    cache = (x, x_cols, x_cols_argmax, pool_param)
+    return out, cache
+
+
+def max_pool_backward_im2col(dout, cache):
+    """
+    An implementation of the backward pass for max pooling based on im2col.
+    This isn't much faster than the naive version, so it should be avoided if
+    possible.
+    """
+    x, x_cols, x_cols_argmax, pool_param = cache
+    N, C, H, W = x.shape
+    pool_height, pool_width = pool_param['pool_height'], pool_param['pool_width']
+    stride = pool_param['stride']
+
+    dout_reshaped = dout.transpose(2, 3, 0, 1).flatten()
+    dx_cols = np.zeros_like(x_cols)
+    dx_cols[x_cols_argmax, np.arange(dx_cols.shape[1])] = dout_reshaped
+    dx = col2im_indicesCS231(dx_cols, (N * C, 1, H, W), pool_height, pool_width,
+                padding=0, stride=stride)
+    dx = dx.reshape(x.shape)
+
+    return dx
