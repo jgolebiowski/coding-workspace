@@ -8,13 +8,13 @@ pickleFilename = "dataSet/notMNIST.pickle"
 with open(pickleFilename, "rb") as fp:
     allDatasets = pickle.load(fp)
 
-X = allDatasets["train_dataset"]
+X.reshape(200000, 1, 28, 28) = allDatasets["train_dataset"]
 Y = allDatasets["train_labels"]
 
-Xtest = allDatasets["test_dataset"]
+Xtest.reshape(10000, 1, 28, 28) = allDatasets["test_dataset"]
 Ytest = allDatasets["test_labels"]
 
-Xvalid = allDatasets["valid_dataset"]
+Xvalid.reshape(10000, 1, 28, 28) = allDatasets["valid_dataset"]
 Yvalid = allDatasets["valid_labels"]
 
 # pickleFilename = "testData.pkl"
