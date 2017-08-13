@@ -56,7 +56,6 @@ class Conv2dOperation(TwoInputOperation):
                 """Shapes of inputs must be compatible with regard of nChannels, but %d != %d.
                 see docstring for explanation of the format.""" % (inputA.shape[1], inputB.shape[1]))
 
-
         if (paddingMethod != "SAME") and (paddingMethod != "VALID"):
             raise NotImplementedError("Only SAME and VALID paddingMethod is implemented!")
         self.paddingMethod = paddingMethod
@@ -65,14 +64,13 @@ class Conv2dOperation(TwoInputOperation):
         if padding is not None:
             self.padding = padding
         elif (self.paddingMethod == "SAME"):
-            if (self.inputB.shape[2] != self.inputB.shape[3]):
+            if (inputB.shape[2] != inputB.shape[3]):
                 raise NotImplementedError("Only square filters are supported for same padding")
-            self.padding = int((self.inputB.shape[2] - 1) / 2)
+            self.padding = int((inputB.shape[2] - 1) / 2)
         elif (self.paddingMethod == "VALID"):
             self.padding = 0
         else:
             raise NotImplementedError("Only SAME and VALID paddingMethod is implemented!")
-
 
         super().__init__(inputA, inputB)
 
@@ -112,23 +110,21 @@ class Conv2dOperation(TwoInputOperation):
         aCol = im2col_indices(a, FH, FW, self.padding, self.stride)
         bCol = b.reshape(NF, -1)
 
+        # ------ Store them for later gradient evaluation
+        self.inputACols = aCol
+        self.inputBCols = bCol
+
         # ------ Obtain the 2d representation of the output
         outCol = np.matmul(aCol, bCol.T)
 
-        #------ Convert into appropriate shape
+        # ------ Convert into appropriate shape
         outMat = outCol
         outMat = outCol.reshape(oH, oW, N, NF)
         outMat = outMat.transpose(2, 3, 0, 1)
 
         return outMat
 
-
-# res = w.reshape((w.shape[0], -1)).dot(x_cols) + b.reshape(-1, 1)
-
-# out = res.reshape(w.shape[0], out.shape[2], out.shape[3], x.shape[0])
-# out = out.transpose(3, 0, 1, 2)
-
-    def performGradient(self, input):
+    def performGradient(self, input, out=None):
         """Find out the gradient with respect to the parameter
 
         Parameters
@@ -151,7 +147,32 @@ class Conv2dOperation(TwoInputOperation):
         ValueError
             input has ot be either 0 or 1
         """
-        pass
+        N, C, H, W = self.inputA.shape
+        NF, C, FH, FW = self.inputB.shape
+        N, NF, oH, oW = self.shape
+
+        # ------ Gather gradient
+        if (self.endNode):
+            grad = np.ones(self.shape)
+        else:
+            grad = np.zeros(self.shape)
+            for out in self.outputs:
+                grad += out.getGradient(self)
+
+        # ------ Reshape the gradient into the form of 2D array in the
+        # ------ format of outCol from forward pass
+
+        gradCols = grad.transpose(2, 3, 0, 1)
+        gradCols = gradCols.reshape(-1, NF)
+
+        if (input == 0):
+            gradCols = np.matmul(gradCols, self.inputBCols)
+            grad = col2im_indices(gradCols, self.inputA.shape, FH, FW, padding=self.padding, stride=self.stride)
+        elif (input == 1):
+            gradCols = np.matmul(self.inputACols.T, gradCols)
+            grad = gradCols.T.reshape(self.inputB.shape)
+
+        return grad
 
 
 ###############################################################################
@@ -162,6 +183,8 @@ class Conv2dOperation(TwoInputOperation):
 #
 # The only modification is that the im2col_indices returns a transposed version
 # of the matrix in shape of (nelements, filterH x filterW)
+# col2im_indices now accepts the transposed version of cols to be compatible with im2col
+# Both functions use the same notation internally, the changes is only in intreface
 ###############################################################################
 
 
@@ -203,6 +226,40 @@ def im2col_indices(x, field_height, field_width, padding=1, stride=1):
 def col2im_indices(cols, x_shape, field_height=3, field_width=3, padding=1,
                    stride=1):
     """ An implementation of col2im based on fancy indexing and np.add.at """
+    # ------ Chyange to be compatible wih im2col
+    cols = cols.T
+    # ------ end of change
+    N, C, H, W = x_shape
+    H_padded, W_padded = H + 2 * padding, W + 2 * padding
+    x_padded = np.zeros((N, C, H_padded, W_padded), dtype=cols.dtype)
+    k, i, j = get_im2col_indices(x_shape, field_height, field_width, padding, stride)
+    cols_reshaped = cols.reshape(C * field_height * field_width, -1, N)
+    cols_reshaped = cols_reshaped.transpose(2, 0, 1)
+    np.add.at(x_padded, (slice(None), k, i, j), cols_reshaped)
+    if padding == 0:
+        return x_padded
+    return x_padded[:, :, padding:-padding, padding:-padding]
+
+# ------ Test functions
+
+
+def im2col_indicesCS231(x, field_height, field_width, padding=1, stride=1):
+    """ An implementation of im2col based on some fancy indexing """
+    # Zero-pad the input
+    p = padding
+    x_padded = np.pad(x, ((0, 0), (0, 0), (p, p), (p, p)), mode='constant')
+
+    k, i, j = get_im2col_indices(x.shape, field_height, field_width, padding, stride)
+
+    cols = x_padded[:, k, i, j]
+    C = x.shape[1]
+    cols = cols.transpose(1, 2, 0).reshape(field_height * field_width * C, -1)
+    return cols
+
+
+def col2im_indicesCS231(cols, x_shape, field_height=3, field_width=3, padding=1,
+                   stride=1):
+    """ An implementation of col2im based on fancy indexing and np.add.at """
     N, C, H, W = x_shape
     H_padded, W_padded = H + 2 * padding, W + 2 * padding
     x_padded = np.zeros((N, C, H_padded, W_padded), dtype=cols.dtype)
@@ -215,20 +272,44 @@ def col2im_indices(cols, x_shape, field_height=3, field_width=3, padding=1,
     return x_padded[:, :, padding:-padding, padding:-padding]
 
 
-# def im2col(X, filterHeight, filterWidth, stride=1):
-#     """Given a 4d tensor of data, return a 2d matrix with each row being
-#     a consecutive snaphot of the image through a (filterHeight x filterWIdth)
-#     visor
+def conv_forward(X, W, b, stride=1, padding=1):
+    cache = W, b, stride, padding
+    n_filters, d_filter, h_filter, w_filter = W.shape
+    n_x, d_x, h_x, w_x = X.shape
+    h_out = (h_x - h_filter + 2 * padding) / stride + 1
+    w_out = (w_x - w_filter + 2 * padding) / stride + 1
 
-#     Parameters
-#     ----------
-#     X : np.array
-#         Data array in the format of (nExamples x nChannels x Height x Width)
-#     filterHeight : int
-#         height of the filter
-#     filterWidth : int
-#         width of the filter
-#     stride : int
-#         Step size
-#     """
-#     N, C, H, W = X.shape
+    if not h_out.is_integer() or not w_out.is_integer():
+        raise Exception('Invalid output dimension!')
+
+    h_out, w_out = int(h_out), int(w_out)
+
+    X_col = im2col_indicesCS231(X, h_filter, w_filter, padding=padding, stride=stride)
+    W_col = W.reshape(n_filters, -1)
+
+    out = W_col @ X_col + b[:, None]
+    out = out.reshape(n_filters, h_out, w_out, n_x)
+    out = out.transpose(3, 0, 1, 2)
+
+    cache = (X, W, b, stride, padding, X_col)
+
+    return out, cache
+
+
+def conv_backward(dout, cache):
+    X, W, b, stride, padding, X_col = cache
+    n_filter, d_filter, h_filter, w_filter = W.shape
+
+    db = np.sum(dout, axis=(0, 2, 3))
+    db = db.reshape(n_filter, -1)
+
+    dout_reshaped = dout.transpose(1, 2, 3, 0)
+    dout_reshaped = dout_reshaped.reshape(n_filter, -1)
+    dW = dout_reshaped @ X_col.T
+    dW = dW.reshape(W.shape)
+
+    W_reshape = W.reshape(n_filter, -1)
+    dX_col = W_reshape.T @ dout_reshaped
+    dX = col2im_indicesCS231(dX_col, X.shape, h_filter, w_filter, padding=padding, stride=stride)
+
+    return dX, dW, db
