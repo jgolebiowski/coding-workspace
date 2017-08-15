@@ -1,30 +1,45 @@
 import numpy as np
 import random
+import pickle
 """A module with the stocastic gradient descent"""
 
 
 class adaptiveSGD(object):
     """Class that holds most of the funtionalities of the
-    adaptive SGD
+    adaptive SGD, currently using the ADAM algorightm
 
-    Parameters
+
+    Attributes
     ----------
-    trainDataset : features for each example in a matrix form
-        x.shape = (nExamples, nFeatures)
 
-    trainLabels : labels for each example in a matrix form and
-        in a one-hot notation
-        y.shape = (nExamples, nClasses)
+    trainDataset : np.array
+        features for each example
+    trainLabels : np.array
+        labels for each example
+    epochs : int
+        number of epochs to run the minimizer
+    miniBatchSize : int
+        size of the mini batch
+    param0 : np.array
+        Initial parameters
+    testFrequency : int
+        How many minibatches to average the cost over for testing
+    self.costLists : np.array
+        A list of the costs for each test iteration, usefull for plotting
 
-    epochs : number of epochs to run the minimizer
+    initialLearningRate : flooat
+        Initial learning rate (typical choice: 1e-3)
+    beta1 : float
+        Beta1 Adam paramater (typical choice: 0.9)
+    beta2 : float
+        Beta2 Adam parameter (typical choice: 0.999)
+    epsilon : float
+        epsilon Adam parameter (typical choice: 1e-8)
 
-    miniBatchSize : size of the mini batch
+   function : float
+        Function to minimize that is of form
+        (cost, gradient) = function(params, FeaturesMatrix, LabelsMatrix)
 
-    learningRate : learning rate
-
-    function : Function to minimize that is of form
-
-    (cost, gradient) = function(params, FeaturesMatrix, LabelsMatrix)
     """
 
     def __init__(self,
@@ -34,25 +49,31 @@ class adaptiveSGD(object):
                  epochs=None,
                  miniBatchSize=None,
                  initialLearningRate=None,
-                 momentumTerm=0.9,
+                 beta1=0.9,
+                 beta2=0.999,
+                 epsilon=1e-8,
                  testFrequency=None,
                  function=None):
 
         self.trainingData = trainingData
         self.trainingLabels = trainingLabels
         self.params = param0
-        self.momentum = np.zeros(len(param0))
+        self.epochs = int(epochs)
         self.testFrequency = testFrequency
         if (self.testFrequency is None):
             self.testFrequency = int(epochs)
 
-        self.epochs = int(epochs)
-        self.miniBatchSize = miniBatchSize
         self.initialLearningRate = initialLearningRate
-        self.learningRate = np.ones(len(param0)) * initialLearningRate
-        self.momentumTerm = momentumTerm
-        self.gVector = np.ones(len(param0)) * 1e-8
+        self.updateValue = np.zeros(len(param0))
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.beta1T = beta1
+        self.beta2T = beta2
+        self.epsilon = epsilon
+        self.m = 0
+        self.v = 0
 
+        self.miniBatchSize = miniBatchSize
         self.nMiniBatches = int(len(trainingData) / miniBatchSize)
         self.miniBatchIndexList = list(range(0, len(trainingData), self.miniBatchSize))
 
@@ -63,16 +84,23 @@ class adaptiveSGD(object):
 
         self.func = function
 
-    def minimize(self, monitorTrainigCost=True):
+    def minimize(self, printTrainigCost=True, printUpdateRate=True, dumpParameters=None):
         """find the minimum of the function
 
         Parameters
         ----------
+        printTrainigCost : bool
+            Flag deciding whether to print the cost information
+        printUpdateRate : bool
+            Flag deciding whether to print the update rate information
+        dumpParameters : str or None
+            if str is provided, dump parameters to a file with a specified name
+            every test iteration
 
-        x0 : vector of initial weights
-
-
-        monitorTrainigCost : set whether to print cost data
+        Returns
+        -------
+        np.array
+            Optimal parameters
         """
 
         iterationBetweenTests = int(self.epochs * self.nMiniBatches / self.testFrequency)
@@ -97,10 +125,18 @@ class adaptiveSGD(object):
                 if ((iterNo % iterationBetweenTests == 0) and (self.testFrequency != 0)):
                     iterCost /= iterationBetweenTests
                     self.costLists.append(iterCost)
-                    print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %e" %
-                          (indexMB, self.nMiniBatches, indexE, self.epochs, iterCost))
-                    # print "Median of the learning rate is", np.median(self.learningRate)
-                    #TODO print out cross validation cost every time + use it to implement early stopping
+                    # TODO print out cross validation cost every time + use it to implement early stopping
+                    if (printTrainigCost):
+                        print("Mibatch: %d out of %d from epoch: %d out of %d, iterCost is: %e" %
+                              (indexMB, self.nMiniBatches, indexE, self.epochs, iterCost))
+                    if (printUpdateRate):
+                        print("\tMean of the update rate is %0.7e from (%0.5e, %0.5e)" %
+                              (np.mean(np.abs(self.updateValue)),
+                               np.min(np.abs(self.updateValue)),
+                               np.max(np.abs(self.updateValue))))
+                    if (dumpParameters is not None):
+                        with open(dumpParameters, "wb") as fp:
+                            pickle.dump(self.params, fp)
                     iterCost = 0
 
         return self.params
@@ -122,27 +158,23 @@ class adaptiveSGD(object):
 
         """
 
-        # Update the parameters according to Nesterov accelerated gradient
-        paramsNAG = params - self.momentum * self.learningRate
-        cost, gradient = self.func(paramsNAG, X, Y)
+        # ------ Evaluate gradient
+        cost, gradient = self.func(params, X, Y)
 
-        # Calculate the decrease in learning rate according to adaGrad
+        # ------ Calculate moment and variance
+        self.m = self.m * self.beta1 + (1 - self.beta1) * gradient
+        self.v = self.v * self.beta2 + (1 - self.beta2) * np.square(gradient)
 
-        # Calculating an outer product to get the diagonal is inefficient it turns out
-        # self.gMatrix += np.outer(gradient, gradient)
-        # self.learningRate = self.initialLearningRate *\
-        #     np.sqrt(np.reciprocal(np.diag(self.gMatrix)))
+        # ------ Calculate bias-corrected moment and variance
+        mHat = self.m / (1 - self.beta1T)
+        vHat = self.v / (1 - self.beta2T)
+        self.beta1T *= self.beta1
+        self.beta2T *= self.beta2
 
-        self.gVector += np.square(gradient)
-        self.learningRate = self.initialLearningRate *\
-            np.sqrt(np.reciprocal(self.gVector))
+        # ------ Calculate the pdate value
+        self.updateValue = self.initialLearningRate * mHat * np.sqrt(np.reciprocal(vHat + self.epsilon))
 
-        # Calculate momentum to evaluate the change in parameters
-        changeInMomentum = np.multiply(self.learningRate, gradient)
-        self.momentum = self.momentum * self.momentumTerm + changeInMomentum
-        updateValue = self.momentum
+        # ------ Update parameters
+        self.params = params - self.updateValue
 
-        # Use the update value to updae the parameters
-        params = params - updateValue
-        self.params = params
         return cost

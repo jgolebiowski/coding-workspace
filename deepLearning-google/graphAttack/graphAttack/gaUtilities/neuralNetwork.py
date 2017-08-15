@@ -1,6 +1,6 @@
 """Neural networks utilities"""
 import numpy as np
-from ..coreDataContainers import Variable, TransposedVariable
+from ..coreDataContainers import Variable
 from ..operations.activationOperations import *
 from ..operations.twoInputOperations import *
 from ..operations.singleInputOperations import *
@@ -29,9 +29,11 @@ def addDenseLayer(mainGraph, nOutputNodes,
     dropoutRate : float
         dropout rate at the end of this layer
     w : np.array
-        weigthts, if None randomly initialized
+        weigthts in shape (nOutputNodes, nFeatures)
+        if None randomly initialized
     b : np.array
-        biases, if None, randomly initialized
+        biases, in shape (nOutputNodes, )
+        if None, randomly initialized
 
     Returns
     -------
@@ -42,12 +44,13 @@ def addDenseLayer(mainGraph, nOutputNodes,
         inputOperation = mainGraph.operations[-1]
 
     if (w is None):
-        w = generateRandomVariable(shape=(nOutputNodes, inputOperation.shape[1]), transpose=True)
+        w = generateRandomVariable(shape=(nOutputNodes, inputOperation.shape[1]),
+                                   transpose=True, nInputs=inputOperation.shape[1])
     else:
-        w = TransposedVariable(w)
+        w = Variable(w.T)
 
     if (b is None):
-        b = generateRandomVariable(shape=nOutputNodes, transpose=False)
+        b = generateRandomVariable(shape=nOutputNodes, transpose=False, nInputs=4)
     else:
         b = Variable(b)
 
@@ -75,17 +78,17 @@ def addDenseLayer(mainGraph, nOutputNodes,
 
 
 def addConv2dLayer(mainGraph,
-                  inputOperation=None,
-                  nFilters=1,
-                  filterHeigth=2,
-                  filterWidth=2,
-                  padding="SAME",
-                  convStride=1,
-                  activation=ReLUActivation,
-                  pooling=MaxPoolOperation,
-                  poolHeight=2,
-                  poolWidth=2,
-                  poolStride=2):
+                   inputOperation=None,
+                   nFilters=1,
+                   filterHeigth=2,
+                   filterWidth=2,
+                   padding="SAME",
+                   convStride=1,
+                   activation=ReLUActivation,
+                   pooling=MaxPoolOperation,
+                   poolHeight=2,
+                   poolWidth=2,
+                   poolStride=2):
     """Append a convolution2D layer with pooling
 
     Parameters
@@ -123,28 +126,25 @@ def addConv2dLayer(mainGraph,
 
     N, C, H, W = inputOperation.shape
 
-
-    w = generateRandomVariable(shape=(nFilters, C, filterHeigth, filterWidth), transpose=False)
-    b = generateRandomVariable(shape=(1, nFilters, 1, 1), transpose=False)
+    w = generateRandomVariable(shape=(nFilters, C, filterHeigth, filterWidth),
+                               # transpose=False, nInputs=(filterHeigth * filterHeigth * C))
+                               transpose=False, nInputs=(H * W * C))
+    b = generateRandomVariable(shape=(1, nFilters, 1, 1), transpose=False, nInputs=(nFilters * 4))
 
     filterWop = mainGraph.addOperation(w, doGradient=True, feederOperation=False)
-    opConv2d = mainGraph.addOperation(Conv2dOperation(inputOperation, filterWop, stride=convStride, paddingMethod=padding))
+    opConv2d = mainGraph.addOperation(Conv2dOperation(
+        inputOperation, filterWop, stride=convStride, paddingMethod=padding))
 
     filterBop = mainGraph.addOperation(b, doGradient=True, feederOperation=False)
     addConv2d = mainGraph.addOperation(AddOperation(opConv2d, filterBop))
 
     actop = mainGraph.addOperation(activation(addConv2d),
-                                  doGradient=False,
-                                  finalOperation=False)
+                                   doGradient=False,
+                                   finalOperation=False)
 
     poolOP = mainGraph.addOperation(pooling(inputA=actop,
-                                               poolHeight=poolHeight,
-                                               poolWidth=poolWidth, 
-                                               stride=poolStride))
+                                            poolHeight=poolHeight,
+                                            poolWidth=poolWidth,
+                                            stride=poolStride))
 
     return poolOP
-
-
-
-
-

@@ -116,7 +116,7 @@ class Graph(object):
         params = np.empty(0)
         for op in self.gradientOps:
             if isinstance(op, Variable):
-                params = np.hstack((params, np.ravel(op.getValueExt())))
+                params = np.hstack((params, np.ravel(op.getValue())))
         return params
 
     def attachParameters(self, params):
@@ -132,7 +132,7 @@ class Graph(object):
         for op in self.gradientOps:
             if isinstance(op, Variable):
                 nElems = np.size(op.result)
-                shaperino = op.shapeExt
+                shaperino = op.shape
                 op.assignData(np.reshape(params[pointer: pointer + nElems], shaperino))
                 pointer += nElems
 
@@ -145,7 +145,7 @@ class Graph(object):
         np.array / float
             Value of the final operation
         """
-        return self.finalOperation.getValueExt()
+        return self.finalOperation.getValue()
 
     def getValue(self):
         """Reset the graph and feed forwards through the graph obtaining the value
@@ -169,7 +169,7 @@ class Graph(object):
         """
         gradients = []
         for op in self.gradientOps:
-            gradients.append((op.referenceNumber, op.name, op.getGradientExt()))
+            gradients.append((op.referenceNumber, op.name, op.getGradient()))
         return gradients
 
     def getGradients(self):
@@ -223,7 +223,7 @@ class Graph(object):
         grads = np.empty(0)
         for op in self.gradientOps:
             if isinstance(op, Variable):
-                grads = np.hstack((grads, np.ravel(op.getGradientExt())))
+                grads = np.hstack((grads, np.ravel(op.getGradient())))
         return grads
 
     def resetAll(self):

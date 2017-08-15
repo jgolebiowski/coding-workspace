@@ -4,51 +4,52 @@ import pickle
 import tensorflow as tf
 """Control script"""
 
-
 pickleFilename = "testDataTensor.pkl"
 with open(pickleFilename, "rb") as fp:
     X, Y = pickle.load(fp)
 
 Xt = X[0:2]
 Yt = Y[0:2]
+X = Xt
+Y = Yt
 
 # ------ conv2D operation testing
 mainGraph = ga.Graph()
 feed = mainGraph.addOperation(ga.Variable(Xt), doGradient=False, feederOperation=True)
 
-maxPoolOP = ga.addConv2dLayer(mainGraph,
-                  inputOperation=feed,
-                  nFilters=2,
-                  filterHeigth=9,
-                  filterWidth=9,
-                  padding="SAME",
-                  convStride=1,
-                  activation=ga.ReLUActivation,
-                  pooling=ga.MaxPoolOperation,
-                  poolHeight=4,
-                  poolWidth=4,
-                  poolStride=3)
+cnn1 = ga.addConv2dLayer(mainGraph,
+                         inputOperation=feed,
+                         nFilters=3,
+                         filterHeigth=5,
+                         filterWidth=5,
+                         padding="SAME",
+                         convStride=1,
+                         activation=ga.ReLUActivation,
+                         pooling=ga.MaxPoolOperation,
+                         poolHeight=2,
+                         poolWidth=2,
+                         poolStride=2)
 
-flattenOp = mainGraph.addOperation(ga.Im2colOperation(maxPoolOP))
-acto = mainGraph.addOperation(ga.SoftmaxActivation(flattenOp),
-                              doGradient=False,
-                              finalOperation=False)
+flattenOp = mainGraph.addOperation(ga.Im2colOperation(cnn1))
+flattenDrop = mainGraph.addOperation(ga.DropoutOperation(
+    flattenOp, 0.0), doGradient=False, finalOperation=False)
 
-Yt = np.random.random((2,162)) + 1e-4
+l1 = ga.addDenseLayer(mainGraph, 20,
+                      inputOperation=flattenDrop,
+                      activation=ga.ReLUActivation,
+                      dropoutRate=0.0,
+                      w=None,
+                      b=None)
+l2 = ga.addDenseLayer(mainGraph, 10,
+                      inputOperation=l1,
+                      activation=ga.SoftmaxActivation,
+                      dropoutRate=0.0,
+                      w=None,
+                      b=None)
 fcost = mainGraph.addOperation(
-    ga.CrossEntropyCostSoftmax(acto, Yt),
+    ga.CrossEntropyCostSoftmax(l2, Yt),
     doGradient=False,
     finalOperation=True)
-
-
-print(mainGraph)
-import scipy.optimize
-params = mainGraph.unrollGradientParameters()
-
-
-def f(x):
-    mainGraph.attachParameters(x)
-    return mainGraph.getValue()
 
 
 def fprime(p, data, labels):
@@ -60,6 +61,22 @@ def fprime(p, data, labels):
     mainGraph.feedBackward()
     g = mainGraph.unrollGradients()
     return c, g
+
+
+def f(p):
+    data = Xt
+    labels = Yt
+    mainGraph.feederOperation.assignData(data)
+    mainGraph.costOperation.assignLabels(labels)
+    mainGraph.attachParameters(p)
+    mainGraph.resetAll()
+    c = mainGraph.feedForward()
+    return c
+
+
+print(mainGraph)
+import scipy.optimize
+params = mainGraph.unrollGradientParameters()
 
 
 numGrad = scipy.optimize.approx_fprime(params, f, 1e-6)

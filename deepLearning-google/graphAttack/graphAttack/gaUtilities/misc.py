@@ -1,14 +1,14 @@
 """Additional utilities"""
 import numpy as np
 
-from ..coreDataContainers import Variable, TransposedVariable
+from ..coreDataContainers import Variable
 
 
-def generateRandomVariable(shape, transpose=False):
+def generateRandomVariable(shape, transpose=False, nInputs=None):
     """Generate a ga.Variable of a given shape filled with random values
     from a Gaussian distribution with mean 0 and standard deviation 1
-    If the transpose flag is set, generate a transposeVariable with the
-    external shape given by shape
+    If the transpose flag is set, generate a Variable that is the transpose of a
+    given shape
 
     Parameters
     ----------
@@ -16,6 +16,8 @@ def generateRandomVariable(shape, transpose=False):
         Shape of the desired variable
     transpose : bool
         If true, generate ga.Transposed variable with the shape being shape.T
+    nInputs : int
+        number of inputs for the variable
 
     Returns
     -------
@@ -23,18 +25,12 @@ def generateRandomVariable(shape, transpose=False):
         generated random variable
     """
 
-    if np.size(shape) == 1:
-        reduction = 1
-    else:
-        reduction = np.sqrt(shape[0])
-        # reduction = 1
-        # for num in shape[1:]:
-        #     reduction *= num
-        # reduction = np.sqrt(reduction)
+    reduction = 0.5 * np.sqrt(nInputs)
+    # print("Initiazing with reduction", reduction, "and shape", shape)
 
     X = np.random.random(shape) / reduction
     if (transpose):
-        return TransposedVariable(X)
+        return Variable(X.T)
     else:
         return Variable(X)
 

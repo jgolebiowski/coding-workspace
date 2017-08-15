@@ -33,10 +33,6 @@ class Operation(Node):
         """Obtain value of the oprtation"""
         raise NotImplementedError("This is not yet implemented")
 
-    def getValueExt(self, *args, **kwargs):
-        """Return a vaue of this Variable for use outside of the graph
-        computations"""
-        return self.getValue(*args, **kwargs)
 
     def perform(self, *args, **kwargs):
         """Return the value of the operation given inputs"""
@@ -51,11 +47,6 @@ class Operation(Node):
         each input"""
         raise NotImplementedError("This is an abstract class, this routine should be implemented in children")
 
-    def getGradientExt(self, *args, **kwargs):
-        """Obtain gradient with respect to the input for use outside
-        of the graph computations.
-        parameter input added for consistancy"""
-        return self.getGradient(*args, **kwargs)
 
 
 class TwoInputOperation(Operation):
