@@ -30,7 +30,7 @@ cnn1 = ga.addConv2dLayer(mainGraph,
                          poolWidth=2,
                          poolStride=2)
 
-flattenOp = mainGraph.addOperation(ga.Im2colOperation(cnn1))
+flattenOp = mainGraph.addOperation(ga.FlattenFeaturesOperation(cnn1))
 flattenDrop = mainGraph.addOperation(ga.DropoutOperation(
     flattenOp, 0.0), doGradient=False, finalOperation=False)
 

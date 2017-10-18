@@ -304,7 +304,7 @@ class MatMatmulOperation(TwoInputOperation):
         if not (len(self.inputA.shape) == 2 == len(self.inputB.shape)):
             raise ValueError("This should be used on arrays of ndims == 2")
 
-        self.shape = self.inputA.shape[0], self.inputB.shape[1]
+        self.shape = (self.inputA.shape[0], self.inputB.shape[1])
 
     def perform(self, a, b):
         """Perform MatMul

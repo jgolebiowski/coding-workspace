@@ -5,7 +5,7 @@ from ..coreNode import broadcast_shape, reduce_shape
 import numpy as np
 
 
-class Im2colOperation(SingleInputOperation):
+class FlattenFeaturesOperation(SingleInputOperation):
     """Flatten the axis greater than 0 to turn
     dim > 2 tensors into 2d arrays
 
@@ -28,7 +28,7 @@ class Im2colOperation(SingleInputOperation):
     shape : tuple
         shape of the output
     """
-    name = "im2colOperation"
+    name = "FlattenFeaturesOperation"
 
     def setShape(self):
         """Set the output shape"""
@@ -81,8 +81,10 @@ class Im2colOperation(SingleInputOperation):
         return grad
 
 
-class Col2imgOperation(SingleInputOperation):
-    """Transform a 2d array into a multidimensional array
+class ReshapeFeaturesOperation(SingleInputOperation):
+    """Gather features and reshape them, transform a 2d array
+    (nExamples, nFeatures) into a multidim array of
+    (nExamples, shape)
 
     Attributes
     ----------
@@ -106,7 +108,7 @@ class Col2imgOperation(SingleInputOperation):
         shape of each example, Result of this operation is a matrix
         with shape (nExamples, nFeatures in each examle)
     """
-    name = "Col2imgOperation"
+    name = "ReshapeFeaturesOperation"
 
     def __init__(self, inputA=None, exampleShape=0):
         self.exampleShape = exampleShape

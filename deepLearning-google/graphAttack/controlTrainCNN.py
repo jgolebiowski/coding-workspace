@@ -54,7 +54,7 @@ for index in [0]:
                              poolWidth=2,
                              poolStride=2)
 
-    flattenOp = mainGraph.addOperation(ga.Im2colOperation(cnn2))
+    flattenOp = mainGraph.addOperation(ga.FlattenFeaturesOperation(cnn2))
     flattenDrop = mainGraph.addOperation(ga.DropoutOperation(
         flattenOp, 0.25), doGradient=False, finalOperation=False)
 
