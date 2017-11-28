@@ -67,11 +67,9 @@ void myarray_zero(struct myarray * self)
 {
     int i, j;
     for (i = 0; i < self->n_rows; i++)
+    for (j = 0; j < self->n_cols; j++)
     {
-        for (j = 0; j < self->n_cols; j++)
-        {
-            *myarray_at(self, i, j) = 0;
-        }
+        *myarray_at(self, i, j) = 0;
     }
 }
 
@@ -80,10 +78,8 @@ void myarray_arange(struct myarray * self)
 {
     int i, j;
     for (i = 0; i < self->n_rows; i++)
+    for (j = 0; j < self->n_cols; j++)
     {
-        for (j = 0; j < self->n_cols; j++)
-        {
-            *myarray_at(self, i, j) = i * self->n_cols + j; 
-        }
+        *myarray_at(self, i, j) = i * self->n_cols + j; 
     }
 }
