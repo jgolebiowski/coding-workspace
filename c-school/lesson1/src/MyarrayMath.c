@@ -45,11 +45,13 @@ struct myarray * myarray_matmul(struct myarray * A, struct myarray * B)
 {
     int i, j, k;
     const int n = A->n_rows;
+    const int mA = A->n_cols;
+    const int mB = B->n_rows;
     const int p = B->n_cols;
-    const int m = A->n_cols;
+    struct myarray * C;
 
-    assert(A->n_cols == B->n_rows);
-    struct myarray * C = myarray_construct(n, p);
+    assert(mA == mB);
+    C = myarray_construct(n, p);
 
     #pragma omp parallel for schedule(static) collapse(2)\
             private(i, j, k) shared(A, B, C) default(none)
@@ -58,7 +60,7 @@ struct myarray * myarray_matmul(struct myarray * A, struct myarray * B)
     {
         *myarray_at(C, i, j) = 0;
         /* calculate an element */
-        for (k = 0; k < m; k++)
+        for (k = 0; k < mA; k++)
         {
             *myarray_at(C, i, j) += *myarray_at(A, i, k) * (*myarray_at(B, k, j));
         }

@@ -7,15 +7,18 @@
 
 int main()
 {
+    const int N = 4;
+    struct myarray *A, *B, *C;
     myHelloworld();
-    const int N = 3;
-    struct myarray * A = myarray_construct(N, N);
-    struct myarray * B = myarray_construct(N, N);
+
+
+    A = myarray_construct(N, N);
+    B = myarray_construct(N, N);
 
     myarray_arange(A);
     myarray_arange(B);
 
-    struct myarray *C = myarray_matmul(A, B);
+    C = myarray_matmul(A, B);
     myarray_add(B, A);
 
     myarray_print(A);

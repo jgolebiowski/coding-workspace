@@ -9,14 +9,18 @@
 /* Constructur for myarray */
 struct myarray * myarray_construct(int nRows, int nCols)
 {
-    /* Create the structure */
-    struct myarray * self = malloc(sizeof(struct myarray));
+    /* Create the structure and data */
+    struct myarray * self;
+    double * data;
+
+    /* Allocate the memory for structure */
+    self = malloc(sizeof(struct myarray));
     if (self)
     {
         /* Fill it with Data */
         self->n_rows = nRows;
         self->n_cols = nCols;
-        double * data = malloc(nRows * nCols * sizeof(double));
+        data = malloc(nRows * nCols * sizeof(double));
         self->data = data;
     }
 
@@ -56,7 +60,7 @@ void myarray_print(struct myarray * self)
     {
         for (j = 0; j < self->n_cols; j++)
         {
-            printf("%-8.3f ", *myarray_at(self, i, j));
+            printf("%-9.3f ", *myarray_at(self, i, j));
         }
         printf("\n");
     }
