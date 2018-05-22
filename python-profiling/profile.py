@@ -50,10 +50,10 @@ def main():
         lp.add_function(fnc)
 
     lp_wrapper = lp(test_function)
-    lp_wrapper("elo", second="melo")
-    
+    result = lp_wrapper("elo", second="melo")
     lp.print_stats()
 
+    print(result)
 
 if (__name__ == "__main__"):
     main()
