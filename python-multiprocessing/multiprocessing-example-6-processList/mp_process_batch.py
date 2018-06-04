@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import numpy as np
 import multiprocessing as mp
-from mp_worker import worker_square, worker_square_list
+from mp_worker import worker_square_queue
 
 
 def chunks(l, n):
@@ -32,7 +32,7 @@ def main():
         # Setup a list of processes that we want to run
         processes = []
         for rank in range(num_threads):
-            p = mp.Process(target=worker_square_list,
+            p = mp.Process(target=worker_square_queue,
                            args=(rank, num_threads),
                            kwargs=dict(number=mini_list[rank],
                                        output_queue=output_queue)
