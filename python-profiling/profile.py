@@ -1,5 +1,5 @@
+"""Test script"""
 from line_profiler import LineProfiler
-
 
 def profile_functions(task, functions=None, parameters=None):
     """Profile given functions with the provided task"""
@@ -41,19 +41,24 @@ def test_function(first: str, second: str="ending") -> str:
 
 
 def main():
+    return test_function("elo", "melo")
+
+
+def profile_main():
     """Profile the function"""
     lp = LineProfiler()
     
-    functions = [test_function, different_test]
+    functions = [main, test_function, different_test]
     
     for fnc in functions:
         lp.add_function(fnc)
 
-    lp_wrapper = lp(test_function)
-    result = lp_wrapper("elo", second="melo")
+    lp_wrapper = lp(main)
+    result = lp_wrapper()
     lp.print_stats()
 
-    print(result)
+    return result
 
 if (__name__ == "__main__"):
     main()
+    profile_main()
