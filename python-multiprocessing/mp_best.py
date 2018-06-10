@@ -24,8 +24,8 @@ def batchify(l, n):
 
 
 def worker_cube(rank, size,
-                output_queue=None,
-                numbers=None):
+                batch=None,
+                output_queue=None):
     """
     Function to calcuate the cube of a numbers in a givne list.
     For each number, put
@@ -39,13 +39,13 @@ def worker_cube(rank, size,
         process number
     size : int
         total number of processes
+    batch : list[float]
+        Numbers to cube
     output_queue : mp.Queue
         Quete to store the results in
-    number : list[float]
-        Numbers to cube
     """
-    print("This is process {} out of {} operating on {}".format(rank, size, numbers))
-    for number in numbers:
+    print("This is process {} out of {} operating on {}".format(rank, size, batch))
+    for number in batch:
         output_queue.put((rank, number, number ** 3))
 
 
@@ -60,7 +60,7 @@ def fast_process_parallel(list2process, num_threads):
     for rank, batch in enumerate(batchify(list2process, num_threads)):
         p = mp.Process(target=worker_cube,
                        args=(rank, num_threads),
-                       kwargs=dict(numbers=batch,
+                       kwargs=dict(batch=batch,
                                    output_queue=output_queue)
                        )
         processes.append(p)
