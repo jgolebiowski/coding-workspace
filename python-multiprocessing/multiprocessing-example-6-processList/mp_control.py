@@ -60,6 +60,10 @@ def main_queue():
     for rank in range(num_threads):
         res = output_queue.get()
         results[res[0]] = res[2]
+
+    # results = []
+    # while (not output_queue.empty()):
+    #     results.append(output_queue.get())
     print(results)
 
 

@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import numpy as np
 import multiprocessing as mp
-from mp_worker import worker_square_queue
+import mp_worker as mpw
 
 
 def chunks(l, n):
@@ -19,7 +19,40 @@ def chunks(l, n):
         yield l[i:i + n]
 
 
-def main():
+def main_pool():
+    list2process = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    num_threads = 3
+
+    # Create a pool of workers
+    globalPool = mp.Pool(processes=num_threads)
+
+    # Start the Queue, this could be also a list, dict etc.
+    mp_manager = mp.Manager()
+    output_queue = mp_manager.Queue()
+
+    # Setup a list of processes that we want to run
+    for rank in range(len(list2process)):
+        # Apply the function asyncronously
+
+        globalPool.apply_async(func=mpw.worker_square_queue,
+                               args=(rank, num_threads,),
+                               kwds=dict(number=list2process[rank],
+                                           output_queue=output_queue)
+                               )
+
+    # Do not allow any more entries
+    globalPool.close()
+    # Join the processes
+    globalPool.join()
+
+    # Extract results
+    results = []
+    while (not output_queue.empty()):
+        results.append(output_queue.get())
+    print(results)
+
+
+def main_process():
     list2process = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     max_num_threads = 5
 
@@ -32,7 +65,7 @@ def main():
         # Setup a list of processes that we want to run
         processes = []
         for rank in range(num_threads):
-            p = mp.Process(target=worker_square_queue,
+            p = mp.Process(target=mpw.worker_square_queue,
                            args=(rank, num_threads),
                            kwargs=dict(number=mini_list[rank],
                                        output_queue=output_queue)
@@ -49,10 +82,11 @@ def main():
 
     # Extract results
     results = []
-    while(not output_queue.empty()):
+    while (not output_queue.empty()):
         results.append(output_queue.get())
     print(results)
 
 
 if (__name__ == "__main__"):
-    main()
+    main_pool()
+    main_process()
