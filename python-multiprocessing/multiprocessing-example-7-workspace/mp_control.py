@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import numpy as np
 import multiprocessing as mp
+import math
 import mp_worker as mpw
 
 
@@ -14,9 +15,62 @@ def chunks(l, n):
     n : int
         Chunk size
     """
+    n = max(1, n)
     for i in range(0, len(l), n):
         # Create an index range for l of n items:
         yield l[i:i + n]
+
+
+def batchify(l, n):
+    """
+    Iterator to divide a list into n chunks,
+    All but the last are equal size
+
+    Parameters
+    ----------
+    l : iterable
+        list
+    n : int
+        Number of chunks
+    """
+    n = min(len(l), n)
+    n = max(1, n)
+    chunksize = int(math.ceil(len(l) / n))
+
+    for i in range(0, len(l), chunksize):
+        # Create an index range for l of chunksize items:
+        yield l[i:i + chunksize]
+
+
+def fast_process_parallel(list2process):
+    num_threads = 3
+
+    # Start the Queue, this could be also a list, dict or a shared array.
+    mp_manager = mp.Manager()
+    output_queue = mp_manager.Queue()
+
+    processes = []
+    for rank, batch in enumerate(batchify(list2process, num_threads)):
+        p = mp.Process(target=mpw.worker_cube,
+                       args=(rank, num_threads),
+                       kwargs=dict(numbers=batch,
+                                   output_queue=output_queue)
+                       )
+        processes.append(p)
+
+    # Run processes
+    for p in processes:
+        p.start()
+
+    # Exit completed processes
+    for p in processes:
+        p.join()
+
+    # Extract results
+    results = []
+    while (not output_queue.empty()):
+        results.append(output_queue.get())
+    print(results)
 
 
 def main_pool():
@@ -37,7 +91,7 @@ def main_pool():
         globalPool.apply_async(func=mpw.worker_square_queue,
                                args=(rank, num_threads,),
                                kwds=dict(number=list2process[rank],
-                                           output_queue=output_queue)
+                                         output_queue=output_queue)
                                )
 
     # Do not allow any more entries
