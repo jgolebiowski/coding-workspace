@@ -106,7 +106,10 @@ def parallel_control(target_function, list2process, num_threads):
 
 def main():
     list2process = [(idx,) for idx in range(10)]
-    print(parallel_control(cube, list2process, 3))
+    results = parallel_control(cube, list2process, 3)
+    inputs = [item[0] for item in results]
+    outputs = [item[1] for item in results]
+    print(inputs, outputs)
 
 
 if (__name__ == "__main__"):
