@@ -66,6 +66,13 @@ def worker_cube(rank, size,
 
 
 def fast_process_parallel(list2process):
+    """Divide the work into n batches where n is number of cpus.
+    Then, spawn one process for each batch and let it work on it.
+    All the results are added to the output queueue that can be later read from
+
+    Arguments are copied to a new process only once whan they are spawned which
+    can be beneficial if the argument is large."""
+
     num_threads = 3
 
     # Start the Queue, this could be also a list, dict or a shared array.
@@ -122,6 +129,11 @@ def worker_square(rank, size,
 
 
 def process_parallel(list2process):
+    """Divide the work into batches of n elements whete n is
+    number of cpus. For each batch, spawn a process for each element in the batch
+    and delegate the wokr to it, each new batch is fed =, the process repets.
+
+    Might suffer from overhead of spawning new processes"""
     max_num_threads = 4
 
     # Start the Queue, this could be also a list, dict or a shared array.
@@ -156,6 +168,13 @@ def process_parallel(list2process):
 
 
 def pool_parallel(list2process):
+    """Start a pool of n workers where n is number of cpus, then define required
+    number of tasks and let the pool split it efficiently between workers.
+
+    WARNING: Every time a nw task is started, the functions argument are piped to individual workers.
+    This mean that is the arguments are large this can become a really slow task.
+    """
+
     num_threads = 3
     num_task = len(list2process)
 
