@@ -4,3 +4,7 @@
 *\.out
 *\.so
 *\.o
+
+# Ignore configs
+*\.idea*
+*\.DS_Store
