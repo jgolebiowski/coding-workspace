@@ -7,5 +7,8 @@ part4: Passing std::vectors between cpp and python
     The new object is defined in the Binding code and can be accessed from both python and cpp
 part5: Passing numpy arrays as Eigen arrays between cpp and python by copy
 part6: Passing arrays between numpy and Eigen
-    Numpy -> Eigen Passed as an Eigen::Ref<Eigen::Matrix>
+    Numpy -> Eigen Matrix Passed as an Eigen::Ref<Eigen::Matrix<>>
+        Eigen::Ref<Eigen::Matrix<>> is a more general construct than Eigen::Matrix<> that accepts
+        also views of matrixes without making a temporary copy. the numpy array is passed as a view
+        of an eigen array and the Ref wraps around it without making a copy.
     Eigen -> Numpy Passed natively if the Eigen Matrix is defined as RowMajor
