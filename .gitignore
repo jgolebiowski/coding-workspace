@@ -4,7 +4,15 @@
 *\.out
 *\.so
 *\.o
+*cmake-build-debug*
 
 # Ignore configs
 *\.idea*
 *\.DS_Store
+*\.params
+
+# Large files
+*\.pkl
+
+# Git files 
+*\.swp
