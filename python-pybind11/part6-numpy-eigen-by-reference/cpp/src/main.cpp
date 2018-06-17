@@ -6,7 +6,7 @@ int main()
 {
     hello_world();
     int size = 3;
-    auto mat = getMatrix(size);
+    EigenDynamicRowMajor mat = getMatrix(size);
     printMatrix(mat);
     setRandom(mat);
     printMatrix(mat);
