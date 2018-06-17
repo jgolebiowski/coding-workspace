@@ -7,13 +7,12 @@ add_subdirectory(cpp/pybind11)
 # Gather all source files and define an executable
 file(GLOB ${PROJECT_NAME}_src
         cpp/src/*.cpp
-        cpp/bindings/*.cpp)
+        cpp/bindings/*.cpp
+        )
 
 # Build as an executable or a library
 #add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_src})
 #add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_src})
-
-# Or as a pybinding module
 pybind11_add_module(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_src})
 
 # Add some libraries
