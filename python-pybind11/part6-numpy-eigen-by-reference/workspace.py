@@ -2,7 +2,6 @@
 from numpy_eigen.lib import numpy_eigen
 import numpy as np
 
-
 def main():
     numpy_eigen.hello_world()
     print("------ Matrix from CPP")

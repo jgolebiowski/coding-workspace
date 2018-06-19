@@ -1,7 +1,7 @@
 """Main file for the problem"""
 from part2.lib import part2
 
-def append_string(str1, str2):
+def append_string(str1: str, str2: str) -> None:
     str1 += str2
 
 def main():
@@ -15,7 +15,7 @@ def main():
     print(part2.hello_world_omp.__doc__)
     part2.hello_world_omp()
 
-    # This does not work since strings are immutable in python, see a function
+    # This does not work since strings are immutable in python, see the python equvalent
     string1 = "abcs"
     string2 = "elomelo"
     print("Before CPP:", string1)
