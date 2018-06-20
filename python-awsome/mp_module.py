@@ -78,7 +78,9 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
         (inuput, output)
     """
     if num_threads is None:
-        num_threads = min(mp.cpu_count(), len(list2process))
+        num_threads = mp.cpu_count()
+    num_threads = min(num_threads, len(list2process))
+
     if fixed_args is None:
         fixed_args = ()
 
