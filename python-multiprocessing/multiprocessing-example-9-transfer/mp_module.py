@@ -1,17 +1,13 @@
 import multiprocessing as mp
 import math
 import numpy as np
+import gc
 from datetime import datetime
-import random
-import string
 
-END_OF_MESSGE = "|EOM|" + ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
 
 
 def make_array(x, size):
-    # a = np.random.uniform(0, 1, (size, size, size)) @ np.random.uniform(0, 1, (size, size, size*100))
-    a = np.random.uniform(0, 1, (size, size, size))
-    return x
+    return np.random.uniform(0, 1, (size, size, size))
 
 
 def batchify(l, n):
@@ -30,6 +26,7 @@ def batchify(l, n):
     chunksize = int(math.ceil(len(l) / n))
 
     for i in range(0, len(l), chunksize):
+        # Create an index range for l of chunksize items:
         yield l[i:i + chunksize]
 
 
@@ -37,12 +34,11 @@ def paralll_worker(rank, size,
                    target_function=None,
                    batch=None,
                    fixed_args=None,
-                   sender=None):
+                   output_queue=None):
     """
-    Function to perform parallel work on a target_function and send the
-    results back to the master process using Pipes.
-    Each entry will be a tuple: (target_function_input, target_function_output)
-
+    Function to perform parallel work on a target_function and dump the results
+    into the output queue, each entry will be structured as
+    (target_function_input, target_function_output)
     Parameters
     ----------
     rank : int
@@ -54,15 +50,14 @@ def paralll_worker(rank, size,
     batch : list[tuple]
         Inputs to the target_function in the form of tuples
     fixed_args : tuple
-        Fixed args to pass to every function call
-    sender : multiprocessing.connection.Connection
-        Sending end of the Pipe to pass the results back to the main thread
+        Fixed args ot pass to every function call
+    output_queue : mp.Queue
+        Quete to store the results in
     """
     for input in batch:
         print(datetime.now(), "This is process {} out of {} operating on {}".format(rank, size, input))
-        res = target_function(*input, *fixed_args)
-        sender.send((input, res))
-    sender.send(END_OF_MESSGE)
+        result = target_function(*input, *fixed_args)
+        output_queue.put((input, result))
 
 
 def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="fork"):
@@ -84,8 +79,8 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     Returns
     -------
     list[tuple]
-        List of results in the form:
-        (input, output)
+        List of results in the form
+        (inuput, output)
     """
     if start_method not in ["spawn", "fork"]:
         raise ValueError("start_method should be spawn or fork not {}".format(start_method))
@@ -98,45 +93,48 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     if fixed_args is None:
         fixed_args = ()
 
+    # Start the Queue, this could be also a list, dict or a shared array.
+    mp_manager = ctx.Manager()
+    output_queue = mp_manager.Queue()
+
     processes = []
-    receivers = []
+    print(datetime.now(), "Starting processes")
     for rank, batch in enumerate(batchify(list2process, num_threads)):
-        rcvr, sndr = ctx.Pipe(duplex=False)
         p = ctx.Process(target=paralll_worker,
                         args=(rank, num_threads),
                         kwargs=dict(target_function=target_function,
                                     batch=batch,
                                     fixed_args=fixed_args,
-                                    sender=sndr)
+                                    output_queue=output_queue)
                         )
         p.start()
         processes.append(p)
-        receivers.append(rcvr)
 
-    # Extract results
-    results = []
-    while (len(receivers) > 0):
-        current = receivers.pop(0)
-        msg = current.recv()
-        if msg != END_OF_MESSGE:
-            results.append(msg)
-            receivers.append(current)
-
-    # Exit completed processes
+    print(datetime.now(), "Joining processes")
+    # Join processes, wait for completion
     for p in processes:
         p.join()
+
+    # Extract results
+    print(datetime.now(), "Extracting results from processes")
+    results = []
+    while (not output_queue.empty()):
+        results.append(output_queue.get())
+
+    # Exit completed processes
+    print(datetime.now(), "Terminating processes")
+    for p in processes:
         p.terminate()
 
+    print(datetime.now(), "Finished")
     return results
 
 
 def main():
-    list2process = [(idx,) for idx in range(10)]
-    results = parallel_control(make_array, list2process, fixed_args=(100,), num_threads=2)
-
-    for res in results:
-        print(res[0], "->", res[1])
-    print(END_OF_MESSGE)
+    list2process = [(None, ) for idx in range(4)]
+    results = parallel_control(make_array, list2process, fixed_args=(200, ), num_threads=2)
+    inputs = [item[0][0] for item in results]
+    outputs = [item[1] for item in results]
 
 
 if (__name__ == "__main__"):
