@@ -2,11 +2,14 @@ import multiprocessing as mp
 import math
 
 
+def cube(x):
+    return x ** 3
+
+
 def batchify(l, n):
     """
     Iterator to divide a list into n chunks,
     All but the last are equal size
-
     Parameters
     ----------
     l : iterable
@@ -23,34 +26,39 @@ def batchify(l, n):
         yield l[i:i + chunksize]
 
 
-def worker_cube(rank, size,
-                batch=None,
-                output_queue=None):
+def paralll_worker(rank, size,
+                   batch=None,
+                   output_queue=None):
     """
-    Function to calcuate the cube of a numbers in a givne list.
-    For each number, put
-    tuple (int, float, float)
-        (rank, number, number_squared)
-    Into the Queue
-
+    Function to perform parallel work on a function and dump the results
+    into the output queue, each entry will be structured as
+    (rank, function_input, function_output)
     Parameters
     ----------
     rank : int
         process number
     size : int
         total number of processes
-    batch : list[float]
-        Numbers to cube
+    batch : list[object]
+        Inputs to the function
     output_queue : mp.Queue
         Quete to store the results in
     """
     print("This is process {} out of {} operating on {}".format(rank, size, batch))
-    for number in batch:
-        output_queue.put((rank, number, number ** 3))
+    for input in batch:
+        result = cube(input)
+        output_queue.put((rank, input, result))
 
 
-def fast_process_parallel(list2process, num_threads):
-    """Process a list in parallel by spawning only necessary number of processes"""
+def parallel_control(list2process, num_threads):
+    """Process a list in parallel by spawning only necessary number of processes
+    Parameters
+    ----------
+    list2process : list
+        List with inputs to process
+    num_threads : int
+        Number of threads ot use
+    """
 
     # Start the Queue, this could be also a list, dict or a shared array.
     mp_manager = mp.Manager()
@@ -58,7 +66,7 @@ def fast_process_parallel(list2process, num_threads):
 
     processes = []
     for rank, batch in enumerate(batchify(list2process, num_threads)):
-        p = mp.Process(target=worker_cube,
+        p = mp.Process(target=paralll_worker,
                        args=(rank, num_threads),
                        kwargs=dict(batch=batch,
                                    output_queue=output_queue)
@@ -77,12 +85,13 @@ def fast_process_parallel(list2process, num_threads):
     results = []
     while (not output_queue.empty()):
         results.append(output_queue.get())
-    print(results)
+
+    return results
 
 
 def main():
     list2process = list(range(10))
-    fast_process_parallel(list2process, 3)
+    print(parallel_control(list2process, 3))
 
 
 if (__name__ == "__main__"):

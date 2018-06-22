@@ -1,7 +1,5 @@
 import multiprocessing as mp
 import math
-from datetime import datetime
-
 
 
 def power(x, power):
@@ -56,61 +54,56 @@ def paralll_worker(rank, size,
         Quete to store the results in
     """
     for input in batch:
-        print(datetime.now(), "This is process {} out of {} operating on {}".format(rank, size, input))
+        print("This is process {} out of {} operating on {}".format(rank, size, input))
         result = target_function(*input, *fixed_args)
         output_queue.put((input, result))
 
 
-def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="fork"):
+def parallel_control(target_function, list2process, fixed_args=None, num_threads=None):
     """Process a list in parallel by spawning only necessary number of processes
-
     Parameters
     ----------
     target_function : function
-        Function to run, will be called as function(*(args +fixed_args))
+        Function to run, will be called as function(*args, *fixed_args)
     list2process : list[tuple]
         List with inputs to the target_function, if None an empty tuple is used
     fixed_args : tuple
-        Fixed args ot pass to every function call, if None an empty tuple is used
+        Fixed args ot pass to every function call
     num_threads : int
         Number of threads ot use, if None multiprocessing.cpu_count() is used
-    start_method : str
-        Specify the start method, should be "spawn" or "fork"
-
     Returns
     -------
     list[tuple]
         List of results in the form
         (inuput, output)
     """
-    if start_method not in ["spawn", "fork"]:
-        raise ValueError("start_method should be spawn or fork not {}".format(start_method))
-    ctx = mp.get_context(start_method)
-
     if num_threads is None:
-        num_threads = ctx.cpu_count()
+        num_threads = mp.cpu_count()
     num_threads = min(num_threads, len(list2process))
 
     if fixed_args is None:
         fixed_args = ()
 
     # Start the Queue, this could be also a list, dict or a shared array.
-    mp_manager = ctx.Manager()
+    mp_manager = mp.Manager()
     output_queue = mp_manager.Queue()
 
     processes = []
     for rank, batch in enumerate(batchify(list2process, num_threads)):
-        p = ctx.Process(target=paralll_worker,
+        p = mp.Process(target=paralll_worker,
                        args=(rank, num_threads),
                        kwargs=dict(target_function=target_function,
                                    batch=batch,
                                    fixed_args=fixed_args,
                                    output_queue=output_queue)
                        )
-        p.start()
         processes.append(p)
 
-    # Join processes, wait for completion
+    # Run processes
+    for p in processes:
+        p.start()
+
+    # Exit completed processes
     for p in processes:
         p.join()
 
@@ -118,10 +111,6 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     results = []
     while (not output_queue.empty()):
         results.append(output_queue.get())
-
-    # Exit completed processes
-    for p in processes:
-        p.terminate()
 
     return results
 
@@ -132,7 +121,7 @@ def main():
     print(results)
 
     results = parallel_control(power, list2process, fixed_args=(3, ))
-    inputs = [item[0][0] for item in results]
+    inputs = [item[0] for item in results]
     outputs = [item[1] for item in results]
     print(inputs, outputs)
 
