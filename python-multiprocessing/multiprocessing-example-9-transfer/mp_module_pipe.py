@@ -8,7 +8,7 @@ END_OF_TRANSMISSION = "|EOT|" + chr(4)
 
 def make_array(x, size):
     # a = np.random.uniform(0, 1, (size, size, size)) @ np.random.uniform(0, 1, (size, size, size*100))
-    a = np.random.uniform(0, 1, (size, size, size))
+    a = np.zeros((size, size, size), dtype=np.float32)
     return x
 
 
@@ -130,10 +130,10 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
 
 def main():
     list2process = [(idx,) for idx in range(10)]
-    results = parallel_control(make_array, list2process, fixed_args=(200,), num_threads=2)
+    results = parallel_control(make_array, list2process, fixed_args=(50,), num_threads=2)
 
-    for res in results:
-        print(res[0], "->", res[1])
+    # for res in results:
+    #     print(res[0], "->", res[1])
 
 
 if (__name__ == "__main__"):
