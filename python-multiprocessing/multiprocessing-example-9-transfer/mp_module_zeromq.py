@@ -1,14 +1,14 @@
 import multiprocessing as mp
 import math
 import numpy as np
+import zmq
 from datetime import datetime
 
-END_OF_TRANSMISSION = "|EOT|" + chr(4)
 
 
 def make_array(x, size):
-    # a = np.random.uniform(0, 1, (size, size, size)) @ np.random.uniform(0, 1, (size, size, size*100))
-    a = np.random.uniform(0, 1, (size, size, size))
+    a = np.random.uniform(0, 1, (size, size, size)) @ np.random.uniform(0, 1, (size, size, size*100))
+    # a = np.random.uniform(0, 1, (size, size, size))
     return x
 
 
@@ -35,7 +35,7 @@ def paralll_worker(rank, size,
                    target_function=None,
                    batch=None,
                    fixed_args=None,
-                   sender=None):
+                   reciever_address=None):
     """
     Function to perform parallel work on a target_function and send the
     results back to the master process using Pipes.
@@ -53,14 +53,20 @@ def paralll_worker(rank, size,
         Inputs to the target_function in the form of tuples
     fixed_args : tuple
         Fixed args to pass to every function call
-    sender : multiprocessing.connection.Connection
-        Sending end of the Pipe to pass the results back to the main thread
+    reciever_address : str
+        Address of the socket used to recieve the data in main thread
     """
+    # Set up zmq context
+    context = zmq.Context()
+
+    # Set up the sender socket
+    sender = context.socket(zmq.PUSH)
+    sender.connect(reciever_address)
+
     for input in batch:
         print(datetime.now(), "This is process {} out of {} operating on {}".format(rank, size, input))
         res = target_function(*input, *fixed_args)
-        sender.send((input, res))
-    sender.send(END_OF_TRANSMISSION)
+        sender.send_pyobj((input, res))
 
 
 def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="fork"):
@@ -96,29 +102,33 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     if fixed_args is None:
         fixed_args = ()
 
+    # Set up zmq context
+    context = zmq.Context()
+    SOCKET_ADDRESS = "tcp://127.0.0.1:5555"
+
+    # Set up the reciever
+    receiver = context.socket(zmq.PULL)
+    receiver.bind(SOCKET_ADDRESS)
+
+
     processes = []
-    receivers = []
     for rank, batch in enumerate(batchify(list2process, num_threads)):
-        rcvr, sndr = ctx.Pipe(duplex=False)
         p = ctx.Process(target=paralll_worker,
                         args=(rank, num_threads),
                         kwargs=dict(target_function=target_function,
                                     batch=batch,
                                     fixed_args=fixed_args,
-                                    sender=sndr)
+                                    reciever_address=SOCKET_ADDRESS)
                         )
         p.start()
         processes.append(p)
-        receivers.append(rcvr)
 
     # Extract results
     results = []
-    while (len(receivers) > 0):
-        current = receivers.pop(0)
-        msg = current.recv()
-        if msg != END_OF_TRANSMISSION:
-            results.append(msg)
-            receivers.append(current)
+    for idx in range(len(list2process)):
+        msg = receiver.recv_pyobj()
+        results.append(msg)
+
 
     # Exit completed processes
     for p in processes:
@@ -130,7 +140,7 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
 
 def main():
     list2process = [(idx,) for idx in range(10)]
-    results = parallel_control(make_array, list2process, fixed_args=(200,), num_threads=2)
+    results = parallel_control(make_array, list2process, fixed_args=(50,), num_threads=2)
 
     for res in results:
         print(res[0], "->", res[1])

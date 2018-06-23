@@ -2,10 +2,8 @@ import multiprocessing as mp
 import math
 import numpy as np
 from datetime import datetime
-import random
-import string
 
-END_OF_MESSGE = "|EOM|" + ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+END_OF_TRANSMISSION = "|EOT|" + chr(4)
 
 
 def make_array(x, size):
@@ -62,7 +60,7 @@ def paralll_worker(rank, size,
         print(datetime.now(), "This is process {} out of {} operating on {}".format(rank, size, input))
         res = target_function(*input, *fixed_args)
         sender.send((input, res))
-    sender.send(END_OF_MESSGE)
+    sender.send(END_OF_TRANSMISSION)
 
 
 def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="fork"):
@@ -118,7 +116,7 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     while (len(receivers) > 0):
         current = receivers.pop(0)
         msg = current.recv()
-        if msg != END_OF_MESSGE:
+        if msg != END_OF_TRANSMISSION:
             results.append(msg)
             receivers.append(current)
 
@@ -132,11 +130,10 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
 
 def main():
     list2process = [(idx,) for idx in range(10)]
-    results = parallel_control(make_array, list2process, fixed_args=(100,), num_threads=2)
+    results = parallel_control(make_array, list2process, fixed_args=(200,), num_threads=2)
 
     for res in results:
         print(res[0], "->", res[1])
-    print(END_OF_MESSGE)
 
 
 if (__name__ == "__main__"):
