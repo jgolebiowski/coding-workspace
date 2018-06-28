@@ -75,7 +75,7 @@ class TestDataset(unittest.TestCase):
         plist = ['partition-0.libsvm', 'partition-5.libsvm', 'partition-10.libsvm']
         self.run_with_different_args(14, 1, 5, partitions_list=plist)
 
-    def test_iterate_test(self):
+    def test_iterate_single_partition(self):
         n = 13
         b = 2
 
@@ -92,7 +92,7 @@ class TestDataset(unittest.TestCase):
                                    partitions_list=plist,
                                    shuffle_partitions=False)
         n_iterations = 0
-        for idx, (data, labels) in enumerate(dataloader.iterate_test(num_examples, itertions)):
+        for idx, (data, labels) in enumerate(dataloader.iterate_single_partition(num_examples, itertions)):
             data = data
             labels = labels
             index = idx % 3
@@ -106,7 +106,38 @@ class TestDataset(unittest.TestCase):
 
         self.assertEqual(n_iterations, 9)
 
-    def test_iterate_test_small(self):
+    def test_iterate_single_partition2(self):
+        n = 13
+        b = 2
+
+        ps = 5
+
+        num_examples = -1
+        itertions = 3
+
+        dataset, labels = self.build_dataset(n, ps)
+        dataloader = DatasetLoader(TEST_DATASET,
+                                   batch_size=b,
+                                   keep_last_batch=False,
+                                   shuffle_partitions=False)
+        n_iterations = 0
+        for idx, (data, labels) in enumerate(dataloader.iterate_single_partition(num_examples,
+                                                                                 itertions,
+                                                                                 partition_name='partition-0.libsvm')):
+            data = data
+            labels = labels
+            index = idx % 2
+            original_data = np.array(dataset[index * b: (index + 1) * b])
+
+            # print(index * b, min((index + 1) * b, num_examples))
+            # print(idx, data.shape, original_data.shape)
+
+            self.assertTrue(np.allclose(data, original_data))
+            n_iterations += 1
+
+        self.assertEqual(n_iterations, 6)
+
+    def test_iterate_single_partition3(self):
         n = 13
         b = 2
 
@@ -123,7 +154,7 @@ class TestDataset(unittest.TestCase):
                                    partitions_list=plist,
                                    shuffle_partitions=False)
         n_iterations = 0
-        for idx, (data, labels) in enumerate(dataloader.iterate_test(num_examples, itertions)):
+        for idx, (data, labels) in enumerate(dataloader.iterate_single_partition(num_examples, itertions)):
             data = data
             labels = labels
             index = idx % 3

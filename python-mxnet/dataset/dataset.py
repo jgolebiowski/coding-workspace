@@ -107,29 +107,42 @@ class DatasetLoader(object):
         if (carry_over_labels is not None) and (self.keep_last_batch):
             yield carry_over_data, carry_over_labels
 
-    def iterate_test(self, num_examples, num_iterations):
+    def iterate_single_partition(self, num_examples=-1, num_iterations=1, partition_name=None):
         """
         Iterate over a small subset of examples from the first partition
 
         Parameters
         ----------
         num_examples : int
-            Number of exampels
+            Number of exampels, if -1 all exmaples in the partition are used.
         num_iterations : int
             Number of times ot iterate over the examples
+        partition_name : str
+            Partition Name to iterate over, if None, the first one is used
 
         """
         if self.shuffle_partitions:
             shuffle(self.partitions_list)
-        data, labels = load_partition(self.partitions_list[0], self.dataset_path)
-        partition_length = len(labels)
-        assert (num_examples <= partition_length), "Cannot specify more examples than fit in a single partition"
 
+        if partition_name is None:
+            data, labels = load_partition(self.partitions_list[0], self.dataset_path)
+        else:
+            data, labels = load_partition(partition_name, self.dataset_path)
+
+        partition_length = len(labels)
+        if num_examples == -1:
+            num_examples = partition_length
+
+        assert (num_examples <= partition_length), "Cannot specify more examples than fit in a single partition"
         for i in range(num_iterations):
             for idx in range(0, num_examples, self.batch_size):
                 dat = data[idx: idx + self.batch_size]
                 lab = labels[idx: idx + self.batch_size]
-                yield dat, lab
+                if self.keep_last_batch:
+                    yield dat, lab
+                else:
+                    if len(lab) == self.batch_size:
+                        yield dat, lab
 
 
 def create_directory(name):
