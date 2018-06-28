@@ -5,6 +5,10 @@
 *\.so
 *\.o
 *cmake-build-debug*
+*\.nbc
+*\.nbi
+*\.lprof
+*\.prof
 
 # Ignore configs
 *\.idea*
