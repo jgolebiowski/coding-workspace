@@ -7,14 +7,15 @@ def main():
     df = pd.read_csv("/Users/golejace/Documents/coding-workspace/python-mxnet/ibdm/aclImdb/reviews_data_clean.csv")
     vocab_df = pd.read_csv("/Users/golejace/Documents/coding-workspace/python-mxnet/ibdm/aclImdb/imdb.vocab")
 
-    for vocab_length in [200, 500, 1000, 2000]:
-        embedding = WordEmbeddingNGramHashing(5, vocab_length, fix_onegrams=True)
-        embedding.train_update_from_list(df.loc[:, "review"])
-        embedding.train_finalise()
-        print(embedding)
+    for maxn in [3, 5, 7]:
+        for vocab_length in [200, 500, 1000, 2000]:
+            embedding = WordEmbeddingNGramHashing(maxn, vocab_length, fix_onegrams=True)
+            embedding.train_update_from_list(df.loc[:, "review"])
+            embedding.train_finalise()
+            print(embedding)
 
-        col_freq, collisions, num_words = embedding.check_collisions(vocab_df.word)
-        print(col_freq, collisions, num_words)
+            col_freq, collisions, num_words = embedding.check_collisions(vocab_df.word)
+            print(col_freq, collisions, num_words)
 
     # vocab_length = 40
     # embedding = WordEmbeddingNGramHashing(5, vocab_length, fix_onegrams=True)

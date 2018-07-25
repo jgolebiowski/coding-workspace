@@ -78,8 +78,9 @@ def main():
     model.collect_params().initialize(mx.init.Normal(0.01), ctx=model.ctx)
     softmax_cross_entropy = mx.gluon.loss.SoftmaxCrossEntropyLoss()
     trainer = mx.gluon.Trainer(model.collect_params(),
-                               "adam",
-                               dict(learning_rate=1e-3))
+                               "nag",
+                               dict(learning_rate=1e-1,
+                                    momentum=0.9))
     model.hybridize()
     checkdir = "checkpoints"
     print(model)
