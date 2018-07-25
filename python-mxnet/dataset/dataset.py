@@ -1,41 +1,9 @@
 import os
 import numpy as np
 from random import shuffle
+from dataset_backends import numpy_load_partition
 
-from dataset_backends import libsvm_write_partition_sparse_fromdense as write_partition
-from dataset_backends import libsvm_load_partition as load_partition
-# from dataset_backends import numpy_write_partition as write_partition
-# from dataset_backends import numpy_load_partition as load_partition
 
-def write_partition_multiple(data, labels, partition_size, dataset_path, basefile="partition"):
-    """
-    Write a new record to the dataset
-
-    Parameters
-    ----------
-    data : ndarray or list[ndarray]
-        Data to be stored. Shape: (nexamples, ...)
-        Alternatively: list[ndarray] with one array for each example
-    labels : ndarray or list
-        The labels for this data. Shape: (nexamples, )
-        Alternatively: list with one input for each example
-    partition_size : int
-        Number of examples in a partition
-    dataset_path : str
-        Path to the dataset directory
-    basefile : int
-        Base of the partition names, should be uniqie or it will be overwritten
-    """
-    assert (len(data) == len(labels)), "Data must be of the same length as the labels"
-    dataset_path = create_directory(dataset_path)
-    size = len(labels)
-
-    for idx in range(0, size, partition_size):
-        partition_name = "{}-{}".format(basefile, idx)
-        write_partition(data[idx: idx + partition_size],
-                        labels[idx: idx + partition_size],
-                        partition_name,
-                        dataset_path)
 
 
 class DatasetLoader(object):
@@ -55,9 +23,15 @@ class DatasetLoader(object):
         List of partition names, if none all partitions in a directory are used
     shuffle_partitions : bool
         If True, shuffle partition order before each pass
+    partition_loder : function(partition : str, input_path : str) -> ndarray, ndarray
+        Function used to load a given partition, they are kept in dataset_backends.py
     """
 
-    def __init__(self, path, batch_size=1, keep_last_batch=True, partitions_list=None, shuffle_partitions=True):
+    def __init__(self, path, batch_size=1, keep_last_batch=True, partitions_list=None, shuffle_partitions=True, partition_loder=None):
+        if partition_loder is None:
+            partition_loder = numpy_load_partition
+        self.partition_loader = partition_loder
+
         self.dataset_path = path
         if partitions_list is None:
             self.partitions_list = os.listdir(path)
@@ -74,8 +48,18 @@ class DatasetLoader(object):
         carry_over_data = None
         carry_over_labels = None
 
+        # TODO Maybe add a functonality to load the next partition in the background while current one is being loaded
+        # if first_iteration:
+        #     data, labels = self.partition_loader()
+        #     start_loading_next_partition()
+        #     first_iteration = False
+        # else:
+        #     data, labels = get_partition_from_loader()
+        #     start_loading_next_partition()
+
+
         for partition in self.partitions_list:
-            data, labels = load_partition(partition, self.dataset_path)
+            data, labels = self.partition_loader(partition, self.dataset_path)
             partition_length = len(labels)
             starting_index = 0
 
@@ -125,9 +109,9 @@ class DatasetLoader(object):
             shuffle(self.partitions_list)
 
         if partition_name is None:
-            data, labels = load_partition(self.partitions_list[0], self.dataset_path)
+            data, labels = self.partition_loader(self.partitions_list[0], self.dataset_path)
         else:
-            data, labels = load_partition(partition_name, self.dataset_path)
+            data, labels = self.partition_loader(partition_name, self.dataset_path)
 
         partition_length = len(labels)
         if num_examples == -1:
@@ -144,23 +128,3 @@ class DatasetLoader(object):
                     if len(lab) == self.batch_size:
                         yield dat, lab
 
-
-def create_directory(name):
-    """
-    Create a directory
-
-    Parameters
-    ----------
-    name : str
-        Directory name
-
-    Returns
-    -------
-    str
-        Path to the newly created direcotry
-    """
-    try:
-        os.mkdir(name)
-    except OSError:
-        pass
-    return name

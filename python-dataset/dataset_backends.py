@@ -3,7 +3,8 @@ import os
 import numpy as np
 import scipy.sparse
 import sklearn.datasets
-import gzip
+
+from parallel import parallel_control
 
 
 def write_partition_multiple(data, labels, partition_size, dataset_path, basefile="partition", writer=None):
@@ -28,11 +29,16 @@ def write_partition_multiple(data, labels, partition_size, dataset_path, basefil
         Function used to write a partition
     """
     assert (len(data) == len(labels)), "Data must be of the same length as the labels"
+    if writer is None:
+        writer = libsvm_write_partition
+
     dataset_path = create_directory(dataset_path)
     size = len(labels)
 
+    partition_index = 0
     for idx in range(0, size, partition_size):
-        partition_name = "{}-{}".format(basefile, idx)
+        partition_name = "{}-{}".format(basefile, partition_index)
+        partition_index += 1
         writer(data[idx: idx + partition_size],
                labels[idx: idx + partition_size],
                partition_name,
@@ -93,61 +99,7 @@ def numpy_load_partition(partition, input_path):
     return data, labels
 
 
-def libsvm_write_partition_sparse_fromdense(data, labels, partition_name, dataset_path):
-    """
-    Write a new record to the dataset, wrapper around libsvm_write_partition_sparse to be compatible with tests
-
-    Parameters
-    ----------
-    data : ndarray or list[ndarray]
-        Data to be stored. Shape: (nexamples, ...)
-        Alternatively: list[ndarray] with one array for each example
-    labels : ndarray or list
-        The labels for this data. Shape: (nexamples, )
-        Alternatively: list with one input for each example
-    partition_name : str
-        Id of the partition, should be uniqie or it will be overwritten
-    dataset_path : str
-        Path to the dataset directory
-    """
-    assert (len(data) == len(labels)), "Data must be of the same length as the labels"
-    datashape = data[0].shape
-    dat = [scipy.sparse.csr_matrix(item.reshape((1, -1))) for item in data]
-    lab = np.array(labels)
-    libsvm_write_partition_sparse(dat, datashape, lab, partition_name, dataset_path)
-
-
-def libsvm_write_partition_sparse(data, datashape, labels, partition_name, dataset_path):
-    """
-    Write a new record to the dataset
-
-    Parameters
-    ----------
-    data : list[scipy.sparse.csr_matrix]
-        List of sparse representations of the array as a (1, example_size) matrix
-    datashape : tuple
-        Shape of each example
-    labels : ndarray or list
-        The labels for this data. Shape: (n_examples, )
-    partition_name : str
-        Id of the partition, should be uniqie or it will be overwritten
-    dataset_path : str
-        Path to the dataset directory
-    """
-    partition_dir = create_directory(os.path.join(dataset_path, partition_name))
-
-    data = scipy.sparse.vstack(data)
-    data_file = os.path.join(partition_dir, "data.libsvm.gz")
-    with gzip.open(data_file, "w") as dfile:
-        sklearn.datasets.dump_svmlight_file(data, labels, dfile, zero_based=True)
-
-    header = "datashape${}\n".format(datashape)
-    header_file = os.path.join(partition_dir, "header.libsvm.gz")
-    with gzip.open(header_file, "w") as hfile:
-        hfile.write(header.encode())
-
-
-def libsvm_write_partition_dense(data, labels, partition_name, dataset_path):
+def libsvm_write_partition(data, labels, partition_name, dataset_path):
     """
     Write a new record to the dataset
 
@@ -172,17 +124,17 @@ def libsvm_write_partition_dense(data, labels, partition_name, dataset_path):
         labels = np.array(labels)
 
     partition_dir = create_directory(os.path.join(dataset_path, partition_name))
-    data_file = os.path.join(partition_dir, "data.libsvm.gz")
+    data_file = os.path.join(partition_dir, "data.libsvm")
 
     datashape = data.shape[1:]
     n_examples = data.shape[0]
 
-    with gzip.open(data_file, "w") as dfile:
+    with open(data_file, "wb") as dfile:
         sklearn.datasets.dump_svmlight_file(data.reshape((n_examples, -1)), labels, dfile, zero_based=True)
 
     header = "datashape${}\n".format(datashape)
-    header_file = os.path.join(partition_dir, "header.libsvm.gz")
-    with gzip.open(header_file, "w") as hfile:
+    header_file = os.path.join(partition_dir, "header.libsvm")
+    with open(header_file, "wb") as hfile:
         hfile.write(header.encode())
 
 
@@ -204,14 +156,75 @@ def libsvm_load_partition(partition, input_path):
     ndarray
         Labels
     """
+    data, datashape, labels = libsvm_load_partition_sparse(partition, input_path)
+    data = data.toarray()
+    data = data.reshape((-1,) + datashape)
+    return data, labels
+
+
+def libsvm_load_partition_sparse_parallel(partition_list, input_path):
+    """
+    Load multiple partitions and return the data and labels
+
+    Parameters
+    ----------
+    partition_list : list[str]
+        List of names of the dataset chunks
+    input_path : str
+        path to the dataset directory
+
+    Returns
+    -------
+    scipy.sparse.csr_matrix
+        Data array of shape (n_examples, n_features)
+    tuple
+        Shape of each example, should be consistant with n_features
+    ndarray
+        Labels
+    """
+    assert type(partition_list) == list, "Must set the parallel_load flag to True to use parallel loaders"
+    results = parallel_control(libsvm_load_partition_sparse,
+                               [(item,) for item in partition_list],
+                               fixed_args=(input_path,),
+                               start_method="fork")
+
+    labels = [item[1][2] for item in results]
+    labels = np.concatenate(labels, axis=0)
+
+    datashape = results[0][1][1]
+    data = [item[1][0] for item in results]
+    data = scipy.sparse.vstack(data)
+    return data, datashape, labels
+
+
+def libsvm_load_partition_sparse(partition, input_path):
+    """
+    Load a partition and return the data in sparse format and labels
+
+    Parameters
+    ----------
+    partition : str
+        Name of the dataset chunks
+    input_path : str
+        path to the dataset directory
+
+    Returns
+    -------
+    scipy.sparse.csr_matrix
+        Data array of shape (n_examples, n_features)
+    tuple
+        Shape of each example, should be consistant with n_features
+    ndarray
+        Labels
+    """
     partition = os.path.join(input_path, partition)
-    data_file = os.path.join(partition, "data.libsvm.gz")
-    header_file = os.path.join(partition, "header.libsvm.gz")
+    data_file = os.path.join(partition, "data.libsvm")
+    header_file = os.path.join(partition, "header.libsvm")
 
-    assert os.path.isfile(data_file), "Partition must contain data.libsvm.gz"
-    assert os.path.isfile(header_file), "Partition must contain header.libsvm.gz"
+    assert os.path.isfile(data_file), "Partition must contain data.libsvm"
+    assert os.path.isfile(header_file), "Partition must contain header.libsvm"
 
-    with gzip.open(header_file, "r") as hfile:
+    with open(header_file, "rb") as hfile:
         header_str = hfile.readlines()
 
     header = {}
@@ -223,34 +236,10 @@ def libsvm_load_partition(partition, input_path):
     for elm in header["datashape"]:
         datasize *= elm
 
-    with gzip.open(data_file) as dfile:
+    with open(data_file, "rb") as dfile:
         data, labels = sklearn.datasets.load_svmlight_file(dfile, n_features=datasize, dtype=np.float32,
                                                            zero_based=True)
-    data = data.toarray()
-    data = data.reshape((-1,) + header["datashape"])
-    return data, labels
-
-
-# def _dump_svmlight(X, f, one_based=False):
-#     X_is_sp = int(hasattr(X, "tocsr"))
-#
-#     if X.dtype.kind == 'i':
-#         value_pattern = "%d:%d"
-#     else:
-#         value_pattern = "%d:%.16g"
-#
-#     line_pattern = "%s\n"
-#
-#     for i in range(X.shape[0]):
-#         if X_is_sp:
-#             span = slice(X.indptr[i], X.indptr[i + 1])
-#             row = zip(X.indices[span], X.data[span])
-#         else:
-#             nz = X[i] != 0
-#             row = zip(np.where(nz)[0], X[i, nz])
-#
-#         s = " ".join(value_pattern % (j + one_based, x) for j, x in row)
-#         f.write((line_pattern % s).encode('ascii'))
+    return data, header["datashape"], labels
 
 
 def create_directory(name):

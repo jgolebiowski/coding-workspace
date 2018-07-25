@@ -1,10 +1,20 @@
 import numpy as np
 import shutil
-from dataset import write_partition_multiple, DatasetLoader
+from dataset import DatasetLoader
+from dataset_backends import write_partition_multiple, numpy_load_partition, numpy_write_partition
+
 import unittest
+
 TEST_DATASET = "test_dataset"
+PARTITION_SUFFIX = ".npz"
+
 
 class TestDataset(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        shutil.rmtree(TEST_DATASET, ignore_errors=True)
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -16,7 +26,7 @@ class TestDataset(unittest.TestCase):
         labels = [item for item in range(elements)]
 
         shutil.rmtree(TEST_DATASET, ignore_errors=True)
-        write_partition_multiple(dataset, labels, partition_size, TEST_DATASET)
+        write_partition_multiple(dataset, labels, partition_size, TEST_DATASET, writer=numpy_write_partition)
         return dataset, labels
 
     def run_with_different_args(self, n, b, ps, keep_last_batch=True, partitions_list=None):
@@ -25,10 +35,9 @@ class TestDataset(unittest.TestCase):
                                    batch_size=b,
                                    keep_last_batch=True,
                                    partitions_list=partitions_list,
-                                   shuffle_partitions=False)
+                                   shuffle_partitions=False,
+                                   partition_loder=numpy_load_partition)
         for idx, (data, labels) in enumerate(dataloader):
-            data = data
-            labels = labels
             original_data = np.array(dataset[idx * b: (idx + 1) * b])
             self.assertTrue(np.allclose(data, original_data))
 
@@ -43,21 +52,23 @@ class TestDataset(unittest.TestCase):
         self.run_with_different_args(20, 5, 5)
 
     def test_carry_over(self):
-        plist = ['partition-0.libsvm', 'partition-5.libsvm', 'partition-10.libsvm']
+        plist = ['partition-0' + PARTITION_SUFFIX, 'partition-5' + PARTITION_SUFFIX, 'partition-10' + PARTITION_SUFFIX]
         self.run_with_different_args(12, 2, 5, keep_last_batch=False, partitions_list=plist)
 
     def test_dont_keep(self):
         n = 13
         b = 5
         ps = 3
-        plist = ["partition-0.libsvm", "partition-3.libsvm", "partition-6.libsvm", "partition-9.libsvm", "partition-12.libsvm"]
+        plist = ["partition-0" + PARTITION_SUFFIX, "partition-3" + PARTITION_SUFFIX, "partition-6" + PARTITION_SUFFIX,
+                 "partition-9" + PARTITION_SUFFIX, "partition-12" + PARTITION_SUFFIX]
 
         dataset, labels = self.build_dataset(n, ps)
         dataloader = DatasetLoader(TEST_DATASET,
                                    batch_size=b,
                                    keep_last_batch=False,
                                    partitions_list=plist,
-                                   shuffle_partitions=False)
+                                   shuffle_partitions=False,
+                                   partition_loder=numpy_load_partition)
         n_iterations = 0
         for idx, (data, labels) in enumerate(dataloader):
             data = data
@@ -72,7 +83,7 @@ class TestDataset(unittest.TestCase):
         self.run_with_different_args(17, 2, 20)
 
     def test_single_batch(self):
-        plist = ['partition-0.libsvm', 'partition-5.libsvm', 'partition-10.libsvm']
+        plist = ['partition-0' + PARTITION_SUFFIX, 'partition-5' + PARTITION_SUFFIX, 'partition-10' + PARTITION_SUFFIX]
         self.run_with_different_args(14, 1, 5, partitions_list=plist)
 
     def test_iterate_single_partition(self):
@@ -80,7 +91,7 @@ class TestDataset(unittest.TestCase):
         b = 2
 
         ps = 5
-        plist = ['partition-0.libsvm', 'partition-5.libsvm', 'partition-10.libsvm']
+        plist = ['partition-0' + PARTITION_SUFFIX, 'partition-5' + PARTITION_SUFFIX, 'partition-10' + PARTITION_SUFFIX]
 
         num_examples = 5
         itertions = 3
@@ -90,7 +101,8 @@ class TestDataset(unittest.TestCase):
                                    batch_size=b,
                                    keep_last_batch=True,
                                    partitions_list=plist,
-                                   shuffle_partitions=False)
+                                   shuffle_partitions=False,
+                                   partition_loder=numpy_load_partition)
         n_iterations = 0
         for idx, (data, labels) in enumerate(dataloader.iterate_single_partition(num_examples, itertions)):
             data = data
@@ -119,11 +131,12 @@ class TestDataset(unittest.TestCase):
         dataloader = DatasetLoader(TEST_DATASET,
                                    batch_size=b,
                                    keep_last_batch=False,
-                                   shuffle_partitions=False)
+                                   shuffle_partitions=False,
+                                   partition_loder=numpy_load_partition)
         n_iterations = 0
         for idx, (data, labels) in enumerate(dataloader.iterate_single_partition(num_examples,
                                                                                  itertions,
-                                                                                 partition_name='partition-0.libsvm')):
+                                                                                 partition_name='partition-0' + PARTITION_SUFFIX)):
             data = data
             labels = labels
             index = idx % 2
@@ -142,7 +155,7 @@ class TestDataset(unittest.TestCase):
         b = 2
 
         ps = 6
-        plist = ['partition-0.libsvm', 'partition-6.libsvm', 'partition-12.libsvm']
+        plist = ['partition-0' + PARTITION_SUFFIX, 'partition-6' + PARTITION_SUFFIX, 'partition-12' + PARTITION_SUFFIX]
 
         num_examples = 5
         itertions = 3
@@ -152,7 +165,8 @@ class TestDataset(unittest.TestCase):
                                    batch_size=b,
                                    keep_last_batch=True,
                                    partitions_list=plist,
-                                   shuffle_partitions=False)
+                                   shuffle_partitions=False,
+                                   partition_loder=numpy_load_partition)
         n_iterations = 0
         for idx, (data, labels) in enumerate(dataloader.iterate_single_partition(num_examples, itertions)):
             data = data
