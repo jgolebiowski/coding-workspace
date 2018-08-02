@@ -1,15 +1,19 @@
 import multiprocessing
+import queue
 
 def worker(rank, size, tasks_queue=None, results_queue=None):
-    while (not tasks_queue.empty()):
-        task = tasks_queue.get()
-        res = str(task) + "_processed"
-        results_queue.put((task, res))
-    print("Finished all tasks on proc {} out of {}".format(rank, size))
+    while (True):
+        try:
+            task = tasks_queue.get(block=True, timeout=0.1)
+            res = str(task) + "_processed"
+            results_queue.put((task, res))
+        except queue.Empty:
+            print("Finished all tasks on proc {} out of {}".format(rank, size))
+            break
 
 
 def parallel_control(list2process):
-    context = multiprocessing.get_context("fork")
+    context = multiprocessing.get_context("spawn")
     max_threads = max(1, int(context.cpu_count() / 2))
 
     task_queue = context.Queue()
@@ -33,9 +37,10 @@ def parallel_control(list2process):
     for elm in list2process:
         results.append(result_queue.get())
 
+    # Make sure work is finished before garbage collection
     print(results)
-
     for p in proc:
+        p.join()
         p.terminate()
 
 
