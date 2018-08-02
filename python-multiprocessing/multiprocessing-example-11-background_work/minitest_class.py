@@ -59,4 +59,6 @@ class ParallelControl(object):
 if __name__ == '__main__':
     pc = ParallelControl([idx for idx in range(10)])
     print(pc.get_results())
+
+    # This is here so that the __del__ method wont be called before the thread starts
     time.sleep(0.1)
