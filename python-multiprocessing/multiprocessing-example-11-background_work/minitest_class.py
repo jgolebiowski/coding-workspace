@@ -1,13 +1,14 @@
 import multiprocessing
 import queue
 import time
+import numpy as np
 
 
 def worker(rank, size, tasks_queue=None, results_queue=None):
     while (True):
         try:
             task = tasks_queue.get(block=True, timeout=0.1)
-            res = str(task) + "_processed"
+            res = task + 1
             results_queue.put((task, res))
         except queue.Empty:
             print("Finished all tasks on proc {} out of {}".format(rank, size))
@@ -57,8 +58,9 @@ class ParallelControl(object):
 
 
 if __name__ == '__main__':
-    pc = ParallelControl([idx for idx in range(10)])
-    print(pc.get_results())
+    pc = ParallelControl([np.random.uniform(0, 1, (100, 100)) for idx in range(10)])
+    res = pc.get_results()
+    # print(res)
 
     # This is here so that the __del__ method wont be called before the thread starts
     time.sleep(0.1)
