@@ -1,7 +1,9 @@
+import functools
 import multiprocessing
 import queue
 import time
 import numpy as np
+
 
 
 def worker(rank, size, tasks_queue=None, results_queue=None):
