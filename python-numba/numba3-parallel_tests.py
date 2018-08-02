@@ -19,11 +19,14 @@ def test_parallel(a):
     return test_arr
 
 
-@numba.jit(nopython=False, parallel=True)
+def modify_element(lister, idx):
+    lister[idx] = "yo"
+
+@numba.jit(nopython=True, parallel=True)
 def modify_list(lister, length):
 
     for idx in numba.prange(length):
-        lister[idx] = "yo"
+        modify_element(lister, idx)
 
 
 
@@ -35,9 +38,9 @@ def main():
     print("A1:", a)
     print("B1:", b)
 
-    lister = np.array("This eBook is for the use of anyone anywhere at no cost and withk".split())
+    lister = np.array(["abc" for idx in range(int(10 ** 8))])
     modify_list(lister, len(lister))
-    print(lister)
+    print(lister[0: 10], len(lister))
 
 
 if (__name__ == "__main__"):

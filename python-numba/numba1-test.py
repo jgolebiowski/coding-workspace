@@ -43,7 +43,7 @@ def test_numpy(arr):
 
 
 def main():
-    N = 30000
+    N = 3000
     arr = np.random.uniform(size=(N, N))
     print("Compiling")
     sum2d_jit(arr)

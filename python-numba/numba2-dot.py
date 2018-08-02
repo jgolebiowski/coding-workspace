@@ -59,7 +59,7 @@ def dot_numpy(a, b):
 
 
 def main():
-    n = 3000
+    n = 300
     m = 100
     p = 100
 
