@@ -9,7 +9,8 @@ import numpy as np
 def worker(rank, size, tasks_queue=None, results_queue=None):
     while (True):
         try:
-            task = tasks_queue.get(block=True, timeout=0.1)
+            # timeout makes sure all tasks are in the queue
+            task = tasks_queue.get(block=True, timeout=0.5)
             res = task + 1
             results_queue.put((task, res))
         except queue.Empty:
@@ -55,7 +56,8 @@ class ParallelControl(object):
         self.task_queue.close()
         self.result_queue.close()
         for p in self.proc:
-            p.join()
+            # Make sure to terminate the childern if they hang
+            p.join(timeout=10.0)
             p.terminate()
 
 

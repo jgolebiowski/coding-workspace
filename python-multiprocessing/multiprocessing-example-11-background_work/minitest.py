@@ -23,7 +23,8 @@ def profile(some_function):
 def worker(rank, size, tasks_queue=None, results_queue=None):
     while (True):
         try:
-            task = tasks_queue.get(block=True, timeout=0.1)
+            # timeout makes sure all tasks are in the queue
+            task = tasks_queue.get(block=True, timeout=1.0)
             res = task + 1
             results_queue.put((task, res))
         except queue.Empty:
@@ -42,9 +43,6 @@ def parallel_control(list2process):
     for task in list2process:
         task_queue.put(task)
 
-    # Make sure all tasks are in the queue
-    time.sleep(0.1)
-
     proc = []
     for idx in range(max_threads):
         p = context.Process(target=worker,
@@ -62,9 +60,10 @@ def parallel_control(list2process):
     # Make sure work is finished before garbage collection
     # print(results)
     for p in proc:
-        p.join()
+        # Make sure to terminate the childern if they hang
+        p.join(timeout=10.0)
         p.terminate()
 
 
 if __name__ == '__main__':
-    parallel_control([np.random.uniform(0, 1, (100, 100)) for idx in range(10)])
+    parallel_control([np.random.uniform(0, 1, (1500, 1500)) for idx in range(10)])
