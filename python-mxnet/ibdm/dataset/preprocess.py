@@ -43,11 +43,8 @@ def cleanup_document(document):
     re.sub('https?://[A-Za-z0-9./]+', '', document)
 
     # Try to recode as ascii
-    try:
-        document = str(unicodedata.normalize('NFKD', document).encode('ascii', 'ignore'))
-        document = re.sub(r'[\x00-\x1F]+', '', document)
-    except:
-        pass
+    document = unicodedata.normalize('NFKD', document).encode('ascii', 'ignore').decode()
+    document = re.sub(r'[\x00-\x1F]+', '', document)
 
     # Lowercase
     document = document.lower()
