@@ -2,77 +2,50 @@ import math
 import multiprocessing as mp
 import sys
 from datetime import datetime
+import queue
+
+TIMEOUT_LONG = 600
+TIMEOUT_SHORT = 0.01
 
 
-def chunks(l, n):
-    """Iterator to divide a list into chunks of size n
-    Parameters
-    ----------
-    l : iterable
-        list
-    n : int
-        Chunk size
-    """
-    n = max(1, n)
-    for i in range(0, len(l), n):
-        # Create an index range for l of n items:
-        yield l[i:i + n]
-
-
-def batchify(l, n):
-    """
-    Iterator to divide a list into n chunks,
-    All but the last are equal size
-    Parameters
-    ----------
-    l : iterable
-        list
-    n : int
-        Number of chunks
-    """
-    n = min(len(l), n)
-    n = max(1, n)
-    chunksize = int(math.ceil(len(l) / n))
-
-    for i in range(0, len(l), chunksize):
-        # Create an index range for l of chunksize items:
-        yield l[i:i + chunksize]
-
-def paralll_worker(rank, size,
-                   target_function=None,
-                   batch=None,
-                   fixed_args=None,
-                   sender=None):
+def paralll_worker(target_function,
+                   task_queue,
+                   result_queue,
+                   fixed_args,
+                   verbose=True):
     """
     Function to perform parallel work on a target_function and send the
     results back to the master process using Pipes.
-    Each entry will be a tuple: (target_function_input, target_function_output)
+    Each entry will be a tuple: (*target_function_input, target_function_output)
+
     Parameters
     ----------
-    rank : int
-        process number
-    size : int
-        total number of processes
     target_function : function
         Function to run, will be called as target_function(*(input + fixed_args))
-    batch : list[tuple]
-        Inputs to the target_function in the form of tuples
+    task_queue : multiprocessing.Queue
+        Queue with partition names
+    result_queue : multiprocessing.Queue
+        Queue where IDs of partitions stored in plasma store are kept
     fixed_args : tuple
         Fixed args to pass to every function call
-    sender : multiprocessing.connection.Connection
-        Sending end of the Pipe to pass the results back to the main thread
+    verbose : bool
+        If True, print logs to stderr
     """
-    for input in batch:
-        print(datetime.now(), "This is process {} out of {} operating on {}".format(rank, size, input), file=sys.stderr)
-        sys.stderr.flush()
-        res = target_function(*(input + fixed_args))
-        sender.send((input, res))
+    while (True):
+        try:
+            task = task_queue.get(block=True, timeout=TIMEOUT_SHORT)
 
-    # The job is finished, close the pipe
-    sender.close()
+            if verbose:
+                print(datetime.now(), "This {} working on {}".format(mp.current_process(), task), file=sys.stderr)
+                sys.stderr.flush()
+
+            res = target_function(*(task + fixed_args))
+            result_queue.put((*task, res))
+        except queue.Empty:
+            break
 
 
-def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="spawn"):
+def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="spawn", verbose=True):
     """Process a list in parallel by spawning only necessary number of processes
 
     Parameters
@@ -87,11 +60,14 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
         Number of threads ot use, if None multiprocessing.cpu_count() is used
     start_method : str
         Specify the start method, should be "spawn" or "fork"
+    verbose : bool
+        If True, print logs to stderr
+
     Returns
     -------
     list[tuple]
         List of results in the form:
-        ((inuput, ), output)
+        (*input, output)
     """
     if start_method not in ["spawn", "fork"]:
         raise ValueError("start_method should be spawn or fork not {}".format(start_method))
@@ -99,41 +75,34 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
 
     if num_threads is None:
         num_threads = int(ctx.cpu_count() / 2)
-    num_threads = min(num_threads, len(list2process))
+    num_threads = max(1, num_threads)
 
     if fixed_args is None:
         fixed_args = ()
 
+    tasks_queue = ctx.Queue()
+    results_queue = ctx.Queue()
+
+    for task in list2process:
+        tasks_queue.put(task)
+
     processes = []
-    receivers = []
-    for rank, batch in enumerate(batchify(list2process, num_threads)):
-        rcvr, sndr = ctx.Pipe(duplex=False)
+    for rank in range(num_threads):
         p = ctx.Process(target=paralll_worker,
-                        args=(rank, num_threads),
-                        kwargs=dict(target_function=target_function,
-                                    batch=batch,
-                                    fixed_args=fixed_args,
-                                    sender=sndr)
+                        args=(target_function,
+                              tasks_queue,
+                              results_queue,
+                              fixed_args),
+                        kwargs=dict(verbose=verbose)
                         )
         p.start()
         processes.append(p)
-        receivers.append(rcvr)
-
-        # Close the sender in the master thread. The only alive reference remains in
-        # the worker threads. If master-version of the sender is not closed, the pipe
-        # will remain alive even if workers close their end.
-        sndr.close()
 
     # Extract results
     results = []
-    while (len(receivers) > 0):
-        current = receivers.pop(0)
-        try:
-            msg = current.recv()
-            results.append(msg)
-            receivers.append(current)
-        except EOFError:
-            pass
+    for task in list2process:
+        res = results_queue.get(block=True, timeout=TIMEOUT_LONG)
+        results.append(res)
 
     # Exit completed processes
     for p in processes:
@@ -141,7 +110,6 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
         p.terminate()
 
     return results
-
 
 
 def power(x, power):
