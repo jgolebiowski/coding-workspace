@@ -28,4 +28,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC cpp/include)
 # Set cpp specifications
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wno-cast-function-type -O3 -fopenmp -fdiagnostics-color")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -fdiagnostics-color -Wno-cast-function-type -fopenmp -O0 -g")
