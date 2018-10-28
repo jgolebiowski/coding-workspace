@@ -6,7 +6,7 @@
 /* Print hello world */
 void hello_world() {
     int randomNumber = 10;
-    std::cout << "Helllo world!"
+    std::cout << "Helllo world! "
               << "The random number is "
               << randomNumber << std::endl;
 }
