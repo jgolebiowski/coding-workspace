@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Eigen/Eigen/Dense"
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> EigenDynamicRowMajor;
-typedef Eigen::Ref<EigenDynamicRowMajor> RefEigenDynamicRowMajor;
+#include "Eigen/Dense"
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> EigenMatrixXdRowMajor;
 
 /**
  * @brief Print Hello world

@@ -6,9 +6,9 @@ project(example_project_cpp)
 file(GLOB ${PROJECT_NAME}_src
         cpp/src/*.cpp
 
-        cpp/tst/main.cpp
-        #        cpp/tst/test_main.cpp
-        #        cpp/tst/test_something.cpp
+        #        cpp/tst/main.cpp
+        cpp/tst/test_main.cpp
+        cpp/tst/testPackingTools.cpp
         )
 
 # Build as an executable or a library
@@ -22,10 +22,12 @@ add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_src})
 target_include_directories(${PROJECT_NAME} PUBLIC cpp/src)
 target_include_directories(${PROJECT_NAME} PUBLIC cpp/tst)
 target_include_directories(${PROJECT_NAME} PUBLIC cpp/include)
+target_include_directories(${PROJECT_NAME} PUBLIC cpp/include/Eigen)
+
 #target_include_directories(${PROJECT_NAME} PUBLIC /path/to/include)
 
 
 # Set cpp specifications
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_COMPILER g++-7)
+set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -fdiagnostics-color -Wno-cast-function-type -fopenmp -O0 -g")

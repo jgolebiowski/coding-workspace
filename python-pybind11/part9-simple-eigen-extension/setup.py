@@ -71,7 +71,10 @@ def compile_extension():
 
     source_library_prefix = os.path.join(WORKDIR, BUILDDIR, PROJECT_NAME_CPP)
     source_library = glob.glob(source_library_prefix + ".cpython*")[0]
-    target_location = os.path.join(WORKDIR, PROJECT_NAME, LIB_DIRECTORY)
+    target_location = os.path.join(WORKDIR, PROJECT_NAME, LIB_DIRECTORY, os.path.basename(source_library))
+
+    if os.path.isfile(target_location):
+        os.remove(target_location)
     shutil.move(source_library, target_location)
 
 

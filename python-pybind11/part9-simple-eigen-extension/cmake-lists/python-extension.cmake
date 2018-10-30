@@ -20,10 +20,11 @@ pybind11_add_module(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_src})
 # Include appropriate directories
 target_include_directories(${PROJECT_NAME} PUBLIC cpp/src)
 target_include_directories(${PROJECT_NAME} PUBLIC cpp/include)
+target_include_directories(${PROJECT_NAME} PUBLIC cpp/include/Eigen)
 #target_include_directories(${PROJECT_NAME} PUBLIC /path/to/include)
 
 
 # Set cpp specifications
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_COMPILER g++-7)
+set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -fdiagnostics-color -Wno-cast-function-type -fopenmp -O3")

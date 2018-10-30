@@ -17,3 +17,5 @@ run gdb as a superuser as
 
 PYBIND11:
 * Can be found at https://github.com/pybind/pybind11.git
+EIGEN
+* Can be found @ https://github.com/eigenteam/eigen-git-mirror.git

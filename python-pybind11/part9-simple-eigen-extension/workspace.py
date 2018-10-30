@@ -42,8 +42,8 @@ def _get_placement_energy(system_pos: np.ndarray, mol_pos: np.ndarray) -> float:
 
 
 def main():
-    example_project_cpp.hello_world_omp()
-    N = 100
+    example_project_cpp.hello_world()
+    N = 10
 
     system = np.random.uniform(low=0, high=1, size=(N, 3))
     molecule = np.random.uniform(low=0, high=1, size=(N // 10, 3))
@@ -51,7 +51,12 @@ def main():
     started_at = time.time()
     energy = _get_placement_energy(system, molecule)
     time_taken = time.time() - started_at
-    print(energy)
+    print(f"It took {time_taken:.2e}s to get the energy of {energy:.2e}")
+
+    started_at = time.time()
+    energy = example_project_cpp.getPlacementEnergy(system, molecule)
+    time_taken = time.time() - started_at
+    print(f"It took {time_taken:.2e}s to get the energy of {energy:.2e}")
 
 
 if (__name__ == "__main__"):
