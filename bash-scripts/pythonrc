@@ -1,0 +1,5 @@
+try:
+    import numpy as np
+except:
+    print("\nCould not import Numpy module.")
+

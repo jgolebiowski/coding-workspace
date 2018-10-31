@@ -1,0 +1,47 @@
+#####################################################################
+#####################################################################
+#########       Added functions         #############
+#####################################################################
+#####################################################################
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/usr/local/bin:$PATH"
+fi
+
+#Increase bash history
+export HISTFILESIZE=1000000
+export HISTSIZE=1000000
+
+#------ LIMIT openMP to not use hyperthreaded cores
+export OMP_NUM_THREADS=2
+
+#make PS1 command prompt more clear
+export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}-\u@\h\$ " 
+
+
+#alias for classic commands
+alias tree='tree -C -L 2'
+alias jmol='jmol -g 1200x800'
+alias ovito='/home/jg2214/workspace/software/ovito-2.9.0-x86_64/bin/ovito'
+alias sublime="/home/jg2214/workspace/local/sublime_text_3/sublime_text"
+alias sublimen="/home/jg2214/workspace/local/sublime_text_3/sublime_text -n"
+alias octave="/workspace/jg2214/software/octave-4.2.0/run-octave --no-gui"
+alias octave-std="/workspace/jg2214/software/octave-4.2.0/run-octave"
+
+
+alias ls='ls --color=auto -v'
+alias grep="grep --color=auto"
+alias open="xdg-open"
+
+# ------ Add python startup, modifu .pythonrc for loading modules
+export PYTHONSTARTUP="$HOME/.pythonrc"
+
+# ------ Add local paths
+source ~/paths/standard.sh
+
+# added by Miniconda2 installer
+export PATH="/home/jg2214/workspace/miniconda2/bin:$PATH"
+# added by Miniconda3 4.3.21 installer
+export PATH="/workspace/jg2214/miniconda3/bin:$PATH"
+
