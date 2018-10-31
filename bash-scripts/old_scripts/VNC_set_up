@@ -1,5 +1,0 @@
-#!/bin/bash
-W=1280
-H=800
-
-vncserver -geometry "$W"x"$H"

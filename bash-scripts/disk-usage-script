@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for dir in ./*
-do
-du -hs "$dir"
-done
-du -hs

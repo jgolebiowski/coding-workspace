@@ -2,7 +2,7 @@
 import functools
 import logging
 import sys
-import time
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -25,16 +25,17 @@ def debug_this(some_function):
     return wrapper
 
 
-def profile(some_function):
+def timethis(some_function):
     """
     Wrapper that profiles the time spent in a function
     """
 
     @functools.wraps(some_function)
     def wrapper(*args, **kwargs):
-        started_at = time.time()
+        started_at = datetime.datetime.now()
         some_function(*args, **kwargs)
-        logging.info("Function {} took {:.4e}s".format(some_function.__name__, time.time() - started_at))
+        print("Function {name} completed in {time}".format(name=some_function.__name__,
+                                                           time=datetime.datetime.now() - started_at))
 
     return wrapper
 

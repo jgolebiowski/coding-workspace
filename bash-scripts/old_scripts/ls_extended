@@ -1,8 +1,0 @@
-#!/bin/bash
-directories=$(ls -d */)
-for dir in $directories
-do
-echo -e "\n\e[34m$dir\e[0m"
-ls "$dir"
-done
-

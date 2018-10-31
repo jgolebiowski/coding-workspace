@@ -1,9 +1,0 @@
-#!/bin/bash
-
-directories=$(ls -dt */)
-
-for dir in $directories
-do
-du -hs $dir
-done
-du -hs
