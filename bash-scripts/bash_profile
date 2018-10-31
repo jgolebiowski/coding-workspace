@@ -1,0 +1,34 @@
+alias ls='ls -G -v'
+alias ovito='open -a Ovito'
+alias grep="grep --color=auto"
+alias sublime="open -a 'Sublime Text'"
+alias octave="octave --no-gui"
+alias git-gui="/usr/local/Cellar/git/2.16.3/libexec/git-core/git-gui"
+
+#Set command prompt
+export PS1="\u: \W \$ "
+
+
+#set path so it would include the /home/bin
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# Set OMP_NUM_THREADS to avoid omp slowing sown due ot hyperthreading
+export OMP_NUM_THREADS=2
+
+# # Alias for compilers
+# export CC=gcc-7
+# export CXX=g++-7
+# export CPP=cpp-7
+# export LD=gcc-7
+# export FC=gfortran-7
+# 
+# alias c++=c++-7
+# alias g++=g++-7
+# alias gcc=gcc-7
+# alias cpp=cpp-7
+# alias ld=gcc-7
+# alias cc=gcc-7
+# alias gfortran=gfortran-7
+
