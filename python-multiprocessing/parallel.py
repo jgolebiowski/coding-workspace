@@ -8,7 +8,7 @@ TIMEOUT_LONG = 600
 TIMEOUT_SHORT = 0.01
 
 
-def paralll_worker(target_function,
+def _paralll_worker(target_function,
                    task_queue,
                    result_queue,
                    fixed_args,
@@ -45,7 +45,8 @@ def paralll_worker(target_function,
             break
 
 
-def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="spawn", verbose=True):
+def parallel_control(target_function, list2process, fixed_args=None, num_threads=None, start_method="fork",
+                     verbose=True):
     """Process a list in parallel by spawning only necessary number of processes
 
     Parameters
@@ -75,6 +76,7 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
 
     if num_threads is None:
         num_threads = int(ctx.cpu_count() / 2)
+        num_threads = min(num_threads, len(list2process))
     num_threads = max(1, num_threads)
 
     if fixed_args is None:
@@ -88,7 +90,7 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
 
     processes = []
     for rank in range(num_threads):
-        p = ctx.Process(target=paralll_worker,
+        p = ctx.Process(target=_paralll_worker,
                         args=(target_function,
                               tasks_queue,
                               results_queue,
@@ -103,6 +105,91 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     for task in list2process:
         res = results_queue.get(block=True, timeout=TIMEOUT_LONG)
         results.append(res)
+
+    # Exit completed processes
+    for p in processes:
+        p.join()
+        p.terminate()
+
+    return results
+
+
+def _basic_paralll_worker(*args, target_function=None, sender=None, verbose=None):
+    """
+    Function to perform parallel work on a target_function and send the
+    results back to the master process using Pipes.
+    Each entry will be a tuple: (*target_function_input, target_function_output)
+
+    Parameters
+    ----------
+    args : Tuple
+        Arguments for the function, will be called as target_function(*args)
+    target_function : Callable
+        Function to run, will be called as target_function(*args)
+    sender : multiprocessing.connection.Connection
+        Sending end of the Pipe to pass the results back to the main thread
+    verbose : bool
+        If True, print logs to stderr
+    """
+    if verbose:
+        print(datetime.now(), "This is {} commencing".format(mp.current_process()), file=sys.stderr)
+        sys.stderr.flush()
+
+    res = target_function(*args)
+    sender.send(res)
+
+
+def basic_parallel_control(target_function, list2process, fixed_args=None, start_method="fork", verbose=True):
+    """Process a list in parallel by spawning one process per element
+
+    Parameters
+    ----------
+    target_function : function
+        Function to run, will be called as function(*(args + fixed_args))
+    list2process : list[tuple]
+        List with inputs to the target_function, if None an empty tuple is used
+    fixed_args : tuple
+        Fixed args ot pass to every function call, if None an empty tuple is used
+    start_method : str
+        Specify the start method, should be "spawn" or "fork"
+    verbose : bool
+        If True, print logs to stderr
+
+    Returns
+    -------
+    list
+        List of results in the same order as the list2pprocess
+    """
+    if start_method not in ["spawn", "fork"]:
+        raise ValueError("start_method should be spawn or fork not {}".format(start_method))
+    ctx = mp.get_context(start_method)
+
+    if fixed_args is None:
+        fixed_args = ()
+
+    processes = []
+    receivers = []
+    for task in list2process:
+        rcvr, sndr = ctx.Pipe(duplex=False)
+        p = ctx.Process(target=_basic_paralll_worker,
+                        args=task + fixed_args,
+                        kwargs=dict(target_function=target_function,
+                                    sender=sndr,
+                                    verbose=verbose)
+                        )
+        p.start()
+        processes.append(p)
+        receivers.append(rcvr)
+
+        # Close the sender in the master thread. The only alive reference remains in
+        # the worker threads. If master-version of the sender is not closed, the pipe
+        # will remain alive even if workers close their end.
+        sndr.close()
+
+    # Extract results
+    results = []
+    for reciever in receivers:
+        results.append(reciever.recv())
 
     # Exit completed processes
     for p in processes:
