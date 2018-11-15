@@ -40,7 +40,7 @@ def paralll_worker(target_function,
                 sys.stderr.flush()
 
             res = target_function(*(task + fixed_args))
-            result_queue.put((*task, res))
+            result_queue.put((res, *task))
         except queue.Empty:
             break
 
@@ -67,7 +67,7 @@ def parallel_control(target_function, list2process, fixed_args=None, num_threads
     -------
     list[tuple]
         List of results in the form:
-        (*input, output)
+        (output, *input)
     """
     if start_method not in ["spawn", "fork"]:
         raise ValueError("start_method should be spawn or fork not {}".format(start_method))
@@ -126,8 +126,8 @@ def main():
     print(results)
 
     results = parallel_control(power, list2process, fixed_args=(3,))
-    inputs = [item[0] for item in results]
-    outputs = [item[1] for item in results]
+    inputs = [item[1] for item in results]
+    outputs = [item[0] for item in results]
     print(inputs, outputs)
 
 

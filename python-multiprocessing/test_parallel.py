@@ -21,43 +21,43 @@ class TestParallel(unittest.TestCase):
         list2process = [(idx,) for idx in range(10)]
         results = parallel_control(cube, list2process, verbose=False)
         for res in results:
-            self.assertAlmostEqual(res[0] ** 3, res[1])
+            self.assertAlmostEqual(res[1] ** 3, res[0])
 
     def test_fixed_args(self):
         list2process = [(idx,) for idx in range(5)]
         results = parallel_control(power, list2process, fixed_args=(3,), verbose=False)
         for res in results:
-            self.assertAlmostEqual(res[0] ** 3, res[1])
+            self.assertAlmostEqual(res[1] ** 3, res[0])
 
     def test_multiple_args(self):
         list2process = [(idx, idx * 2) for idx in range(10)]
         results = parallel_control(power2, list2process, fixed_args=(3,), verbose=False)
         for res in results:
-            self.assertAlmostEqual(res[0] ** 3, res[2])
+            self.assertAlmostEqual(res[1] ** 3, res[0])
 
     def test_fork(self):
         list2process = [(idx,) for idx in range(4)]
         results = parallel_control(power, list2process, fixed_args=(3,), start_method="fork", verbose=False)
         for res in results:
-            self.assertAlmostEqual(res[0] ** 3, res[1])
+            self.assertAlmostEqual(res[1] ** 3, res[0])
 
     def test_spawn(self):
         list2process = [(idx,) for idx in range(4)]
         results = parallel_control(power, list2process, fixed_args=(3,), start_method="spawn", verbose=False)
         for res in results:
-            self.assertAlmostEqual(res[0] ** 3, res[1])
+            self.assertAlmostEqual(res[1] ** 3, res[0])
 
     def test_short(self):
         list2process = [(idx,) for idx in range(1)]
         results = parallel_control(power, list2process, fixed_args=(3,), start_method="spawn", verbose=False)
         for res in results:
-            self.assertAlmostEqual(res[0] ** 3, res[1])
+            self.assertAlmostEqual(res[1] ** 3, res[0])
 
     def test_numpy(self):
         list2process = [(np.ones((2, 2)) * idx,) for idx in range(5)]
         results = parallel_control(power, list2process, fixed_args=(3,), start_method="spawn", verbose=False)
         for res in results:
-            self.assertTrue(np.allclose(res[0] ** 3, res[1]))
+            self.assertTrue(np.allclose(res[1] ** 3, res[0]))
 
 if (__name__ == "__main__"):
     unittest.main()
