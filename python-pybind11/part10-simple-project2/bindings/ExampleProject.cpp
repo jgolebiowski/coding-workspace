@@ -11,7 +11,7 @@
 namespace py = pybind11;
 
 // Here, the first argument is the module name which must be the same as cmake project name!!
-PYBIND11_MODULE(example_project_cpp, m)
+PYBIND11_MODULE(project_extension, m)
 {
 
 //    Provide module documentation

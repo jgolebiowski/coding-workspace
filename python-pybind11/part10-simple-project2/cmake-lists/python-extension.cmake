@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(example_project_cpp)
+project(project_extension)
 
 # Include pybinding
 add_subdirectory(dependencies/pybind11)

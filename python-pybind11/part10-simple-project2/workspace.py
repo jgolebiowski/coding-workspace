@@ -2,7 +2,7 @@
 import numba
 import numpy as np
 import time
-import example_project_cpp
+import project_extension
 
 @numba.jit([
     numba.float64(numba.float64[:]),
@@ -42,7 +42,7 @@ def _get_placement_energy(system_pos: np.ndarray, mol_pos: np.ndarray) -> float:
 
 
 def main():
-    example_project_cpp.hello_world()
+    project_extension.hello_world()
     N = 10
 
     system = np.random.uniform(low=0, high=1, size=(N, 3))
@@ -54,7 +54,7 @@ def main():
     print(f"It took {time_taken:.2e}s to get the energy of {energy:.2e}")
 
     started_at = time.time()
-    energy = example_project_cpp.getPlacementEnergy(system, molecule)
+    energy = project_extension.getPlacementEnergy(system, molecule)
     time_taken = time.time() - started_at
     print(f"It took {time_taken:.2e}s to get the energy of {energy:.2e}")
 

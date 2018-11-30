@@ -21,7 +21,7 @@ TEST_EXECUTABLE_CMAKE = "test-executable.cmake"
 BUILDDIR = "build"
 
 # CMake project name (also pybinding project name - they must be the same)
-PROJECT_NAME_CPP = "example_project_cpp"
+PROJECT_NAME_CPP = "project_extension"
 
 
 

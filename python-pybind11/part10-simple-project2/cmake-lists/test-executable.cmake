@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(example_project_cpp)
+project(project_extension)
 
 # Gather all source files and define an executable
 # Here, either compile tst/main or tst/test_main and all test cases

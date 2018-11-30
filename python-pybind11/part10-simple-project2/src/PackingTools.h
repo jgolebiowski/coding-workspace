@@ -2,8 +2,8 @@
 // Created by Jacek Golebiowski on 28/10/2018.
 //
 
-#ifndef EXAMPLE_PROJECT_CPP_PACKINGTOOLS_H
-#define EXAMPLE_PROJECT_CPP_PACKINGTOOLS_H
+#ifndef PROJECT_EXTENSION_PACKINGTOOLS_H
+#define PROJECT_EXTENSION_PACKINGTOOLS_H
 
 #include "Utilities.h"
 
@@ -22,7 +22,7 @@ double getEnergy(const EigenMatrixXdRowMajor &distances);
  * @param moleculePositions positions of the molecule atoms as (n_mol_atoms, 3) matrix
  * @return This will be populated with the total energy
  */
-double getPlacementEnergy(const Eigen::Ref<EigenMatrixXdRowMajor> systemPositions,
-                        const Eigen::Ref<EigenMatrixXdRowMajor> moleculePositions);
+double getPlacementEnergy(const Eigen::Ref <EigenMatrixXdRowMajor> systemPositions,
+                          const Eigen::Ref <EigenMatrixXdRowMajor> moleculePositions);
 
-#endif //EXAMPLE_PROJECT_CPP_PACKINGTOOLS_H
+#endif //PROJECT_EXTENSION_PACKINGTOOLS_H
