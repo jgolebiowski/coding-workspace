@@ -7,7 +7,7 @@ import datetime
 logger = logging.getLogger(__name__)
 
 
-def debug_this(some_function):
+def debugtool(some_function):
     """
     Wrapper that launches a post mortem pdb debugger on errors in the function
     """
@@ -15,12 +15,12 @@ def debug_this(some_function):
     @functools.wraps(some_function)
     def wrapper(*args, **kwargs):
         try:
-            some_function(*args, **kwargs)
+            return some_function(*args, **kwargs)
         except:
-            import ipdb
+            import pdb
             type, value, traceback = sys.exc_info()
             print(type, value, traceback)
-            ipdb.post_mortem(traceback)
+            pdb.post_mortem(traceback)
 
     return wrapper
 
@@ -33,9 +33,10 @@ def timethis(some_function):
     @functools.wraps(some_function)
     def wrapper(*args, **kwargs):
         started_at = datetime.datetime.now()
-        some_function(*args, **kwargs)
+        result = some_function(*args, **kwargs)
         print("Function {name} completed in {time}".format(name=some_function.__name__,
                                                            time=datetime.datetime.now() - started_at))
+        return result
 
     return wrapper
 
