@@ -59,11 +59,12 @@ def quickplot(x: Union[List, np.ndarray], y: Union[List, np.ndarray],
         yposition = plotheigth - 1 - floor(yposition)
         plot[yposition, xposition] = "o"
 
-    # ------ Make vertical ticks
     plotlines = []
-    tickmask = [not bool(idx % 3) for idx in range(plotheigth)]
+    # ------ Make vertical ticks
+    tickmask = [False for idx in range(plotheigth)]
     tickmask[0] = True
     tickmask[-1] = True
+    find_vertical_ticks(1, len(tickmask) - 1, tickmask)
     for idx in range(plotheigth):
         if tickmask[idx]:
             line = f"{ybins[idx]:+8.2e} |" + "".join(plot[idx, :])
@@ -77,15 +78,31 @@ def quickplot(x: Union[List, np.ndarray], y: Union[List, np.ndarray],
     finalline = [" " for idx in range(plotwidth)]
     finalline[0: tickwidth] = f"{xbins[0]:+9.3e}"
     finalline[-tickwidth:] = f"{xbins[-1]:+9.3e}"
-    fill_final_line(tickwidth, len(finalline) - tickwidth, finalline, xbins)
+    find_horizontal_ticks(tickwidth, len(finalline) - tickwidth, finalline, xbins)
     finalline = " " * 10 + "".join(finalline)
     plotlines.append(finalline)
 
     plotstring = "\n".join(plotlines)
     print(plotstring)
 
+def find_vertical_ticks(start: int, stop: int, tickmask: List[bool]):
+    """
+    Recursive routine to fill in tick mask
+    :param start: beggining of the fragment to fill
+    :param stop: end of the fragment to fill
+    :param tickmask: tick mask itself
+    """
+    tickwidth = 6
+    if (stop - start) < tickwidth:
+        return
 
-def fill_final_line(start: int, stop: int, finalline: List[str], xbins: np.ndarray):
+    midpoint = floor((start + stop) / 2)
+    tickmask[midpoint] = True
+    find_vertical_ticks(start, midpoint, tickmask)
+    find_vertical_ticks(midpoint, stop, tickmask)
+
+
+def find_horizontal_ticks(start: int, stop: int, finalline: List[str], xbins: np.ndarray):
     """
     Recursive routine for filling in ticks in the final line
     :param start: begigning of the final line fragment to fill
@@ -100,8 +117,8 @@ def fill_final_line(start: int, stop: int, finalline: List[str], xbins: np.ndarr
     midpoint = floor((start + stop) / 2)
     finalline[int(midpoint - tickwidth / 2):
               int(midpoint + tickwidth / 2)] = f"{xbins[int(midpoint)]:+9.3e}"
-    fill_final_line(start, int(midpoint - tickwidth / 2), finalline, xbins)
-    fill_final_line(int(midpoint + tickwidth / 2), stop, finalline, xbins)
+    find_horizontal_ticks(start, int(midpoint - tickwidth / 2), finalline, xbins)
+    find_horizontal_ticks(int(midpoint + tickwidth / 2), stop, finalline, xbins)
 
 
 class TestUtilities(unittest.TestCase):
@@ -124,6 +141,7 @@ class TestUtilities(unittest.TestCase):
     def test_quickplot(self):
         x = np.linspace(-10, 10, num=100, endpoint=True)
         y = x ** 2
+        print("")
         quickplot(x, y)
 
     def test_gen_bin(self):
@@ -146,3 +164,4 @@ class TestUtilities(unittest.TestCase):
 
 if (__name__ == "__main__"):
     unittest.main()
+
