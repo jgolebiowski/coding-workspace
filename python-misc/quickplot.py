@@ -43,7 +43,7 @@ def quickplot(x: Union[List, np.ndarray], y: Union[List, np.ndarray],
     plotwidth = display_width - 11
     plotheigth = display_heigth - 2
     xbins = np.linspace(xmin, xmax, num=plotwidth)
-    ybins = np.linspace(ymin, ymax, num=plotheigth)
+    ybins = np.linspace(ymax, ymin, num=plotheigth)
 
     # ------ Make plot central panel
     plot = np.chararray((plotheigth, plotwidth), itemsize=1, unicode=True)
