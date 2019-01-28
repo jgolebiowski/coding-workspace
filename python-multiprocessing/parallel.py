@@ -7,12 +7,31 @@ import queue
 TIMEOUT_LONG = 600
 TIMEOUT_SHORT = 0.01
 
+def batchify(l, n):
+    """
+    Iterator to divide a list into n chunks,
+    All but the last are equal size
+    Parameters
+    ----------
+    l : iterable
+        list
+    n : int
+        Number of chunks
+    """
+    n = min(len(l), n)
+    n = max(1, n)
+    chunksize = int(math.ceil(len(l) / n))
+
+    for i in range(0, len(l), chunksize):
+        # Create an index range for l of chunksize items:
+        yield l[i:i + chunksize]
+
 
 def _paralll_worker(target_function,
-                   task_queue,
-                   result_queue,
-                   fixed_args,
-                   verbose=True):
+                    task_queue,
+                    result_queue,
+                    fixed_args,
+                    verbose=True):
     """
     Function to perform parallel work on a target_function and send the
     results back to the master process using Pipes.
@@ -139,6 +158,7 @@ def _basic_paralll_worker(*args, target_function=None, sender=None, verbose=None
     sender.send(res)
 
 
+
 def basic_parallel_control(target_function, list2process, fixed_args=None, start_method="fork", verbose=True):
     """Process a list in parallel by spawning one process per element
 
@@ -161,7 +181,7 @@ def basic_parallel_control(target_function, list2process, fixed_args=None, start
         List of results in the same order as the list2pprocess
     """
     if start_method not in ["spawn", "fork"]:
-        raise ValueError("start_method should be spawn or fork not {}".format(start_method))
+        raise ValueError("start_method should be spawn or fork and not {}".format(start_method))
     ctx = mp.get_context(start_method)
 
     if fixed_args is None:
@@ -217,6 +237,21 @@ def main():
     outputs = [item[0] for item in results]
     print(inputs, outputs)
 
+    list2pprocess = [(idx, ) for idx in range(4)]
+    results = basic_parallel_control(power, list2process, fixed_args=(3,))
+    print(list2process, results)
+
+
+    og_list2pprocess = tuple(range(10))
+    list2process = [item for item in batchify(og_list2pprocess, 4)]
+    def func(*args):
+        return [power(item, 3) for item in args]
+
+    results = basic_parallel_control(func, list2process)
+    print(list2process, results)
+
+
 
 if (__name__ == "__main__"):
     main()
+
