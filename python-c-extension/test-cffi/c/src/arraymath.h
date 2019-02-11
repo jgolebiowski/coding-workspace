@@ -1,0 +1,8 @@
+//
+// Created by Jacek Golebiowski on 2019-02-11.
+//
+
+#ifndef PROJECT_EXTENSION_ARRAYMATH_H
+#define PROJECT_EXTENSION_ARRAYMATH_H
+
+#endif //PROJECT_EXTENSION_ARRAYMATH_H
