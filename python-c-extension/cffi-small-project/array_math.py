@@ -6,7 +6,8 @@ from cffi import FFI
 ffi = FFI()
 
 from compile import compile_cffi
-import _array_math.lib as libextra
+import _array_math.lib as lib
+# from ._array_math import lib 
 
 
 def matmul(A, B):
@@ -20,7 +21,7 @@ def matmul(A, B):
     p2, m = B.shape
 
     C = np.empty((n, m))
-    libextra.arraymath_matmul(
+    lib.arraymath_matmul(
         ffi.cast("double *", ffi.from_buffer(A)), n, p1,
         ffi.cast("double *", ffi.from_buffer(B)), p2, m,
         ffi.cast("double *", ffi.from_buffer(C)), n, m
