@@ -3,6 +3,7 @@
 #include "stdio.h"
 
 
+
 void arraymath_matmul(
         double *matA, int matAcols, int matArows,
         double *matB, int matBcols, int matBrows,

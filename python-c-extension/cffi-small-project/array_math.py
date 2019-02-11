@@ -41,15 +41,13 @@ class TestIO(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    CHEADER = """
+    C_HEADER = """
     void arraymath_matmul(
         double *matA, int matAcols, int matArows,
         double *matB, int matBcols, int matBrows,
         double *matRES, int matREScols, int matRESrows);
     """
-    with open("source.c", "r") as fin:
-        CCODE = fin.readlines()
-        CCODE = "".join(CCODE)
+    SOURCES = ["source_arraymath.c"]
 
-    compile_cffi("_array_math", CHEADER, CCODE)
+    compile_cffi("_array_math", C_HEADER, C_HEADER, SOURCES)
     unittest.main()
