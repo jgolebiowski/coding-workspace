@@ -66,7 +66,7 @@ def compile_cffi(project_name: str, cdef: str, extra_header: str, source_files: 
 
     ffibuilder.set_source(project_name,
                           extra_header,
-                          sources = source_files,
+                          sources=source_files,
                           extra_compile_args=CFLAGS + INCLUDES,
                           extra_link_args=LIBRARY_DIRS + LINKER_FLAGS,
                           )
@@ -82,9 +82,9 @@ def move_output(project_name: str, workdir: str, target_location: str):
     :param target_location: location of the extension dir
     """
     os.makedirs(target_location, exist_ok=True)
-    compilation_files = [file for file in os.listdir(WORKDIR) if file.startswith(C_PROJECT_NAME)]
+    compilation_files = [file for file in os.listdir(workdir) if file.startswith(project_name)]
     for file in compilation_files:
-        shutil.move(os.path.join(WORKDIR, file), os.path.join(WORKDIR, EXTENSION_DIR, file))
+        shutil.move(os.path.join(workdir, file), os.path.join(workdir, target_location, file))
 
 
 if __name__ == "__main__":

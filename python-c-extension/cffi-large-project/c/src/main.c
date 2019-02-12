@@ -8,7 +8,7 @@
 #include "stdio.h"
 
 //int main (int argc, char *argv[])
-int main() {
+int not_main() {
     double a[] = {0.11, 0.12, 0.13,
                   0.21, 0.22, 0.23};
 
@@ -25,4 +25,5 @@ int main() {
 
     gsl_matrix_view RES = gsl_matrix_view_array(c, 2, 2);
     gsl_matrix_fprintf(stdout, &RES.matrix, "%f");
+    return 0;
 }

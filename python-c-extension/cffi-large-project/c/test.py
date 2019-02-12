@@ -1,6 +1,6 @@
 import unittest
 
-import tst.test_arraymath
+import test_python.test_arraymath
 
 
 def main():
@@ -9,7 +9,7 @@ def main():
     loader = unittest.TestLoader()
 
     # Load tests from modules
-    suite.addTest(loader.loadTestsFromModule(tst.test_arraymath))
+    suite.addTest(loader.loadTestsFromModule(test_python.test_arraymath))
 
     # Run tests
     runner = unittest.TextTestRunner(verbosity=3)

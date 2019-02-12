@@ -5,7 +5,6 @@ project(project_extension)
 # Here, either compile tst/main or tst/test_main and all test cases
 file(GLOB ${PROJECT_NAME}_src
         src/*.c
-
         tst/*.c
         )
 
@@ -22,6 +21,7 @@ target_link_libraries(${PROJECT_NAME} -lgsl -liomp5 -lcblas)
 #target_include_directories(${PROJECT_NAME} PUBLIC /path/to/include)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_include_directories(${PROJECT_NAME} PUBLIC tst)
+target_include_directories(${PROJECT_NAME} PUBLIC dependencies)
 target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
 
 
