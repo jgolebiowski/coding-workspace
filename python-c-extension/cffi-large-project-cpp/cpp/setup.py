@@ -59,10 +59,10 @@ def compile_cffi(project_name: str, cdef: str, extra_header: str, source_files: 
     os.environ["CC"] = "g++-8"
     os.environ["CXX"] = "g++-8"
 
-    CFLAGS = ["-Wall", "-Wextra","-fdiagnostics-color", "-fopenmp"]
+    CFLAGS = ["-std=c++11", "-Wall", "-Wextra","-fdiagnostics-color", "-fopenmp"]
     INCLUDES = ["-I/usr/local/include"]
 
-    LINKER_FLAGS = ["-lm", "-liomp5"]
+    LINKER_FLAGS = ["-lm", "-fopenmp", "-liomp5"]
     LIBRARY_DIRS = ["-L/usr/local/lib"]
 
     ffibuilder.set_source(project_name,
@@ -86,6 +86,10 @@ def move_output(project_name: str, workdir: str, target_location: str):
     compilation_files = [file for file in os.listdir(workdir) if file.startswith(project_name)]
     for file in compilation_files:
         shutil.move(os.path.join(workdir, file), os.path.join(workdir, target_location, file))
+
+    objects = [os.path.join(SOURCEDIR, file) for file in os.listdir(SOURCEDIR) if file.endswith(".o")]
+    for object in objects:
+        os.remove(object)
 
 
 if __name__ == "__main__":
